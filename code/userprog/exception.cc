@@ -61,26 +61,10 @@ static void UpdatePC() {
 //      are in machine.h.
 //----------------------------------------------------------------------
 
-/*void ExceptionHandler(ExceptionType which) {
- int type = machine->ReadRegister(2);
-
- if ((which == SyscallException) && (type == SC_Halt)) {
- DEBUG('a', "Shutdown, initiated by user program.\n");
- interrupt->Halt();
- } else {
- printf("Unexpected user mode exception %d %d\n", which, type);
- ASSERT(FALSE);
- }
-
- // LB: Do not forget to increment the pc before returning!
- UpdatePC();
- // End of addition
- }*/
-
 void ExceptionHandler(ExceptionType which) {
 	int type = machine->ReadRegister(2);
 
-#ifndef CHANGE
+#ifndef CHANGED // Noter le if*n*def
 	if ((which == SyscallException) && (type == SC_Halt)) {
 		DEBUG('a', "Shutdown, initiated by user program.\n");
 		interrupt->Halt();
@@ -88,12 +72,14 @@ void ExceptionHandler(ExceptionType which) {
 		printf("Unexpected user mode exception %d %d\n", which, type);
 		ASSERT(FALSE);
 	}
-#else //CHANGE
-	if(which == SyscallException)
+#else // CHANGED
+	if (which == SyscallException)
 	{
-		switch(type) {
+		switch (type) {
 			case SC_Halt: {
 				DEBUG('a', "Shutdown, initiated by user program.\n");
+				interrupt->Halt();
+				break;
 			}
 			case SC_PutChar: { // to write a character to the console
 				DEBUG('m', "PutChar, system call handler. \n");
@@ -108,14 +94,16 @@ void ExceptionHandler(ExceptionType which) {
 				ASSERT(FALSE);
 				break;
 			}
-		} // end of switch
-	} else {
+		} // end of switch case
+	} // end of if statement
+	else
+	{
 		printf("Unexpected user mode exception %d %d\n", which, type);
 		ASSERT(FALSE);
-	} // end of if..else
-#endif //CHANGE
-		UpdatePC();
-} // END OF ExceptionHandler
+	}
+#endif // CHANGED
+	UpdatePC();
+}// end of ExceptionHandler
 
 #ifdef CHANGED
 void copyStringFromMachine( int from, char *to, unsigned size) {
