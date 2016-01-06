@@ -52,10 +52,10 @@ void SynchConsole::SynchPutString(const char s[])
 void SynchConsole::SynchGetString(char *s, int n)
 {
 	int i;
-	for (i = 0; i < n-2; i ++)
+	for (i = 0; i < n-1; i ++)
 	{
 		s[i] = SynchGetChar();
-		if (s[i] == EOF || s[i] == '\0' || s[i] == '\n')
+		if (s[i] == '\n')
 			break;
 	}
 	s[i] = '\0';
