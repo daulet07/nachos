@@ -35,6 +35,12 @@ Machine *machine;		// user program memory and registers
 PostOffice *postOffice;
 #endif
 
+/*For SynchConsole*/
+#ifdef CHANGED
+#ifdef USER_PROGRAM
+SynchConsole *synchConsole;
+#endif //USER_PROGRAM
+#endif //CHANGED
 
 // External definition, to allow us to take a pointer to this function
 extern void Cleanup ();
@@ -170,6 +176,13 @@ Initialize (int argc, char **argv)
 #ifdef NETWORK
 	postOffice = new PostOffice (netname, rely, 10);
 #endif
+
+#ifdef CHANGED
+#ifdef USER_PROGRAM
+	synchConsole = new SynchConsole (0, 0);
+#endif //USER_PROGRAM
+#endif //CHANGED
+
 }
 
 //----------------------------------------------------------------------
@@ -199,6 +212,12 @@ Cleanup ()
 	delete timer;
 	delete scheduler;
 	delete interrupt;
+
+#ifdef CHANGED
+#ifdef USER_PROGRAM
+    delete synchConsole;
+#endif //USER_PROGRAM
+#endif //CHANGED
 
 	Exit (0);
 }
