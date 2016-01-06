@@ -84,3 +84,29 @@ ExceptionHandler (ExceptionType which)
     UpdatePC ();
     // End of addition
 }
+
+#ifdef CHANGED
+void copyStringFromMachine( int from, char *to, unsigned size){
+
+	int byte;
+
+	while (size > 0 && (char)byte != '\0')
+	{
+		machine->ReadMem(from, 1, &byte);
+		from ++;
+		*to = (char)byte;
+		to ++;
+		size --;
+	}
+
+	if ((char) byte != '\0')
+		to = '\0';
+}
+
+void writeStringToMachine(char* string, int to, unsigned size){
+	int i;
+	for (i = 0; i < (int)size; i++)
+		machine->WriteMem(to + i, 1, string[i]);
+}
+
+#endif //CHANGED
