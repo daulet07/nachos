@@ -133,42 +133,42 @@ Initialize (int argc, char **argv)
 		ASSERT (argc > 1);
 		netname = atoi (*(argv + 1));
 		argCount = 2;
-	    }
+		}
 #endif
-      }
+	  }
 
-    DebugInit (debugArgs);	// initialize DEBUG messages
-    stats = new Statistics ();	// collect statistics
-    interrupt = new Interrupt;	// start up interrupt handling
-    scheduler = new Scheduler ();	// initialize the ready queue
-    if (randomYield)		// start the timer (if needed)
-	timer = new Timer (TimerInterruptHandler, 0, randomYield);
+	DebugInit (debugArgs);	// initialize DEBUG messages
+	stats = new Statistics ();	// collect statistics
+	interrupt = new Interrupt;	// start up interrupt handling
+	scheduler = new Scheduler ();	// initialize the ready queue
+	if (randomYield)		// start the timer (if needed)
+		timer = new Timer (TimerInterruptHandler, 0, randomYield);
 
-    threadToBeDestroyed = NULL;
+	threadToBeDestroyed = NULL;
 
-    // We didn't explicitly allocate the current thread we are running in.
-    // But if it ever tries to give up the CPU, we better have a Thread
-    // object to save its state. 
-    currentThread = new Thread ("main");
-    currentThread->setStatus (RUNNING);
+	// We didn't explicitly allocate the current thread we are running in.
+	// But if it ever tries to give up the CPU, we better have a Thread
+	// object to save its state. 
+	currentThread = new Thread ("main");
+	currentThread->setStatus (RUNNING);
 
-    interrupt->Enable ();
-    CallOnUserAbort (Cleanup);	// if user hits ctl-C
+	interrupt->Enable ();
+	CallOnUserAbort (Cleanup);	// if user hits ctl-C
 
 #ifdef USER_PROGRAM
-    machine = new Machine (debugUserProg);	// this must come first
+	machine = new Machine (debugUserProg);	// this must come first
 #endif
 
 #ifdef FILESYS
-    synchDisk = new SynchDisk ("DISK");
+	synchDisk = new SynchDisk ("DISK");
 #endif
 
 #ifdef FILESYS_NEEDED
-    fileSystem = new FileSystem (format);
+	fileSystem = new FileSystem (format);
 #endif
 
 #ifdef NETWORK
-    postOffice = new PostOffice (netname, rely, 10);
+	postOffice = new PostOffice (netname, rely, 10);
 #endif
 }
 
@@ -176,29 +176,29 @@ Initialize (int argc, char **argv)
 // Cleanup
 //      Nachos is halting.  De-allocate global data structures.
 //----------------------------------------------------------------------
-void
+	void
 Cleanup ()
 {
-    printf ("\nCleaning up...\n");
+	printf ("\nCleaning up...\n");
 #ifdef NETWORK
-    delete postOffice;
+	delete postOffice;
 #endif
 
 #ifdef USER_PROGRAM
-    delete machine;
+	delete machine;
 #endif
 
 #ifdef FILESYS_NEEDED
-    delete fileSystem;
+	delete fileSystem;
 #endif
 
 #ifdef FILESYS
-    delete synchDisk;
+	delete synchDisk;
 #endif
 
-    delete timer;
-    delete scheduler;
-    delete interrupt;
+	delete timer;
+	delete scheduler;
+	delete interrupt;
 
-    Exit (0);
+	Exit (0);
 }
