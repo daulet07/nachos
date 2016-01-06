@@ -59,6 +59,7 @@ void copyStringFromMachine( int from, char *to, unsigned size){
 
 	if ((char) byte != '\0')
 		to = '\0';
+	
 }
 
 void writeStringToMachine(char* string, int to, unsigned size){
@@ -119,6 +120,46 @@ void ExceptionHandler(ExceptionType which) {
 				int charint = machine->ReadRegister(4);
 				char ch = (char) charint;
 				synchConsole->SynchPutChar(ch);
+				break;
+			}
+			case SC_GetChar:
+				DEBUG('a', "GetChar, system call handler.\n");
+
+				machine->WriteRegister(2, (int)synchConsole->SynchGetChar());
+				break;
+			case SC_PutString:
+			{
+				DEBUG('a', "PutString, system call handler.\n");
+				char *buffer = new char[MAX_STRING_SIZE+1];
+				copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
+				fprintf(stderr, "Buffer %s\n", buffer);
+				synchConsole->SynchPutString(buffer);
+				delete[] buffer;
+				break;
+			}
+			case SC_GetString:
+			{
+				DEBUG('a', "GetString, system call handler.\n");
+
+				char *buffer = new char[MAX_STRING_SIZE+1];
+				int p = 0;
+				int bufferMachine = machine->ReadRegister(4);
+				int maxSize = machine->ReadRegister(5);
+
+				while (p < maxSize) {
+					/*
+					if (reg5 - p > MAX_STRING_SIZE+1)
+						size = MAX_STRING_SIZE+1;
+					else
+						size = reg5 - p;
+					*/
+					synchConsole->SynchGetString(buffer+p, maxSize-p);
+					writeStringToMachine(buffer, bufferMachine+p, strlen(buffer));
+					p+= strlen(buffer);
+					fprintf(stderr, "p= %d %s\n", p, buffer);
+				}
+				machine->WriteMem(bufferMachine+p+1, 1, '\0');
+				delete [] buffer;
 				break;
 			}
 			default: {

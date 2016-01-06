@@ -97,9 +97,13 @@ Console::CheckCharAvail()
     if ((incoming != EOF) || !PollFile(readFileNo))
 	return;	  
 
+//	fprintf(stderr, "Inside console.cc char avail %c\n", incoming);
+//	fflush(stderr);
     // otherwise, read character and tell user about it
     n = ReadPartial(readFileNo, &c, sizeof(char));
     incoming = (n == 1 ? c : EOF);
+//	fprintf(stderr, "char initilize incoming %c\n", incoming);
+//	fflush(stderr);
     stats->numConsoleCharsRead++;
     (*readHandler)(handlerArg);	
 }
@@ -128,10 +132,14 @@ Console::WriteDone()
 char
 Console::GetChar()
 {
-   char ch = incoming;
+//	fprintf(stderr, "Somebody take the char\n");
+//	fflush(stderr);
+	char ch = incoming;
 
-   incoming = EOF;
-   return ch;
+	incoming = EOF;
+//	fprintf(stderr, "incoming = EOF %d\n", stats->numConsoleCharsRead);
+//	fflush(stderr);
+	return ch;
 }
 
 //----------------------------------------------------------------------

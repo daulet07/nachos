@@ -20,3 +20,4 @@ main ()
     /* not reached */
     return 0;
 }
+

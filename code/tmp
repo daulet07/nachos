@@ -1,0 +1,53 @@
+
+		switch(type) {
+			case SC_Halt:
+				DEBUG('a', "Shutdown, initiated by user program.\n");
+				interrupt->Halt();
+				break;
+			case SC_PutChar:
+				DEBUG('a', "PutChar, system call handler.\n");
+				synchConsole->SynchPutChar((char)machine->ReadRegister(4));
+				break;
+			case SC_PutString:
+			{
+				DEBUG('a', "PutString, system call handler.\n");
+				char *buffer = new char[MAX_STRING_SIZE+1];
+				copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
+>>>>>>> Stashed changes
+
+				delete[] buffer;
+				break;
+			}
+			case SC_GetChar:
+				DEBUG('a', "GetChar, system call handler.\n");
+
+				machine->WriteRegister(2, (int)synchConsole->SynchGetChar());
+				break;
+			case SC_GetString:
+			{
+				DEBUG('a', "GetString, system call handler.\n");
+
+				char *buffer = new char[MAX_STRING_SIZE+1];
+				int p = 0, size;
+				int reg5 = machine->ReadRegister(5);
+
+				while (p < reg5) {
+					if (reg5 - p > MAX_STRING_SIZE+1)
+						size = MAX_STRING_SIZE+1;
+					else
+						size = reg5 - p;
+					synchConsole->SynchGetString(buffer, size);
+					writeStringToMachine(buffer, machine->ReadRegister(4)+p, strlen(buffer));
+					p+= strlen(buffer);
+
+					if (strlen(buffer) != MAX_STRING_SIZE)
+						break;
+				}
+				machine->WriteMem(machine->ReadRegister(4)+p+1, 1, '\0');
+				delete [] buffer;
+				break;
+			}
+			default: 
+				printf("Unexpected user mode exception %d %d\n", which, type);
+				ASSERT(FALSE);
+		}

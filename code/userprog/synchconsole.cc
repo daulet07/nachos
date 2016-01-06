@@ -7,7 +7,7 @@
 static Semaphore *readAvail;
 static Semaphore *writeDone;
 
-static void ReadAvail(int arg) {readAvail->V(); }
+static void ReadAvail(int arg) { readAvail->V();}
 static void WriteDone(int arg) {writeDone->V(); }
 
 SynchConsole::SynchConsole(char *readFile, char *writeFile)
@@ -32,35 +32,46 @@ void SynchConsole::SynchPutChar(const char ch)
 
 char SynchConsole::SynchGetChar()
 {
+//	fprintf(stderr, "Synchconsole.cc Whant getChar\n");
 	readAvail->P();
 	char ch;
 	ch = console->GetChar();
+//	fprintf(stderr, "Synchconsole.cc take char %c\n", ch);
 	return ch;
 }
 
 void SynchConsole::SynchPutString(const char s[])
 {
-	writeDone->P();
 	while (*s != '\0')
 	{
 		SynchPutChar(*s);
 		s ++;
 	}
-	writeDone->V();
 }
 
 void SynchConsole::SynchGetString(char *s, int n)
 {
-	readAvail->P();
+	int i;
+	for (i = 0; i < n-2; i ++)
+	{
+		s[i] = SynchGetChar();
+		if (s[i] == EOF || s[i] == '\0' || s[i] == '\n')
+			break;
+	}
+	s[i] = '\0';
+
+/*
 	char c = SynchGetChar();
 	while (c != EOF && c!= '\0' && n > 0)
 	{
 		*s = c;
+		fprintf(stderr, "- %c\n", *s);
 		s ++;
 		c = SynchGetChar();
+		n --;
+		
 	}
-	*s = '\0';
-	readAvail->V();
+	*/
 }
 
 #endif // CHANGED

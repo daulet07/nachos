@@ -32,6 +32,9 @@
 
 #ifdef CHANGED
 #define SC_PutChar	11
+#define SC_GetChar	12
+#define SC_PutString	13
+#define SC_GetString	14
 #endif //CHANGED
 
 #ifdef IN_USER_MODE
@@ -138,6 +141,9 @@ void writeStringToMachine(char* string, int to, unsigned size);
 void copyStringFromMachine( int from, char *to, unsigned size);
 
 void PutChar(char c);
+char GetChar();
+void PutString(const char s[]);
+void GetString(char* s, int n);
 #endif //CHANGED
 
 #endif // IN_USER_MODE
