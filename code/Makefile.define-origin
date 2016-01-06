@@ -32,17 +32,8 @@
 
 ###########################################################################
 # List of NachOS user programs initially present
-<<<<<<< Updated upstream
-ORIG_USERPROGS=halt matmult shell sort putchar
-=======
-<<<<<<< HEAD
 ORIG_USERPROGS=halt matmult shell sort
-=======
-ORIG_USERPROGS=halt matmult shell sort putchar
->>>>>>> refs/remotes/origin/master
->>>>>>> Stashed changes
 
-###########################################################################
 # Group of files used to defined initial flavors
 #
 THREAD_SRC      :=      main.cc list.cc scheduler.cc synch.cc synchlist.cc \
