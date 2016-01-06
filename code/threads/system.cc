@@ -163,6 +163,9 @@ Initialize (int argc, char **argv)
 
 #ifdef USER_PROGRAM
 	machine = new Machine (debugUserProg);	// this must come first
+#ifdef CHANGED
+	synchConsole = new SynchConsole(0, 0); //for stdin and stdout
+#endif //CHANGED
 #endif
 
 #ifdef FILESYS
@@ -199,6 +202,9 @@ Cleanup ()
 
 #ifdef USER_PROGRAM
 	delete machine;
+#ifdef CHANGED
+	delete synchConsole;
+#endif //CHANGED
 #endif
 
 #ifdef FILESYS_NEEDED

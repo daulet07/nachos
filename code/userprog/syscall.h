@@ -133,6 +133,10 @@ void Fork (void (*func) ());
 void Yield ();
 
 #ifdef CHANGED
+
+void writeStringToMachine(char* string, int to, unsigned size);
+void copyStringFromMachine( int from, char *to, unsigned size);
+
 void PutChar(char c);
 #endif //CHANGED
 

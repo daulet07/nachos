@@ -25,18 +25,50 @@
 #include "system.h"
 #include "syscall.h"
 
+#ifdef CHANGED
+extern SynchConsole *synchConsole;
+#endif //CHANGED
 //----------------------------------------------------------------------
 // UpdatePC : Increments the Program Counter register in order to resume
 // the user program immediately after the "syscall" instruction.
 //----------------------------------------------------------------------
-static void UpdatePC() {
-	int pc = machine->ReadRegister(PCReg);
-	machine->WriteRegister(PrevPCReg, pc);
-	pc = machine->ReadRegister(NextPCReg);
-	machine->WriteRegister(PCReg, pc);
+	static void
+UpdatePC ()
+{
+	int pc = machine->ReadRegister (PCReg);
+	machine->WriteRegister (PrevPCReg, pc);
+	pc = machine->ReadRegister (NextPCReg);
+	machine->WriteRegister (PCReg, pc);
 	pc += 4;
-	machine->WriteRegister(NextPCReg, pc);
+	machine->WriteRegister (NextPCReg, pc);
 }
+
+#ifdef CHANGED
+void copyStringFromMachine( int from, char *to, unsigned size){
+
+	int byte;
+
+	while (size > 0 && (char)byte != '\0')
+	{
+		machine->ReadMem(from, 1, &byte);
+		from ++;
+		*to = (char)byte;
+		to ++;
+		size --;
+	}
+
+	if ((char) byte != '\0')
+		to = '\0';
+}
+
+void writeStringToMachine(char* string, int to, unsigned size){
+	int i;
+	for (i = 0; i < (int)size; i++)
+		machine->WriteMem(to + i, 1, string[i]);
+}
+
+#endif //CHANGED
+
 
 //----------------------------------------------------------------------
 // ExceptionHandler
@@ -104,29 +136,3 @@ void ExceptionHandler(ExceptionType which) {
 #endif // CHANGED
 	UpdatePC();
 }// end of ExceptionHandler
-
-#ifdef CHANGED
-void copyStringFromMachine( int from, char *to, unsigned size) {
-
-	int byte;
-
-	while (size > 0 && (char)byte != '\0')
-	{
-		machine->ReadMem(from, 1, &byte);
-		from ++;
-		*to = (char)byte;
-		to ++;
-		size --;
-	}
-
-	if ((char) byte != '\0')
-	to = '\0';
-}
-
-void writeStringToMachine(char* string, int to, unsigned size) {
-	int i;
-	for (i = 0; i < (int)size; i++)
-	machine->WriteMem(to + i, 1, string[i]);
-}
-
-#endif //CHANGED
