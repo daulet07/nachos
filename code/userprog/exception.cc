@@ -45,9 +45,25 @@ UpdatePC ()
 
 #ifdef CHANGED
 void copyStringFromMachine( int from, char *to, unsigned size){
-
 	int byte;
+	unsigned int i;
+	int offset = 0;
 
+	do{
+		for (i = 0; i < size -1; i ++)
+		{
+			machine->ReadMem(from + offset+i, 1, &byte);
+
+			if ((char)byte == '\0')
+				break;
+			to[i] = (char)byte;
+		}
+		offset += i;
+		to[i] = '\0';
+		synchConsole->SynchPutString(to);
+	}while((char)byte != '\0');
+
+/*
 	while (size > 0 && (char)byte != '\0')
 	{
 		machine->ReadMem(from, 1, &byte);
@@ -59,7 +75,7 @@ void copyStringFromMachine( int from, char *to, unsigned size){
 
 	if ((char) byte != '\0')
 		to = '\0';
-	
+*/	
 }
 
 void writeStringToMachine(char* string, int to, unsigned size){
@@ -130,11 +146,35 @@ void ExceptionHandler(ExceptionType which) {
 			case SC_PutString:
 			{
 				DEBUG('a', "PutString, system call handler.\n");
-				char *buffer = new char[MAX_STRING_SIZE+1];
+				char *buffer = new char[MAX_STRING_SIZE];
 				copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
-				synchConsole->SynchPutString(buffer);
 				delete[] buffer;
 				break;
+				/*
+				char *buffer = new char[MAX_STRING_SIZE];
+				int bufferMachine = machine->ReadRegister(4);
+
+				int print = 0;
+				int mustPrint;
+				while (print < size)
+				{
+					if (size-print > MAX_STRING_SIZE-1)
+					{
+						mustPrint = MAX_STRING_SIZE-1;
+						buffer[MAX_STRING_SIZE-1] = '\0';
+					}
+					else
+						mustPrint = size-print;
+
+					copyStringFromMachine(bufferMachine+print, buffer, mustPrint);
+					synchConsole->SynchPutString(buffer);
+
+					print += mustPrint;
+					fprintf(stderr, "exception.cc putstring %d %d\n", print, mustPrint);
+				}
+				delete[] buffer;
+				break;
+				*/
 			}
 			case SC_GetString:
 			{
