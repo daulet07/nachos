@@ -148,7 +148,7 @@ void ExceptionHandler(ExceptionType which) {
 				DEBUG('a', "PutString, system call handler.\n");
 				char *buffer = new char[MAX_STRING_SIZE];
 				copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
-				delete[] buffer;
+			delete[] buffer;
 				break;
 				/*
 				char *buffer = new char[MAX_STRING_SIZE];

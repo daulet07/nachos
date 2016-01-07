@@ -213,11 +213,5 @@ Cleanup ()
 	delete scheduler;
 	delete interrupt;
 
-#ifdef CHANGED
-#ifdef USER_PROGRAM
-    delete synchConsole;
-#endif //USER_PROGRAM
-#endif //CHANGED
-
 	Exit (0);
 }
