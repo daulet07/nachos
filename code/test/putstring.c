@@ -1,6 +1,5 @@
 #include "syscall.h"
 int main() {
 	PutString("Hello world!\nHello world!\nHello world!\nHello world!\n");
-	Halt();
 	return 0;
 }

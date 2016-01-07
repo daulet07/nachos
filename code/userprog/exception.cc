@@ -200,6 +200,10 @@ void ExceptionHandler(ExceptionType which) {
 				delete [] buffer;
 				break;
 			}
+			case SC_Exit:
+				DEBUG('a', "Shutdown, initiated by user program.\n");
+				interrupt->Halt();
+				break;
 			default: {
 				printf("Unexpected user mode exception %d %d\n", which, type);
 				ASSERT(FALSE);
