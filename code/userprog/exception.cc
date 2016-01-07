@@ -180,24 +180,44 @@ void ExceptionHandler(ExceptionType which) {
 			{
 				DEBUG('a', "GetString, system call handler.\n");
 
-				char *buffer = new char[MAX_STRING_SIZE+1];
-				int p = 0;
-				int bufferMachine = machine->ReadRegister(4);
-				int maxSize = machine->ReadRegister(5);
+				char *kernelBuffer = new char[MAX_STRING_SIZE];
+				int offset = 0;
+				int mipsBuffer = machine->ReadRegister(4);
+				int maxSize = machine->ReadRegister(5)-1;
+				int mustRead;
 
-				//while (p < maxSize) {
-					/*
-					if (reg5 - p > MAX_STRING_SIZE+1)
-						size = MAX_STRING_SIZE+1;
+				while (offset < maxSize) {
+					if (maxSize - offset > MAX_STRING_SIZE)
+						mustRead = MAX_STRING_SIZE;
 					else
-						size = reg5 - p;
-					*/
-					synchConsole->SynchGetString(buffer+p, maxSize-p);
-					writeStringToMachine(buffer+p, bufferMachine+p, strlen(buffer));
-					p+= strlen(buffer);
-				//}
-				machine->WriteMem(bufferMachine+p+1, 1, '\0');
-				delete [] buffer;
+						mustRead = maxSize - offset;
+
+					int read = synchConsole->SynchGetString(kernelBuffer, mustRead);
+					writeStringToMachine(kernelBuffer, mipsBuffer + offset, read);
+					offset += read;
+					if (kernelBuffer[read-1] == '\n' || kernelBuffer[read-1] == EOF|| kernelBuffer[read-1] == '\0')
+						break;
+				}
+				machine->WriteMem(mipsBuffer+offset+1, 1, '\0');
+				delete [] kernelBuffer;
+				break;
+			}
+			case SC_PutInt:
+			{
+				DEBUG('a', "PutInt, system call handler.\n");
+				int number = machine->ReadRegister(4);
+				synchConsole->SynchPutInt(number);
+				break;
+			}
+			case SC_GetInt:
+			{
+				DEBUG('a', "GetInt, system call handler.\n");
+				int pointer = machine->ReadRegister(4);
+				int num;
+				synchConsole->SynchGetInt(&num);
+
+				machine->WriteMem(pointer, sizeof(int), num);
+
 				break;
 			}
 			case SC_Exit:

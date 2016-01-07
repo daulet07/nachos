@@ -15,6 +15,7 @@ SynchConsole::SynchConsole(char *readFile, char *writeFile)
 	readAvail = new Semaphore("read avail", 0);
 	writeDone = new Semaphore("write done", 0);
 	console = new Console(readFile, writeFile, ReadAvail, WriteDone, 0);
+	pthread_mutex_init(&mutex, NULL);
 }
 
 SynchConsole::~SynchConsole()
@@ -22,6 +23,7 @@ SynchConsole::~SynchConsole()
 	delete console;
 	delete writeDone;
 	delete readAvail;
+	pthread_mutex_destroy(&mutex);
 }
 
 void SynchConsole::SynchPutChar(const char ch)
@@ -49,18 +51,25 @@ void SynchConsole::SynchPutString(const char s[])
 	}
 }
 
-void SynchConsole::SynchGetString(char *s, int n)
+int SynchConsole::SynchGetString(char *s, int n)
 {
+	pthread_mutex_lock(&mutex);
 	int i;
 	for (i = 0; i < n; i ++)
 	{
 		s[i] = SynchGetChar();
-		if (s[i] == '\n')
+		if (s[i] == '\n' || s[i] == EOF || s[i] == '\0')
+		{
+			i ++;
 			break;
+		}
 	}
-	s[i] = '\0';
+	
+	pthread_mutex_unlock(&mutex);
+	return i;
 
 /*
+	s[i] = '\0';
 	char c = SynchGetChar();
 	while (c != EOF && c!= '\0' && n > 0)
 	{
@@ -72,6 +81,23 @@ void SynchConsole::SynchGetString(char *s, int n)
 		
 	}
 	*/
+}
+
+void SynchConsole::SynchPutInt(int n)
+{
+	char *buffer = new char[MAX_STRING_SIZE];
+	snprintf(buffer, MAX_STRING_SIZE, "%d", n);
+	SynchPutString(buffer);
+	delete []buffer;
+}
+
+void SynchConsole::SynchGetInt(int *n)
+{
+	char *buffer = new char[MAX_STRING_SIZE];
+	SynchGetString(buffer, MAX_STRING_SIZE);
+	if (sscanf(buffer, "%i", n) != 1)
+		*n = 0;
+	delete [] buffer;
 }
 
 #endif // CHANGED

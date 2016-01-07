@@ -3,7 +3,7 @@
 int main()
 {
 	char buffer[100];
-	GetString(buffer, 5);
+	GetString(buffer, 8);
 	PutString(buffer);
 	PutString("\n");
 	Halt();
