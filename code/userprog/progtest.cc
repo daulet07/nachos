@@ -67,8 +67,10 @@ static void WriteDone(int arg) {
 //      Test the console by echoing characters typed at the input onto
 //      the output.  Stop when the user types a 'q'.
 //----------------------------------------------------------------------
+void TestAsynchCOnsole(char *in, char *out);
 
 void ConsoleTest(char *in, char *out) {
+	//TestAsynchCOnsole(in, out);
 	char ch;
 
 	console = new Console(in, out, ReadAvail, WriteDone, 0);
@@ -112,4 +114,31 @@ void SynchConsoleTest (char *in, char *out)
 	}
 	fprintf(stderr, "Solaris: EOF detected in SynchConsole!\n");
 }
+
+/*
+static void ReadAsync(int i) {
+	char ch = console->GetChar();
+	console->PutChar(ch);
+	console->WriteDone();
+}
+
+static void WriteAsync(int i) {
+}
+#include <unistd.h>
+
+void TestAsynchCOnsole(char *in, char *out)
+{
+	console = new Console(in, out, ReadAsync, WriteAsync, 0);
+
+	int i = 0;
+	while(i < 100){
+		i ++;
+		sleep(1);
+		currentThread->Yield();
+		fprintf(stderr, "i = %d\n", i);
+	}
+}
+*/
+
+
 #endif //CHANGED
