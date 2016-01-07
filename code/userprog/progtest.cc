@@ -71,18 +71,19 @@ void TestAsynchCOnsole(char *in, char *out);
 
 void ConsoleTest(char *in, char *out) {
 	//TestAsynchCOnsole(in, out);
-	char ch;
 
 	console = new Console(in, out, ReadAvail, WriteDone, 0);
 	readAvail = new Semaphore("read avail", 0);
 	writeDone = new Semaphore("write done", 0);
 
+#ifdef CHANGED
+	char ch;
 	for (;;) {
-//#ifdef CHANGED
+
 		readAvail->P ();	// wait for character to arrive
 		ch = console->GetChar ();
 		if (ch == EOF)
-		return;
+			return;
 
 		if (ch == 'c')
 		{
@@ -98,47 +99,53 @@ void ConsoleTest(char *in, char *out) {
 			console->PutChar (ch);	// echo it!
 			writeDone->P ();// wait for write to finish
 			if (ch == 'q')
-			return;// if q, quit
+				return;// if q, quit
 		}
-//#endif //CHANGED
+
 	}
+#endif //CHANGED
 }
 
 #ifdef CHANGED
 void SynchConsoleTest (char *in, char *out)
 {
 	char ch;
-	while ((ch = synchConsole->SynchGetChar()) != EOF)
-	{
+
+	if(in != NULL && out !=NULL ){
+		delete synchConsole;
+		synchConsole = new SynchConsole(in, out);
+	}
+
+	while ((ch = synchConsole->SynchGetChar()) != EOF){
 		synchConsole->SynchPutChar(ch);
 	}
+
 	fprintf(stderr, "Solaris: EOF detected in SynchConsole!\n");
 }
 
 /*
-static void ReadAsync(int i) {
-	char ch = console->GetChar();
-	console->PutChar(ch);
-	console->WriteDone();
-}
+ static void ReadAsync(int i) {
+ char ch = console->GetChar();
+ console->PutChar(ch);
+ console->WriteDone();
+ }
 
-static void WriteAsync(int i) {
-}
-#include <unistd.h>
+ static void WriteAsync(int i) {
+ }
+ #include <unistd.h>
 
-void TestAsynchCOnsole(char *in, char *out)
-{
-	console = new Console(in, out, ReadAsync, WriteAsync, 0);
+ void TestAsynchCOnsole(char *in, char *out)
+ {
+ console = new Console(in, out, ReadAsync, WriteAsync, 0);
 
-	int i = 0;
-	while(i < 100){
-		i ++;
-		sleep(1);
-		currentThread->Yield();
-		fprintf(stderr, "i = %d\n", i);
-	}
-}
-*/
-
+ int i = 0;
+ while(i < 100){
+ i ++;
+ sleep(1);
+ currentThread->Yield();
+ fprintf(stderr, "i = %d\n", i);
+ }
+ }
+ */
 
 #endif //CHANGED
