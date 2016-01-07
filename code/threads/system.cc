@@ -180,12 +180,6 @@ Initialize (int argc, char **argv)
 	postOffice = new PostOffice (netname, rely, 10);
 #endif
 
-#ifdef CHANGED
-#ifdef USER_PROGRAM
-	synchConsole = new SynchConsole (0, 0);
-#endif //USER_PROGRAM
-#endif //CHANGED
-
 }
 
 //----------------------------------------------------------------------
