@@ -55,7 +55,6 @@ Console::Console(char *readFile, char *writeFile, VoidFunctionPtr readAvail,
     putBusy = FALSE;
     incoming = EOF;
 
-	fprintf(stderr, "Init Console\n");
     // start polling for incoming packets
     interrupt->Schedule(ConsoleReadPoll, (int)this, ConsoleTime, ConsoleReadInt);
 }

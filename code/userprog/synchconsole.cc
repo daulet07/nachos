@@ -15,7 +15,6 @@ SynchConsole::SynchConsole(char *readFile, char *writeFile)
 	readAvail = new Semaphore("read avail", 0);
 	writeDone = new Semaphore("write done", 0);
 	console = new Console(readFile, writeFile, ReadAvail, WriteDone, 0);
-	fprintf(stderr, "synchConsole\n");
 }
 
 SynchConsole::~SynchConsole()
@@ -53,7 +52,7 @@ void SynchConsole::SynchPutString(const char s[])
 void SynchConsole::SynchGetString(char *s, int n)
 {
 	int i;
-	for (i = 0; i < n-1; i ++)
+	for (i = 0; i < n; i ++)
 	{
 		s[i] = SynchGetChar();
 		if (s[i] == '\n')
