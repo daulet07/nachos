@@ -26,6 +26,8 @@
 #include "syscall.h"
 
 #ifdef CHANGED
+#include "userthread.h"
+
 extern SynchConsole *synchConsole;
 #endif //CHANGED
 //----------------------------------------------------------------------
@@ -223,6 +225,21 @@ void ExceptionHandler(ExceptionType which) {
 			case SC_Exit:
 				DEBUG('a', "Shutdown, initiated by user program.\n");
 				interrupt->Halt();
+				break;
+			case SC_UserThreadCreate:
+			{
+				DEBUG('a', "UserThreadCreate, system call handler.\n");
+				int function = machine->ReadRegister(4);
+				int arg = machine->ReadRegister(5);
+				int ret = do_UserThreadCreate(function, arg);
+
+				machine->WriteRegister(2, ret);
+
+				break;
+			}
+			case SC_UserThreadExit:
+				DEBUG('a', "UserThreadExit, system call handler.\n");
+				UserThreadExit();
 				break;
 			default: {
 				printf("Unexpected user mode exception %d %d\n", which, type);
