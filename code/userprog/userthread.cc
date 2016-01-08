@@ -1,7 +1,7 @@
 #ifdef CHANGED
 #include "userthread.h"
 
-static void StartUserThread(int f){
+static void StartUserThread(int f) {
 
 	Args * param = (Args*) f;
 
@@ -21,9 +21,10 @@ static void StartUserThread(int f){
 	machine->Run();
 }
 
-int do_UserThreadCreate(int f, int arg){
+int do_UserThreadCreate(int f, int arg)
+{
 
-	Thread *newThread  = new Thread("User Thread");
+	Thread *newThread = new Thread("User Thread");
 
 	if(newThread == NULL) {
 		DEBUG('t',"Error while creating thread");
@@ -43,6 +44,5 @@ void do_UserThreadExit()
 {
 	currentThread->Finish();
 }
-
 
 #endif //CHANGED

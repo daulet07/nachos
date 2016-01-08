@@ -69,6 +69,7 @@ void SynchConsole::SynchPutString(const char s[])
 	}
 //	semPutString->V();
 }
+
 int SynchConsole::SynchGetString(char *s, int n)
 {
 //	semGetString->P();
