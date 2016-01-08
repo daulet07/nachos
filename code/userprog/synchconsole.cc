@@ -10,6 +10,7 @@ static Semaphore *writeDone;
 static Semaphore *semPut;
 static Semaphore *semGet;
 
+static Semaphore *semPutString;
 static void ReadAvail(int arg) {readAvail->V();}
 static void WriteDone(int arg) {writeDone->V();}
 
@@ -19,6 +20,7 @@ SynchConsole::SynchConsole(char *readFile, char *writeFile)
 	writeDone = new Semaphore("write done", 0);
 	console = new Console(readFile, writeFile, ReadAvail, WriteDone, 0);
 	semPut = new Semaphore("sem put", 1);
+	semPutString = new Semaphore("sem put", 1);
 	semGet = new Semaphore("sem get", 1);
 }
 
@@ -28,6 +30,7 @@ SynchConsole::~SynchConsole()
 	delete writeDone;
 	delete readAvail;
 	delete semPut;
+	delete semPutString;
 	delete semGet;
 }
 
@@ -58,7 +61,6 @@ void SynchConsole::SynchPutString(const char s[])
 		s ++;
 	}
 }
-
 int SynchConsole::SynchGetString(char *s, int n)
 {
 	int i;

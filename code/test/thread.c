@@ -1,11 +1,12 @@
 #include "syscall.h"
 
 void print(void *arg) {
-	//arg = arg + 1;
+	arg = arg + 1;
 	//int id = (int)arg;
-	PutString("I am thread ");
+//	PutString("I am thread ");
 	//PutInt(id);
-	PutChar('\n');
+//	PutChar('\n');
+	PutChar('a');
 
 }
 
@@ -25,6 +26,17 @@ int main()
 	}
 	PutString("Ending main\n");
 	*/
+	PutChar('b');
+	PutChar('c');
+	PutChar('d');
+	PutChar('e');
+	PutChar('f');
+	PutChar('g');
+	PutChar('h');
+	PutChar('i');
+	PutChar('j');
+	PutChar('k');
+	PutChar('l');
 
 	return 0;
 }

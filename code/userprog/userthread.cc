@@ -3,23 +3,24 @@
 
 
 static void StartUserThread(int f){
-//	fprintf(stderr, "first call of a new thread\n");
+	//	fprintf(stderr, "first call of a new thread\n");
 	//Get args
 	Args *args = (Args*)f;
 
 	int func = args->f;
-	//int arg = args->arg;
+	int arg = args->arg;
 	delete(args);
 
 	currentThread->space->InitRegisters();
 	currentThread->space->RestoreState();
 
 	int stack = currentThread->space->getStackForThread();
-//	fprintf(stderr, "Stack = %d\n", stack);
+	//	fprintf(stderr, "Stack = %d\n", stack);
 
 	machine->WriteRegister(StackReg, stack);
 	machine->WriteRegister(PCReg, func);
 	machine->WriteRegister(NextPCReg, func+4);
+	machine->WriteRegister(4, arg);
 
 	//Initilize registers
 
@@ -37,7 +38,6 @@ int do_UserThreadCreate(int f, int arg){
 
 	//Create the new thread
 	//Thread *newThread = new Thread(currentThread->getName());
-//	fprintf(stderr, "Create a new thread\n");
 	Thread *newThread = new Thread("User Thread");
 	newThread->Fork(StartUserThread, (int)args);
 
