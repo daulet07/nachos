@@ -4,7 +4,6 @@
 #include "copyright.h"
 #include "utility.h"
 #include "console.h"
-#include <pthread.h>
 
 class SynchConsole {
 	public:
@@ -19,7 +18,6 @@ class SynchConsole {
 		void SynchGetInt(int *n); // Unix sscanf(3S)
 	private:
 		Console *console;
-		 pthread_mutex_t mutex;
 };
 #endif // SYNCHCONSOLE_H
 #endif // CHANGED

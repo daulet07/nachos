@@ -7,15 +7,19 @@
 static Semaphore *readAvail;
 static Semaphore *writeDone;
 
-static void ReadAvail(int arg) { readAvail->V();}
-static void WriteDone(int arg) {writeDone->V(); }
+static Semaphore *semPut;
+static Semaphore *semGet;
+
+static void ReadAvail(int arg) {readAvail->V();}
+static void WriteDone(int arg) {writeDone->V();}
 
 SynchConsole::SynchConsole(char *readFile, char *writeFile)
 {
 	readAvail = new Semaphore("read avail", 0);
 	writeDone = new Semaphore("write done", 0);
 	console = new Console(readFile, writeFile, ReadAvail, WriteDone, 0);
-	pthread_mutex_init(&mutex, NULL);
+	semPut = new Semaphore("sem put", 1);
+	semGet = new Semaphore("sem get", 1);
 }
 
 SynchConsole::~SynchConsole()
@@ -23,22 +27,26 @@ SynchConsole::~SynchConsole()
 	delete console;
 	delete writeDone;
 	delete readAvail;
-	pthread_mutex_destroy(&mutex);
+	delete semPut;
+	delete semGet;
 }
 
 void SynchConsole::SynchPutChar(const char ch)
 {
+	semPut->P();
 	console->PutChar(ch);
 	writeDone->P();
+	semPut->V();
 }
 
 char SynchConsole::SynchGetChar()
 {
-//	fprintf(stderr, "Synchconsole.cc Whant getChar\n");
+	semGet->P();
 	readAvail->P();
+
 	char ch;
 	ch = console->GetChar();
-//	fprintf(stderr, "Synchconsole.cc take char %c\n", ch);
+	semGet->V();
 	return ch;
 }
 
@@ -53,7 +61,6 @@ void SynchConsole::SynchPutString(const char s[])
 
 int SynchConsole::SynchGetString(char *s, int n)
 {
-	pthread_mutex_lock(&mutex);
 	int i;
 	for (i = 0; i < n; i ++)
 	{
@@ -65,22 +72,7 @@ int SynchConsole::SynchGetString(char *s, int n)
 		}
 	}
 	
-	pthread_mutex_unlock(&mutex);
 	return i;
-
-/*
-	s[i] = '\0';
-	char c = SynchGetChar();
-	while (c != EOF && c!= '\0' && n > 0)
-	{
-		*s = c;
-		fprintf(stderr, "- %c\n", *s);
-		s ++;
-		c = SynchGetChar();
-		n --;
-		
-	}
-	*/
 }
 
 void SynchConsole::SynchPutInt(int n)
