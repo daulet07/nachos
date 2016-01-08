@@ -1,14 +1,18 @@
 #include "syscall.h"
 
 void print(void *arg) {
-	int id = (int)arg;
+	//arg = arg + 1;
+	//int id = (int)arg;
 	PutString("I am thread ");
-	PutInt(id);
+	//PutInt(id);
+	PutChar('\n');
 
 }
 
 int main()
 {
+	UserThreadCreate(print, 0);
+	/*
 	PutString("Entring on the main\n");
 	int tab[1], i;
 	for (i = 0; i < 1; i ++)
@@ -19,7 +23,8 @@ int main()
 		tab[i] = i;
 		UserThreadCreate(print, &tab[i]);
 	}
-	PutString("Hello\n");
+	PutString("Ending main\n");
+	*/
 
 	return 0;
 }
