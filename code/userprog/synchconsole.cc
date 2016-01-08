@@ -22,7 +22,6 @@ SynchConsole::SynchConsole(char *readFile, char *writeFile)
 	writeDone = new Semaphore("write done", 0);
 	console = new Console(readFile, writeFile, ReadAvail, WriteDone, 0);
 	semPut = new Semaphore("sem put", 1);
-	semPutString = new Semaphore("sem put", 1);
 	semGet = new Semaphore("sem get", 1);
 
 //	semPutString = new Semaphore("sem put string", 1);
@@ -35,8 +34,8 @@ SynchConsole::~SynchConsole()
 	delete writeDone;
 	delete readAvail;
 	delete semPut;
-	delete semPutString;
 	delete semGet;
+
 //	delete semPutString;
 //	delete semGetString;
 }
