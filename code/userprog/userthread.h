@@ -5,7 +5,7 @@
 extern int do_UserThreadCreate(int f, int arg);
 void UserThreadExit();
 
-typedef struct{
+typedef struct Argument{
 	int f;
 	int arg;
 } Args;

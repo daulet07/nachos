@@ -10,7 +10,9 @@ static Semaphore *writeDone;
 static Semaphore *semPut;
 static Semaphore *semGet;
 
-static Semaphore *semPutString;
+//static Semaphore *semPutString;
+//static Semaphore *semGetString;
+
 static void ReadAvail(int arg) {readAvail->V();}
 static void WriteDone(int arg) {writeDone->V();}
 
@@ -22,6 +24,9 @@ SynchConsole::SynchConsole(char *readFile, char *writeFile)
 	semPut = new Semaphore("sem put", 1);
 	semPutString = new Semaphore("sem put", 1);
 	semGet = new Semaphore("sem get", 1);
+
+//	semPutString = new Semaphore("sem put string", 1);
+//	semGetString = new Semaphore("sem get string", 1);
 }
 
 SynchConsole::~SynchConsole()
@@ -32,6 +37,8 @@ SynchConsole::~SynchConsole()
 	delete semPut;
 	delete semPutString;
 	delete semGet;
+//	delete semPutString;
+//	delete semGetString;
 }
 
 void SynchConsole::SynchPutChar(const char ch)
@@ -55,14 +62,17 @@ char SynchConsole::SynchGetChar()
 
 void SynchConsole::SynchPutString(const char s[])
 {
+//	semPutString->P();
 	while (*s != '\0')
 	{
 		SynchPutChar(*s);
 		s ++;
 	}
+//	semPutString->V();
 }
 int SynchConsole::SynchGetString(char *s, int n)
 {
+//	semGetString->P();
 	int i;
 	for (i = 0; i < n; i ++)
 	{
@@ -73,7 +83,8 @@ int SynchConsole::SynchGetString(char *s, int n)
 			break;
 		}
 	}
-	
+//	semGetString->V();
+
 	return i;
 }
 
@@ -90,7 +101,7 @@ void SynchConsole::SynchGetInt(int *n)
 	char *buffer = new char[MAX_STRING_SIZE];
 	SynchGetString(buffer, MAX_STRING_SIZE);
 	if (sscanf(buffer, "%i", n) != 1)
-		*n = 0;
+	*n = 0;
 	delete [] buffer;
 }
 

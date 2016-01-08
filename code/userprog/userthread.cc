@@ -1,51 +1,45 @@
 #ifdef CHANGED
 #include "userthread.h"
 
-
 static void StartUserThread(int f){
-	//	fprintf(stderr, "first call of a new thread\n");
-	//Get args
-	Args *args = (Args*)f;
 
-	int func = args->f;
-	int arg = args->arg;
-	delete(args);
+	Args * param = (Args*) f;
 
-	currentThread->space->InitRegisters();
-	currentThread->space->RestoreState();
+	ASSERT(param!=NULL);
+	ASSERT(param->f!=0);
+	ASSERT(param->arg!=0);
+
+	machine->WriteRegister(PCReg,param->f);
+	machine->WriteRegister(NextPCReg,(param->f)+4);
+	machine->WriteRegister(4,param->arg);
 
 	int stack = currentThread->space->getStackForThread();
-	//	fprintf(stderr, "Stack = %d\n", stack);
-
 	machine->WriteRegister(StackReg, stack);
-	machine->WriteRegister(PCReg, func);
-	machine->WriteRegister(NextPCReg, func+4);
-	machine->WriteRegister(4, arg);
 
-	//Initilize registers
-
+	delete(param);
 
 	machine->Run();
-
 }
 
 int do_UserThreadCreate(int f, int arg){
-	//Serialize the args
-	//struct Args *args = malloc(sizeof(struct Args))
+
+	Thread *newThread  = new Thread("User Thread");
+
+	if(newThread == NULL) {
+		DEBUG('t',"Error while creating thread");
+		return -1;
+	}
+
 	Args *args = new Args;
 	args->f = f;
 	args->arg = arg;
 
-	//Create the new thread
-	//Thread *newThread = new Thread(currentThread->getName());
-	Thread *newThread = new Thread("User Thread");
 	newThread->Fork(StartUserThread, (int)args);
-
 
 	return 0;
 }
 
-void UserThreadExit()
+void do_UserThreadExit()
 {
 	currentThread->Finish();
 }

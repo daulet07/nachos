@@ -34,30 +34,28 @@ extern SynchConsole *synchConsole;
 // UpdatePC : Increments the Program Counter register in order to resume
 // the user program immediately after the "syscall" instruction.
 //----------------------------------------------------------------------
-	static void
-UpdatePC ()
-{
-	int pc = machine->ReadRegister (PCReg);
-	machine->WriteRegister (PrevPCReg, pc);
-	pc = machine->ReadRegister (NextPCReg);
-	machine->WriteRegister (PCReg, pc);
+static void UpdatePC() {
+	int pc = machine->ReadRegister(PCReg);
+	machine->WriteRegister(PrevPCReg, pc);
+	pc = machine->ReadRegister(NextPCReg);
+	machine->WriteRegister(PCReg, pc);
 	pc += 4;
-	machine->WriteRegister (NextPCReg, pc);
+	machine->WriteRegister(NextPCReg, pc);
 }
 
 #ifdef CHANGED
-void copyStringFromMachine( int from, char *to, unsigned size){
+void copyStringFromMachine( int from, char *to, unsigned size) {
 	int byte;
 	unsigned int i;
 	int offset = 0;
 
-	do{
+	do {
 		for (i = 0; i < size -1; i ++)
 		{
 			machine->ReadMem(from + offset+i, 1, &byte);
 
 			if ((char)byte == '\0')
-				break;
+			break;
 			to[i] = (char)byte;
 		}
 		offset += i;
@@ -65,29 +63,28 @@ void copyStringFromMachine( int from, char *to, unsigned size){
 		synchConsole->SynchPutString(to);
 	}while((char)byte != '\0');
 
-/*
-	while (size > 0 && (char)byte != '\0')
-	{
-		machine->ReadMem(from, 1, &byte);
-		from ++;
-		*to = (char)byte;
-		to ++;
-		size --;
-	}
+	/*
+	 while (size > 0 && (char)byte != '\0')
+	 {
+	 machine->ReadMem(from, 1, &byte);
+	 from ++;
+	 *to = (char)byte;
+	 to ++;
+	 size --;
+	 }
 
-	if ((char) byte != '\0')
-		to = '\0';
-*/	
+	 if ((char) byte != '\0')
+	 to = '\0';
+	 */
 }
 
-void writeStringToMachine(char* string, int to, unsigned size){
+void writeStringToMachine(char* string, int to, unsigned size) {
 	int i;
 	for (i = 0; i < (int)size; i++)
-		machine->WriteMem(to + i, 1, string[i]);
+	machine->WriteMem(to + i, 1, string[i]);
 }
 
 #endif //CHANGED
-
 
 //----------------------------------------------------------------------
 // ExceptionHandler
@@ -141,42 +138,17 @@ void ExceptionHandler(ExceptionType which) {
 				break;
 			}
 			case SC_GetChar:
-				DEBUG('a', "GetChar, system call handler.\n");
+			DEBUG('a', "GetChar, system call handler.\n");
 
-				machine->WriteRegister(2, (int)synchConsole->SynchGetChar());
-				break;
+			machine->WriteRegister(2, (int)synchConsole->SynchGetChar());
+			break;
 			case SC_PutString:
 			{
 				DEBUG('a', "PutString, system call handler.\n");
 				char *buffer = new char[MAX_STRING_SIZE];
 				copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
-			delete[] buffer;
-				break;
-				/*
-				char *buffer = new char[MAX_STRING_SIZE];
-				int bufferMachine = machine->ReadRegister(4);
-
-				int print = 0;
-				int mustPrint;
-				while (print < size)
-				{
-					if (size-print > MAX_STRING_SIZE-1)
-					{
-						mustPrint = MAX_STRING_SIZE-1;
-						buffer[MAX_STRING_SIZE-1] = '\0';
-					}
-					else
-						mustPrint = size-print;
-
-					copyStringFromMachine(bufferMachine+print, buffer, mustPrint);
-					synchConsole->SynchPutString(buffer);
-
-					print += mustPrint;
-					fprintf(stderr, "exception.cc putstring %d %d\n", print, mustPrint);
-				}
 				delete[] buffer;
 				break;
-				*/
 			}
 			case SC_GetString:
 			{
@@ -190,15 +162,15 @@ void ExceptionHandler(ExceptionType which) {
 
 				while (offset < maxSize) {
 					if (maxSize - offset > MAX_STRING_SIZE)
-						mustRead = MAX_STRING_SIZE;
+					mustRead = MAX_STRING_SIZE;
 					else
-						mustRead = maxSize - offset;
+					mustRead = maxSize - offset;
 
 					int read = synchConsole->SynchGetString(kernelBuffer, mustRead);
 					writeStringToMachine(kernelBuffer, mipsBuffer + offset, read);
 					offset += read;
 					if (kernelBuffer[read-1] == '\n' || kernelBuffer[read-1] == EOF|| kernelBuffer[read-1] == '\0')
-						break;
+					break;
 				}
 				machine->WriteMem(mipsBuffer+offset+1, 1, '\0');
 				delete [] kernelBuffer;
@@ -234,12 +206,11 @@ void ExceptionHandler(ExceptionType which) {
 				int ret = do_UserThreadCreate(function, arg);
 
 				machine->WriteRegister(2, ret);
-
 				break;
 			}
 			case SC_UserThreadExit:
 				DEBUG('a', "UserThreadExit, system call handler.\n");
-				UserThreadExit();
+				do_UserThreadExit();
 				break;
 			default: {
 				printf("Unexpected user mode exception %d %d\n", which, type);
@@ -255,4 +226,4 @@ void ExceptionHandler(ExceptionType which) {
 	}
 #endif // CHANGED
 	UpdatePC();
-}// end of ExceptionHandler
+} // end of ExceptionHandler
