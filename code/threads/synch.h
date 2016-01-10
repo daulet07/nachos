@@ -88,6 +88,10 @@ class Lock
   private:
     const char *name;		// for debugging
     // plus some other stuff you'll need to define
+#ifdef CHANGED
+    bool lock;			// lock state, true mean lock
+    List *queue;		// threads waiting in Acquire() 
+#endif
 };
 
 // The following class defines a "condition variable".  A condition

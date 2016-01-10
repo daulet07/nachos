@@ -4,6 +4,7 @@
 #include "copyright.h"
 #include "utility.h"
 #include "console.h"
+#include "synch.h"
 
 class SynchConsole {
 	public:
@@ -18,6 +19,9 @@ class SynchConsole {
 		void SynchGetInt(int *n); // Unix sscanf(3S)
 	private:
 		Console *console;
+
+		Lock* lockPut;
+		Lock* lockGet;
 };
 #endif // SYNCHCONSOLE_H
 #endif // CHANGED

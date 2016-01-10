@@ -7,8 +7,8 @@
 static Semaphore *readAvail;
 static Semaphore *writeDone;
 
-static Semaphore *semPut;
-static Semaphore *semGet;
+//static Semaphore *semPut;
+//static Semaphore *semGet;
 
 //static Semaphore *semPutString;
 //static Semaphore *semGetString;
@@ -21,8 +21,10 @@ SynchConsole::SynchConsole(char *readFile, char *writeFile)
 	readAvail = new Semaphore("read avail", 0);
 	writeDone = new Semaphore("write done", 0);
 	console = new Console(readFile, writeFile, ReadAvail, WriteDone, 0);
-	semPut = new Semaphore("sem put", 1);
-	semGet = new Semaphore("sem get", 1);
+//	semPut = new Semaphore("sem put", 1);
+//	semGet = new Semaphore("sem get", 1);
+	lockPut = new Lock("lock put");
+	lockGet = new Lock("lock put");
 
 //	semPutString = new Semaphore("sem put string", 1);
 //	semGetString = new Semaphore("sem get string", 1);
@@ -33,8 +35,10 @@ SynchConsole::~SynchConsole()
 	delete console;
 	delete writeDone;
 	delete readAvail;
-	delete semPut;
-	delete semGet;
+	delete lockPut;
+	delete lockGet;
+//	delete semPut;
+//	delete semGet;
 
 //	delete semPutString;
 //	delete semGetString;
@@ -42,20 +46,24 @@ SynchConsole::~SynchConsole()
 
 void SynchConsole::SynchPutChar(const char ch)
 {
-	semPut->P();
+//	semPut->P();
+	lockPut->Acquire();
 	console->PutChar(ch);
 	writeDone->P();
-	semPut->V();
+	lockPut->Release();
+//	semPut->V();
 }
 
 char SynchConsole::SynchGetChar()
 {
-	semGet->P();
+//	semGet->P();
+	lockGet->Acquire();
 	readAvail->P();
 
 	char ch;
 	ch = console->GetChar();
-	semGet->V();
+	lockGet->Release();
+//	semGet->V();
 	return ch;
 }
 
