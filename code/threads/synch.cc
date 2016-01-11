@@ -148,22 +148,47 @@ Lock::Release ()
 
 Condition::Condition (const char *debugName)
 {
+/*#ifdef CHANGED
+	name = debugName;
+	queue = new List;
+	waiter = 0;
+	sem = new Semaphore("Semaphore for condition", 0);
+#endif*/
 }
 
 Condition::~Condition ()
 {
+/*#ifdef CHANGED
+	delete queue;
+	delete sem;
+#endif*/
 }
 	void
 Condition::Wait (Lock * conditionLock)
 {
-	ASSERT (FALSE);
+/*#ifdef CHANGED
+	waiter ++;
+	conditionLock->Release();
+	sem->P();
+	conditionLock->Acquire();
+#endif*/
 }
 
 	void
 Condition::Signal (Lock * conditionLock)
 {
+/*#ifdef CHANGED
+	sem->V();
+	waiter --;
+#endif*/
 }
 	void
 Condition::Broadcast (Lock * conditionLock)
 {
+/*#ifdef CHANGED
+	while(waiter){
+		waiter --;
+		sem->V();
+	}
+#endif*/;
 }

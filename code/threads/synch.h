@@ -148,5 +148,10 @@ class Condition
 	private:
 		const char *name;
 		// plus some other stuff you'll need to define
+#ifdef CHANGED
+		List *queue;		// threads waiting in Acquire() 
+		Semaphore *sem;
+		int waiter;
+#endif
 };
 #endif // SYNCH_H

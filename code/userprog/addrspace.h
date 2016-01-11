@@ -16,6 +16,10 @@
 #include "copyright.h"
 #include "filesys.h"
 
+#ifdef CHANGED
+class Lock;
+#endif
+
 #define UserStackSize		1024	// increase this as necessary!
 
 class AddrSpace
@@ -33,8 +37,11 @@ class AddrSpace
 		void RestoreState ();	// info on a context switch 
 
 #ifdef CHANGED
-		void inscreaseThread();
+		void increaseThread();
 		int getStackForThread();
+		int getNbThread();
+		void waitThread();
+		void endThread();
 #endif
 
 	private:
@@ -44,7 +51,8 @@ class AddrSpace
 		// address space
 
 #ifdef CHANGED
-		unsigned int numThread;
+		unsigned int nbThread;
+		Lock *haltLock;
 #endif
 };
 

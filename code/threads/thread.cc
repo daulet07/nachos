@@ -196,6 +196,12 @@ Thread::Finish ()
 	ASSERT (threadToBeDestroyed == NULL);
 	// End of addition 
 
+#ifdef USER_PROGRAM
+#ifdef CHANGED
+	space->endThread();
+#endif
+#endif
+
 	threadToBeDestroyed = currentThread;
 	Sleep ();			// invokes SWITCH
 	// not reached

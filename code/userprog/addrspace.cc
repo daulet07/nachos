@@ -121,7 +121,9 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	}
 
 #ifdef CHANGED
-	numThread = 1;
+	nbThread = 1;
+	haltLock = new Lock("Lock for halt");
+	haltLock->Acquire();
 #endif
 
 }
@@ -137,6 +139,10 @@ AddrSpace::~AddrSpace ()
 	// delete pageTable;
 	delete [] pageTable;
 	// End of modification
+
+#ifdef CHANGED
+	delete haltLock;
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -202,12 +208,24 @@ AddrSpace::RestoreState ()
 
 #ifdef CHANGED
 
-void AddrSpace::inscreaseThread(){
-	numThread ++;
+void AddrSpace::increaseThread(){
+	nbThread ++;
+}
+
+int AddrSpace::getNbThread(){
+	return nbThread;
 }
 
 // must return -1 if no space available
 int AddrSpace::getStackForThread(){
 	return (numPages-2)*PageSize-16;
+}
+
+void AddrSpace::waitThread(){
+	haltLock->Acquire();
+}
+void AddrSpace::endThread(){
+	nbThread --;
+	haltLock->Release();
 }
 #endif

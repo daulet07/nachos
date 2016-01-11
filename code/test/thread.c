@@ -8,6 +8,8 @@ void print(void * arg) {
 	PutInt(num);
 	PutChar('\n');
 
+	UserThreadExit();
+
 }
 
 int main() {

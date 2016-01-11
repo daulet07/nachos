@@ -138,10 +138,10 @@ void ExceptionHandler(ExceptionType which) {
 				break;
 			}
 			case SC_GetChar:
-			DEBUG('a', "GetChar, system call handler.\n");
+				DEBUG('a', "GetChar, system call handler.\n");
 
-			machine->WriteRegister(2, (int)synchConsole->SynchGetChar());
-			break;
+				machine->WriteRegister(2, (int)synchConsole->SynchGetChar());
+				break;
 			case SC_PutString:
 			{
 				DEBUG('a', "PutString, system call handler.\n");
@@ -196,6 +196,8 @@ void ExceptionHandler(ExceptionType which) {
 			}
 			case SC_Exit:
 				DEBUG('a', "Shutdown, initiated by user program.\n");
+				while (currentThread->space->getNbThread() > 1)
+					currentThread->space->waitThread();
 				interrupt->Halt();
 				break;
 			case SC_UserThreadCreate:

@@ -16,6 +16,8 @@ static void StartUserThread(int f) {
 	int stack = currentThread->space->getStackForThread();
 	machine->WriteRegister(StackReg, stack);
 
+	currentThread->space->increaseThread();
+
 	delete(param);
 
 	machine->Run();
