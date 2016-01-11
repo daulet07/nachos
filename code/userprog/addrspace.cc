@@ -65,6 +65,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	NoffHeader noffH;
 	unsigned int i, size;
 
+
 	executable->ReadAt ((char *) &noffH, sizeof (noffH), 0);
 	if ((noffH.noffMagic != NOFFMAGIC) &&
 			(WordToHost (noffH.noffMagic) == NOFFMAGIC))
@@ -81,6 +82,12 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	// to run anything too big --
 	// at least until we have
 	// virtual memory
+#ifdef CHANGED
+	nbThread = 1;
+	haltLock = new Lock("Lock for halt");
+	haltLock->Acquire();
+	memoryMap = new BitMap(numPages/NbPagesPerThread);
+#endif
 
 	DEBUG ('a', "Initializing address space, num pages %d, size %d\n",
 			numPages, size);
@@ -102,6 +109,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	// and the stack segment
 	bzero (machine->mainMemory, size);
 
+	memoryMap->Mark(0);
 	// then, copy in the code and data segments into memory
 	if (noffH.code.size > 0)
 	{
@@ -121,9 +129,9 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	}
 
 #ifdef CHANGED
-	nbThread = 1;
-	haltLock = new Lock("Lock for halt");
-	haltLock->Acquire();
+	unsigned int nbAllocated = divRoundUp(divRoundUp(noffH.initData.virtualAddr+ noffH.initData.size, PageSize),NbPagesPerThread);
+	for (i = 0; i < nbAllocated; i ++)
+		memoryMap->Mark(i);
 #endif
 
 }
@@ -142,6 +150,7 @@ AddrSpace::~AddrSpace ()
 
 #ifdef CHANGED
 	delete haltLock;
+	delete memoryMap;
 #endif
 }
 
@@ -176,6 +185,10 @@ AddrSpace::InitRegisters ()
 	machine->WriteRegister (StackReg, numPages * PageSize - 16);
 	DEBUG ('a', "Initializing stack register to %d\n",
 			numPages * PageSize - 16);
+
+#ifdef CHANGED
+	memoryMap->Mark(numPages/NbPagesPerThread-1);
+#endif //CHANGED
 }
 
 //----------------------------------------------------------------------
@@ -218,7 +231,11 @@ int AddrSpace::getNbThread(){
 
 // must return -1 if no space available
 int AddrSpace::getStackForThread(){
-	return (numPages-2)*PageSize-16;
+	int position = memoryMap->Find();
+	if (position == -1)
+		return -1;
+
+	return (position+1)*NbPagesPerThread*PageSize-16;
 }
 
 void AddrSpace::waitThread(){

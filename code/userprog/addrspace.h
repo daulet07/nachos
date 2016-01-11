@@ -17,10 +17,12 @@
 #include "filesys.h"
 
 #ifdef CHANGED
+#include "bitmap.h"
 class Lock;
+#define NbPagesPerThread 2
 #endif
 
-#define UserStackSize		1024	// increase this as necessary!
+#define UserStackSize	2048	//1024	// increase this as necessary!
 
 class AddrSpace
 {
@@ -52,6 +54,7 @@ class AddrSpace
 
 #ifdef CHANGED
 		unsigned int nbThread;
+		BitMap *memoryMap;
 		Lock *haltLock;
 #endif
 };

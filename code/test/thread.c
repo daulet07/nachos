@@ -2,10 +2,10 @@
 
 void print(void * arg) {
 
-	int num = (int)arg;
+	int *num = (int*)arg;
 
 	PutString("Printing from user thread print!");
-	PutInt(num);
+	PutInt(*num);
 	PutChar('\n');
 
 	UserThreadExit();
