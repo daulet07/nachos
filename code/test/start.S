@@ -210,14 +210,5 @@ UserThreadJoin:
 	j	$31
 	.end UserThreadJoin
 
-	.globl Halt4Thread
-	.ent	Halt4Thread
-Halt4Thread:
-	addiu $2,$0,SC_Halt4Thread
-	syscall
-	j	$31
-	.end Halt4Thread
-
-
 
 #endif //CHANGED
