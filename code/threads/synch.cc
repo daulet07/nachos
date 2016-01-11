@@ -169,7 +169,7 @@ Condition::Wait (Lock * conditionLock)
 	conditionLock->Release();
 
 	queue->Append((void*) currentThread);
-	currentThread->sleep();
+	currentThread->Sleep();
 
 	conditionLock->Acquire();
 
@@ -212,7 +212,7 @@ Condition::Broadcast (Lock * conditionLock)
 	IntStatus oldLevel = interrupt->SetLevel (IntOff);
 
 	
-	while (thread = (Thread *) queue->Remove () != NULL)
+	while ((thread = (Thread *) queue->Remove ()) != NULL)
 		scheduler->ReadyToRun (thread);
 
 	(void) interrupt->SetLevel (oldLevel);
