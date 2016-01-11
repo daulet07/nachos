@@ -98,24 +98,28 @@ Semaphore::V ()
 	(void) interrupt->SetLevel (oldLevel);
 }
 
-#ifdef CHANGED
 // Dummy functions -- so we can compile our later assignments 
 // Note -- without a correct implementation of Condition::Wait(), 
 // the test case in the network assignment won't work!
 Lock::Lock (const char *debugName)
 {
+#ifdef CHANGED
 	name = debugName;
 	lock = false;
 	queue = new List;
+#endif
 }
 
 Lock::~Lock ()
 {
+#ifdef CHANGED
 	delete queue;
+#endif
 }
 	void
 Lock::Acquire ()
 {
+#ifdef CHANGED
 	IntStatus oldLevel = interrupt->SetLevel (IntOff);	// disable interrupts
 	while (lock)
 	{
@@ -125,10 +129,12 @@ Lock::Acquire ()
 	lock = true;
 
 	(void) interrupt->SetLevel (oldLevel);	// re-enable interrupts
+#endif
 }
 	void
 Lock::Release ()
 {
+#ifdef CHANGED
 	Thread *thread;
 	IntStatus oldLevel = interrupt->SetLevel (IntOff);
 
@@ -137,8 +143,8 @@ Lock::Release ()
 		scheduler->ReadyToRun (thread);
 	lock = false;
 	(void) interrupt->SetLevel (oldLevel);
+#endif
 }
-#endif //CHANGED
 
 Condition::Condition (const char *debugName)
 {

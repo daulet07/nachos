@@ -212,6 +212,13 @@ void ExceptionHandler(ExceptionType which) {
 				DEBUG('a', "UserThreadExit, system call handler.\n");
 				do_UserThreadExit();
 				break;
+			case SC_UserThreadJoin:
+			{
+				DEBUG('a', "UserThreadJoin, system call handler.\n");
+				int threadId = machine->ReadRegister(4);
+				do_UserThreadJoin(threadId);
+				break;
+			}
 			default: {
 				printf("Unexpected user mode exception %d %d\n", which, type);
 				ASSERT(FALSE);

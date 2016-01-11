@@ -34,6 +34,9 @@
 
 Thread::Thread (const char *threadName)
 {
+#ifdef CHANGED
+//	this->threadId = 1;
+#endif
 	name = threadName;
 	stackTop = NULL;
 	stack = NULL;
@@ -48,6 +51,28 @@ Thread::Thread (const char *threadName)
 #endif
 }
 
+#ifdef CHANGED
+Thread::Thread (const char *threadName, int threadId)
+{
+//	this->threadId = threadId;
+//	joinLock = new Lock("thread Lock");
+//	joinLock->Acquire();
+
+	name = threadName;
+	stackTop = NULL;
+	stack = NULL;
+	status = JUST_CREATED;
+#ifdef USER_PROGRAM
+	space = NULL;
+	// FBT: Need to initialize special registers of simulator to 0
+	// in particular LoadReg or it could crash when switching
+	// user threads.
+	for (int r=NumGPRegs; r<NumTotalRegs; r++)
+		userRegisters[r] = 0;
+#endif
+}
+
+#endif //CHANGED
 //----------------------------------------------------------------------
 // Thread::~Thread
 //      De-allocate a thread.
@@ -62,6 +87,7 @@ Thread::Thread (const char *threadName)
 
 Thread::~Thread ()
 {
+
 	DEBUG ('t', "Deleting thread \"%s\"\n", name);
 
 	ASSERT (this != currentThread);
@@ -411,3 +437,10 @@ Thread::RestoreUserState ()
 #endif
 
 
+#ifdef CHANGED
+/*
+int getThreadId(){
+	return threadId;
+}
+*/
+#endif

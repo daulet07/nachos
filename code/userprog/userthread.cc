@@ -45,4 +45,8 @@ void do_UserThreadExit()
 	currentThread->Finish();
 }
 
+void do_UserThreadJoin(int threadId){
+//	thread->waitThread();
+}
+
 #endif //CHANGED
