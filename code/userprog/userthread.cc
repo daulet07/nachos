@@ -16,7 +16,6 @@ static void StartUserThread(int f) {
 	delete(param);
 	currentThread->space->increaseThread();
 	int stack = currentThread->space->getStackForThread();
-	fprintf(stderr, "stack = %d\n", stack);
 
 	if (stack == -1)
 		currentThread->Finish();
