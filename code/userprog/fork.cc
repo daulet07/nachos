@@ -5,11 +5,10 @@
 #include "system.h"
 
 static void StartUserProcess(int arg){
+	currentThread->space = (AddrSpace*)arg;
 	currentThread->space->InitRegisters();	// set the initial register values
 	currentThread->space->RestoreState();	// load page table register
 
-	fprintf(stderr, "A new process start\n");
-	fprintf(stderr, "========================================================\n");
 
 	machine->Run();
 }
@@ -26,9 +25,9 @@ int do_UserForkExec(char *pName){
 	
 	delete exec;		// close file
 	Thread *newThread = new Thread("new user process");
-	newThread->space = space;
+	machine->addProcess();
 
-	newThread->Fork(StartUserProcess, (int)0);
+	newThread->Fork(StartUserProcess, (int)space);
 	//scheduler->ReadyToRun(newThread);
 
 	return 0;

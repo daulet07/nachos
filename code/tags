@@ -82,10 +82,12 @@ FindIndex	filesys/directory.cc	/^Directory::FindIndex(const char *name)$/;"	f	cl
 FindNextToRun	threads/scheduler.cc	/^Scheduler::FindNextToRun ()$/;"	f	class:Scheduler
 Finish	threads/thread.cc	/^Thread::Finish ()$/;"	f	class:Thread
 Fork	threads/thread.cc	/^Thread::Fork (VoidFunctionPtr func, int arg)$/;"	f	class:Thread
+FrameProvider	userprog/frameProvider.cc	/^FrameProvider::FrameProvider(){$/;"	f	class:FrameProvider
 FreeMapFileSize	filesys/filesys.cc	63;"	d	file:
 FreeMapSector	filesys/filesys.cc	57;"	d	file:
 Get	network/post.cc	/^MailBox::Get(PacketHeader *pktHdr, MailHeader *mailHdr, char *data) $/;"	f	class:MailBox
 GetChar	machine/console.cc	/^Console::GetChar()$/;"	f	class:Console
+GetEmptyFrame	userprog/frameProvider.cc	/^int FrameProvider::GetEmptyFrame(){$/;"	f	class:FrameProvider
 HI	bin/execute.c	/^int HI, LO;			\/* mul\/div machine registers *\/$/;"	v
 Halt	machine/interrupt.cc	/^Interrupt::Halt()$/;"	f	class:Interrupt
 HandleInterrupt	machine/disk.cc	/^Disk::HandleInterrupt ()$/;"	f	class:Disk
@@ -138,6 +140,8 @@ Mapcar	threads/synchlist.cc	/^SynchList::Mapcar (VoidFunctionPtr func)$/;"	f	cla
 Mark	userprog/bitmap.cc	/^BitMap::Mark (int which)$/;"	f	class:BitMap
 ModuloDiff	machine/disk.cc	/^Disk::ModuloDiff(int to, int from)$/;"	f	class:Disk
 Mult	machine/mipssim.cc	/^Mult(int a, int b, bool signedArith, int* hiPtr, int* loPtr)$/;"	f	file:
+N	test/userpages0.c	/^const int N = 10; \/\/ Choose it large enough!$/;"	v
+N	test/userpages1.c	/^const int N = 10; \/\/ Choose it large enough!$/;"	v
 NH	bin/execute.c	465;"	d	file:
 NNN	bin/execute.c	466;"	d	file:
 NNNN	bin/execute.c	555;"	d	file:
@@ -147,6 +151,7 @@ NULL	bin/d.c	11;"	d	file:
 Network	machine/network.cc	/^Network::Network(NetworkAddress addr, double reliability,$/;"	f	class:Network
 NetworkReadPoll	machine/network.cc	/^static void NetworkReadPoll(int arg)$/;"	f	file:
 NetworkSendDone	machine/network.cc	/^static void NetworkSendDone(int arg)$/;"	f	file:
+NumAvailFrame	userprog/frameProvider.cc	/^int FrameProvider::NumAvailFrame(){$/;"	f	class:FrameProvider
 NumClear	userprog/bitmap.cc	/^BitMap::NumClear ()$/;"	f	class:BitMap
 NumDirEntries	filesys/filesys.cc	64;"	d	file:
 OneInstruction	machine/mipssim.cc	/^Machine::OneInstruction(Instruction *instr)$/;"	f	class:Machine
@@ -211,6 +216,7 @@ Reg	bin/execute.c	/^int Reg[32];			\/* GPR's *\/$/;"	v
 Regtrace	bin/disasm.c	/^int TRACE, Traptrace, Regtrace;$/;"	v
 Regtrace	bin/main.c	/^int TRACE, Traptrace, Regtrace;$/;"	v
 Release	threads/synch.cc	/^Lock::Release ()$/;"	f	class:Lock
+ReleaseFrame	userprog/frameProvider.cc	/^void FrameProvider::ReleaseFrame(int pos){$/;"	f	class:FrameProvider
 Remove	filesys/directory.cc	/^Directory::Remove(const char *name)$/;"	f	class:Directory
 Remove	filesys/filesys.cc	/^FileSystem::Remove(const char *name)$/;"	f	class:FileSystem
 Remove	threads/list.cc	/^List::Remove ()$/;"	f	class:List
@@ -244,6 +250,7 @@ SortedRemove	threads/list.cc	/^List::SortedRemove (long long *keyPtr)$/;"	f	clas
 StackAllocate	threads/thread.cc	/^Thread::StackAllocate (VoidFunctionPtr func, int arg)$/;"	f	class:Thread
 StackSize	bin/coff2flat.c	31;"	d	file:
 StartProcess	userprog/progtest.cc	/^void StartProcess(char *filename) {$/;"	f
+StartUserProcess	userprog/fork.cc	/^static void StartUserProcess(int arg){$/;"	f	file:
 StartUserThread	userprog/userthread.cc	/^static void StartUserThread(int f) {$/;"	f	file:
 Statistics	machine/stats.cc	/^Statistics::Statistics()$/;"	f	class:Statistics
 SwapHeader	userprog/addrspace.cc	/^SwapHeader (NoffHeader * noffH)$/;"	f	file:
@@ -257,6 +264,10 @@ SynchList	threads/synchlist.cc	/^SynchList::SynchList ()$/;"	f	class:SynchList
 SynchPutChar	userprog/synchconsole.cc	/^void SynchConsole::SynchPutChar(const char ch)$/;"	f	class:SynchConsole
 SynchPutInt	userprog/synchconsole.cc	/^void SynchConsole::SynchPutInt(int n)$/;"	f	class:SynchConsole
 SynchPutString	userprog/synchconsole.cc	/^void SynchConsole::SynchPutString(const char s[])$/;"	f	class:SynchConsole
+THAT	test/userpages0.c	3;"	d	file:
+THAT	test/userpages1.c	3;"	d	file:
+THIS	test/userpages0.c	2;"	d	file:
+THIS	test/userpages1.c	2;"	d	file:
 TRACE	bin/disasm.c	/^int TRACE, Traptrace, Regtrace;$/;"	v
 TRACE	bin/main.c	/^int TRACE, Traptrace, Regtrace;$/;"	v
 Tell	machine/sysdep.cc	/^Tell(int fd)$/;"	f
@@ -303,6 +314,7 @@ WriteRequest	machine/disk.cc	/^Disk::WriteRequest(int sectorNumber, char* data)$
 WriteSector	filesys/synchdisk.cc	/^SynchDisk::WriteSector(int sectorNumber, char* data)$/;"	f	class:SynchDisk
 Yield	threads/thread.cc	/^Thread::Yield ()$/;"	f	class:Thread
 YieldOnReturn	machine/interrupt.cc	/^Interrupt::YieldOnReturn()$/;"	f	class:Interrupt
+addProcess	machine/machine.cc	/^void Machine::addProcess(){$/;"	f	class:Machine
 addtable	bin/execute.c	/^int addtable[33][33];$/;"	v
 aouthdr	bin/out.c	/^struct aouthdr aouthdr;$/;"	v	typeref:struct:aouthdr
 arch1cycles	bin/execute.c	/^int arch1cycles;$/;"	v
@@ -324,15 +336,19 @@ datahead	bin/main.c	/^static SCNHDR texthead, rdatahead, datahead, sdatahead, sb
 deallocateMapStack	userprog/addrspace.cc	/^void AddrSpace::deallocateMapStack(int position){$/;"	f	class:AddrSpace
 dis1	bin/disasm.c	/^dis1(xpc)$/;"	f
 disasm	bin/disasm.c	/^disasm(startpc, argc, argv)$/;"	f
+do_UserForkExec	userprog/fork.cc	/^int do_UserForkExec(char *pName){$/;"	f
 do_UserThreadCreate	userprog/userthread.cc	/^int do_UserThreadCreate(int f, int arg)$/;"	f
 do_UserThreadExit	userprog/userthread.cc	/^void do_UserThreadExit()$/;"	f
 do_UserThreadJoin	userprog/userthread.cc	/^void do_UserThreadJoin(int threadId){$/;"	f
 dump_ascii	bin/d.c	/^dump_ascii(instruction, pc)$/;"	f
 dump_reg	bin/execute.c	/^dump_reg()$/;"	f
 enableFlags	threads/utility.cc	/^static const char *enableFlags = NULL;	\/\/ controls which DEBUG messages are printed $/;"	v	file:
+endProcess	machine/machine.cc	/^void Machine::endProcess(){$/;"	f	class:Machine
 endThread	userprog/addrspace.cc	/^void AddrSpace::endThread(){$/;"	f	class:AddrSpace
 endThread	userprog/listthread.cc	/^void ListThread::endThread(unsigned int id){$/;"	f	class:ListThread
 exceptionNames	machine/machine.cc	/^static const char* exceptionNames[] = { "no exception", "syscall", $/;"	v	file:
+f	test/userpages0.c	/^void f(void *s)$/;"	f
+f	test/userpages1.c	/^void f(void *s)$/;"	f
 false	bin/execute.c	16;"	d	file:
 fileSystem	threads/system.cc	/^FileSystem *fileSystem;$/;"	v
 filehdr	bin/out.c	/^struct filehdr filehdr;$/;"	v	typeref:struct:filehdr
@@ -342,11 +358,14 @@ fmt	bin/execute.c	/^char fmt[] = "%6d";$/;"	v
 fmt2	bin/execute.c	/^char fmt2[] = "------";$/;"	v
 fp	bin/disasm.c	/^static FILE *fp;$/;"	v	file:
 fp	bin/main.c	/^static FILE *fp;$/;"	v	file:
+frameProvider	userprog/addrspace.cc	/^static FrameProvider frameProvider;$/;"	v	file:
 getId	threads/thread.cc	/^unsigned int Thread::getId(){$/;"	f	class:Thread
 getMaxThread	userprog/addrspace.cc	/^int AddrSpace::getMaxThread(){$/;"	f	class:AddrSpace
 getNbThread	userprog/addrspace.cc	/^int AddrSpace::getNbThread(){$/;"	f	class:AddrSpace
+getNumProcess	machine/machine.cc	/^int Machine::getNumProcess(){$/;"	f	class:Machine
 getStackForThread	userprog/addrspace.cc	/^int AddrSpace::getStackForThread(){$/;"	f	class:AddrSpace
 getStackPosition	threads/thread.cc	/^int Thread::getStackPosition(){$/;"	f	class:Thread
+haltMachine	userprog/exception.cc	/^static void haltMachine(){$/;"	f	file:
 henter	bin/execute.c	/^henter(n)$/;"	f
 henters	bin/execute.c	/^void henters(n, hist)$/;"	f
 hist	bin/execute.c	/^static int hist[NNNN];$/;"	v	file:
@@ -380,6 +399,7 @@ main	test/getstring.c	/^int main()$/;"	f
 main	test/halt.c	/^main ()$/;"	f
 main	test/matmult.c	/^main ()$/;"	f
 main	test/multiThreads.c	/^int main() {$/;"	f
+main	test/multiprocess.c	/^int main()$/;"	f
 main	test/putchar.c	/^int main() {$/;"	f
 main	test/putint.c	/^int main()$/;"	f
 main	test/putstring.c	/^int main() {$/;"	f
@@ -387,6 +407,8 @@ main	test/shell.c	/^main ()$/;"	f
 main	test/sort.c	/^main ()$/;"	f
 main	test/thread.c	/^int main() {$/;"	f
 main	test/threadJoin.c	/^int main() {$/;"	f
+main	test/userpages0.c	/^int main()$/;"	f
+main	test/userpages1.c	/^int main()$/;"	f
 main	threads/main.cc	/^main (int argc, char **argv)$/;"	f
 mem	bin/disasm.c	/^char mem[MEMSIZE];		\/* main memory. use malloc later *\/$/;"	v
 mem	bin/main.c	/^char mem[MEMSIZE];		\/* main memory. use malloc later *\/$/;"	v
@@ -417,6 +439,8 @@ print_section	bin/out.c	/^print_section(i)$/;"	f
 printf	bin/out.c	190;"	d	file:
 printhist	bin/execute.c	/^printhist()$/;"	f
 printstatistics	bin/execute.c	/^printstatistics()$/;"	f
+puts	test/userpages0.c	/^void puts(char *s)$/;"	f
+puts	test/userpages1.c	/^void puts(char *s)$/;"	f
 rdatahead	bin/disasm.c	/^static SCNHDR texthead, rdatahead, datahead, sdatahead, sbsshead, bsshead;$/;"	v	file:
 rdatahead	bin/main.c	/^static SCNHDR texthead, rdatahead, datahead, sdatahead, sbsshead, bsshead;$/;"	v	file:
 readAvail	userprog/progtest.cc	/^static Semaphore *readAvail;$/;"	v	file:
@@ -471,6 +495,7 @@ writeStringToMachine	userprog/exception.cc	/^void writeStringToMachine(char* str
 ~Console	machine/console.cc	/^Console::~Console()$/;"	f	class:Console
 ~Directory	filesys/directory.cc	/^Directory::~Directory()$/;"	f	class:Directory
 ~Disk	machine/disk.cc	/^Disk::~Disk()$/;"	f	class:Disk
+~FrameProvider	userprog/frameProvider.cc	/^FrameProvider::~FrameProvider(){$/;"	f	class:FrameProvider
 ~Interrupt	machine/interrupt.cc	/^Interrupt::~Interrupt()$/;"	f	class:Interrupt
 ~List	threads/list.cc	/^List::~List ()$/;"	f	class:List
 ~ListThread	userprog/listthread.cc	/^ListThread::~ListThread(){$/;"	f	class:ListThread

@@ -207,6 +207,7 @@ Thread::Finish ()
 
 	threadToBeDestroyed = currentThread;
 	Sleep ();			// invokes SWITCH
+	fprintf(stderr, "==============\n");
 	// not reached
 }
 

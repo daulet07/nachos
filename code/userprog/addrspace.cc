@@ -189,9 +189,6 @@ AddrSpace::AddrSpace (OpenFile * executable)
 
 AddrSpace::~AddrSpace ()
 {
-	// LB: Missing [] for delete
-	// delete pageTable;
-	delete [] pageTable;
 	// End of modification
 
 #ifdef CHANGED
@@ -199,7 +196,14 @@ AddrSpace::~AddrSpace ()
 	delete memoryMap;
 	delete listThread;
 	delete lockId;
+
+	for (unsigned int i = 0; i < numPages; i ++)
+		frameProvider.ReleaseFrame(pageTable[i].physicalPage);
 #endif
+
+	// LB: Missing [] for delete
+	// delete pageTable;
+	delete [] pageTable;
 }
 
 //----------------------------------------------------------------------

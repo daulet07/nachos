@@ -85,6 +85,21 @@ void writeStringToMachine(char* string, int to, unsigned size) {
 	machine->WriteMem(to + i, 1, string[i]);
 }
 
+static void haltMachine(){
+	while (currentThread->space->getNbThread() > 1)
+		currentThread->space->waitThread();
+
+
+	if (machine->getNumProcess() == 1)
+		interrupt->Halt();
+
+	if (currentThread->space->getNbThread() == 1)
+	{
+		machine->endProcess();
+	}
+	currentThread->Finish();
+}
+
 #endif //CHANGED
 
 //----------------------------------------------------------------------
@@ -127,7 +142,7 @@ void ExceptionHandler(ExceptionType which) {
 		switch (type) {
 			case SC_Halt: {
 				DEBUG('a', "Shutdown, initiated by user program.\n");
-				interrupt->Halt();
+				haltMachine();
 				break;
 			}
 			case SC_PutChar: { // to write a character to the console
@@ -198,9 +213,7 @@ void ExceptionHandler(ExceptionType which) {
 			}
 			case SC_Exit:
 				DEBUG('a', "Shutdown, initiated by user program.\n");
-				while (currentThread->space->getNbThread() > 1)
-					currentThread->space->waitThread();
-				interrupt->Halt();
+				haltMachine();
 				break;
 			case SC_UserThreadCreate:
 			{
@@ -232,12 +245,10 @@ void ExceptionHandler(ExceptionType which) {
 
 				copyStringFromMachine(machine->ReadRegister(4), exec, MAX_STRING_SIZE);
 				int ret = do_UserForkExec(exec);
-				fprintf(stderr, "ret = %d\n", ret);
 
 				machine->WriteRegister(2, ret);
 
 				delete exec;
-				fprintf(stderr, "coucou\n");
 				
 				break;
 			}

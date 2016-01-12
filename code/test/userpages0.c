@@ -16,7 +16,7 @@ void f(void *s)
 
 int main()
 {
-	PutString("*start UserPage0\n");
+	PutString("start UserPage0\n");
 	UserThreadCreate(f, (void *) THIS);
 	//f((void*) THAT);
 

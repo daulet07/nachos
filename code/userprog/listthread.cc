@@ -59,9 +59,10 @@ void ListThread::waitThread(unsigned int id){
 }
 
 void ListThread::endThread(unsigned int id){
+	if (first == NULL)
+		return;
 	lock->Acquire();
 	ElemThread *thread = first;
-	ASSERT(thread != NULL);
 
 	if (first->id == id)
 	{
@@ -76,6 +77,11 @@ void ListThread::endThread(unsigned int id){
 		{
 			prev = thread;
 			thread = thread->next;
+		}
+		if (thread == NULL || thread->id != id)
+		{
+			lock->Release();
+			return;
 		}
 		ASSERT(thread != NULL);
 		ASSERT(thread->id == id);
