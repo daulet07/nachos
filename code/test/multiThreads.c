@@ -7,22 +7,22 @@ void print(void * arg) {
 	PutInt(*id);
 	PutChar('\n');
 
-	//UserThreadExit();
+	UserThreadExit();
 }
 
 int main() {
 
 	PutString("Begin Main\n");
 
-	int i =10;
-	int nbThread = 10;
+	int i;
+	int nbThread = 3;
 	int id[nbThread];
 	for (i = 0; i < nbThread; i ++)
 	{
 		id[i] = i;
 		if (UserThreadCreate(print, (void *)&id[i]) == -1)
 		{
-			PutString("Can't create thread\n");
+			PutString("Can't create thread ");
 			PutInt(i);
 			PutChar('\n');
 		}

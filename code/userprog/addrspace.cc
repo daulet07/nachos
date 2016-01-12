@@ -45,6 +45,18 @@ SwapHeader (NoffHeader * noffH)
 	noffH->uninitData.inFileAddr = WordToHost (noffH->uninitData.inFileAddr);
 }
 
+#ifdef CHANGED
+static void ReadAtVirtual( OpenFile *executable, int virtualaddr, int numBytes, int position, TranslationEntry *pageTable,unsigned numPages){
+	char buffer[numBytes];
+
+	executable->ReadAt(buffer, numBytes, position);
+
+	for (int i = 0; i < numBytes; i ++)
+		machine->WriteMem(virtualaddr+i, 1, buffer[i]);
+
+}
+#endif //CHANGED
+
 //----------------------------------------------------------------------
 // AddrSpace::AddrSpace
 //      Create an address space to run a user program.
@@ -64,7 +76,6 @@ AddrSpace::AddrSpace (OpenFile * executable)
 {
 	NoffHeader noffH;
 	unsigned int i, size;
-
 
 	executable->ReadAt ((char *) &noffH, sizeof (noffH), 0);
 	if ((noffH.noffMagic != NOFFMAGIC) &&
@@ -99,7 +110,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	for (i = 0; i < numPages; i++)
 	{
 		pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
-		pageTable[i].physicalPage = i;
+		pageTable[i].physicalPage = i+1;
 		pageTable[i].valid = TRUE;
 		pageTable[i].use = FALSE;
 		pageTable[i].dirty = FALSE;
@@ -107,6 +118,10 @@ AddrSpace::AddrSpace (OpenFile * executable)
 		// a separate page, we could set its 
 		// pages to be read-only
 	}
+
+#ifdef CHANGED
+	RestoreState();
+#endif
 
 	// zero out the entire address space, to zero the unitialized data segment 
 	// and the stack segment
@@ -117,17 +132,25 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	{
 		DEBUG ('a', "Initializing code segment, at 0x%x, size %d\n",
 				noffH.code.virtualAddr, noffH.code.size);
+#ifndef CHANGED
 		executable->ReadAt (&(machine->mainMemory[noffH.code.virtualAddr]),
 				noffH.code.size, noffH.code.inFileAddr);
+#else
+		ReadAtVirtual(executable, noffH.code.virtualAddr, noffH.code.size, noffH.code.inFileAddr, pageTable, numPages);
+#endif
 	}
 	if (noffH.initData.size > 0)
 	{
 		DEBUG ('a', "Initializing data segment, at 0x%x, size %d\n",
 				noffH.initData.virtualAddr, noffH.initData.size);
+#ifndef CHANGED
 		executable->ReadAt (&
 				(machine->mainMemory
 				 [noffH.initData.virtualAddr]),
 				noffH.initData.size, noffH.initData.inFileAddr);
+#else
+		ReadAtVirtual(executable, noffH.initData.virtualAddr, noffH.initData.size, noffH.initData.inFileAddr, pageTable, numPages);
+#endif
 	}
 
 #ifdef CHANGED
@@ -264,7 +287,7 @@ void AddrSpace::endThread(){
 	nbThread --;
 	lockId->Release();
 
-	if (currentThread->getId() != 0)
+	if (currentThread->getId() != 1)
 		listThread->endThread(currentThread->getId());
 	
 	deallocateMapStack(currentThread->getStackPosition());
