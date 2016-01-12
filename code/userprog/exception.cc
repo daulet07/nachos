@@ -27,6 +27,7 @@
 
 #ifdef CHANGED
 #include "userthread.h"
+#include "fork.h"
 
 extern SynchConsole *synchConsole;
 #endif //CHANGED
@@ -225,6 +226,18 @@ void ExceptionHandler(ExceptionType which) {
 			case SC_ForkExec:
 			{
 				DEBUG('a', "ForkExec, system call handler.\n");
+
+				char *exec = new char[MAX_STRING_SIZE];
+
+
+				copyStringFromMachine(machine->ReadRegister(4), exec, MAX_STRING_SIZE);
+				int ret = do_UserForkExec(exec);
+				fprintf(stderr, "ret = %d\n", ret);
+
+				machine->WriteRegister(2, ret);
+
+				delete exec;
+				fprintf(stderr, "coucou\n");
 				
 				break;
 			}

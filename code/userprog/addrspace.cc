@@ -53,11 +53,19 @@ SwapHeader (NoffHeader * noffH)
 static void ReadAtVirtual( OpenFile *executable, int virtualaddr, int numBytes, int position, TranslationEntry *pageTable,unsigned numPages){
 	char buffer[numBytes];
 
-	executable->ReadAt(buffer, numBytes, position);
+	TranslationEntry* oldPt = machine->pageTable;
+	unsigned int oldNumP = machine->pageTableSize;
+	
+	machine->pageTable = pageTable;
+	machine->pageTableSize = numPages;
 
-	for (int i = 0; i < numBytes; i ++)
+	int read = executable->ReadAt(buffer, numBytes, position);
+
+	for (int i = 0; i < read; i ++)
 		machine->WriteMem(virtualaddr+i, 1, buffer[i]);
 
+	machine->pageTable = oldPt;
+	machine->pageTableSize = oldNumP;
 }
 
 static FrameProvider frameProvider;
@@ -131,12 +139,12 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	}
 
 #ifdef CHANGED
-	RestoreState();
+//	RestoreState();
 #endif
 
 	// zero out the entire address space, to zero the unitialized data segment 
 	// and the stack segment
-	bzero (machine->mainMemory, size);
+//	bzero (machine->mainMemory, size);
 
 	// then, copy in the code and data segments into memory
 	if (noffH.code.size > 0)
