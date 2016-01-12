@@ -146,6 +146,7 @@ void ExceptionHandler(ExceptionType which) {
 			{
 				DEBUG('a', "PutString, system call handler.\n");
 				char *buffer = new char[MAX_STRING_SIZE];
+
 				copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
 				delete[] buffer;
 				break;
@@ -219,6 +220,12 @@ void ExceptionHandler(ExceptionType which) {
 				DEBUG('a', "UserThreadJoin, system call handler.\n");
 				int threadId = machine->ReadRegister(4);
 				do_UserThreadJoin(threadId);
+				break;
+			}
+			case SC_ForkExec:
+			{
+				DEBUG('a', "ForkExec, system call handler.\n");
+				
 				break;
 			}
 			default: {

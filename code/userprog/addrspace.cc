@@ -20,6 +20,10 @@
 #include "addrspace.h"
 #include "noff.h"
 
+#ifdef CHANGED
+#include "frameProvider.h"
+#endif
+
 #include <strings.h>		/* for bzero */
 
 //----------------------------------------------------------------------
@@ -55,6 +59,8 @@ static void ReadAtVirtual( OpenFile *executable, int virtualaddr, int numBytes, 
 		machine->WriteMem(virtualaddr+i, 1, buffer[i]);
 
 }
+
+static FrameProvider frameProvider;
 #endif //CHANGED
 
 //----------------------------------------------------------------------
@@ -101,6 +107,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	haltLock->Acquire();
 	memoryMap = new BitMap(numPages/NbPagesPerThread);
 	lockId = new Lock("Lock of thread id");
+
 #endif
 
 	DEBUG ('a', "Initializing address space, num pages %d, size %d\n",
@@ -110,7 +117,11 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	for (i = 0; i < numPages; i++)
 	{
 		pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
+#ifndef CHANGED
 		pageTable[i].physicalPage = i+1;
+#else
+		pageTable[i].physicalPage = frameProvider.GetEmptyFrame();
+#endif
 		pageTable[i].valid = TRUE;
 		pageTable[i].use = FALSE;
 		pageTable[i].dirty = FALSE;
