@@ -89,7 +89,7 @@ class Thread
 	public:
 		Thread (const char *debugName);	// initialize a Thread 
 #ifdef CHANGED
-		Thread (const char *debugName, int threadId);
+		Thread (const char *debugName, unsigned int id);
 #endif //CHANED
 		~Thread ();		// deallocate a Thread
 		// NOTE -- thread being deleted
@@ -121,7 +121,9 @@ class Thread
 		}
 
 #ifdef CHANGED
-		//int getThreadId();
+		unsigned int getId();
+		int getStackPosition();
+		void setStackPosition(int pos);
 #endif //CHANGED
 
 	private:
@@ -137,7 +139,8 @@ class Thread
 		// Allocate a stack for thread.
 		// Used internally by Fork()
 #ifdef CHANGED
-		//int threadId;
+		unsigned int threadId;
+		int stackPosition;
 #endif //CHANGED
 
 #ifdef USER_PROGRAM

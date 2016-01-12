@@ -7,7 +7,7 @@ void print(void * arg) {
 	PutInt(*id);
 	PutChar('\n');
 
-	UserThreadExit();
+	//UserThreadExit();
 }
 
 int main() {
@@ -15,11 +15,18 @@ int main() {
 	PutString("Begin Main\n");
 
 	int i =10;
-	int id[5];
-	for (i = 0; i < 5; i ++)
+	int nbThread = 10;
+	int id[nbThread];
+	for (i = 0; i < nbThread; i ++)
 	{
 		id[i] = i;
-		UserThreadCreate(print, (void *)&id[i]);
+		if (UserThreadCreate(print, (void *)&id[i]) == -1)
+		{
+			PutString("Can't create thread\n");
+			PutInt(i);
+			PutChar('\n');
+		}
+
 	}
 
 	PutString("Ending Main\n");

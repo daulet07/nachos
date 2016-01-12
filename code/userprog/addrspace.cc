@@ -83,10 +83,13 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	// at least until we have
 	// virtual memory
 #ifdef CHANGED
+	listThread = new ListThread();
 	nbThread = 1;
+	idThread = 1;
 	haltLock = new Lock("Lock for halt");
 	haltLock->Acquire();
 	memoryMap = new BitMap(numPages/NbPagesPerThread);
+	lockId = new Lock("Lock of thread id");
 #endif
 
 	DEBUG ('a', "Initializing address space, num pages %d, size %d\n",
@@ -109,7 +112,6 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	// and the stack segment
 	bzero (machine->mainMemory, size);
 
-	memoryMap->Mark(0);
 	// then, copy in the code and data segments into memory
 	if (noffH.code.size > 0)
 	{
@@ -132,6 +134,8 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	unsigned int nbAllocated = divRoundUp(divRoundUp(noffH.initData.virtualAddr+ noffH.initData.size, PageSize),NbPagesPerThread);
 	for (i = 0; i < nbAllocated; i ++)
 		memoryMap->Mark(i);
+
+	maxThreads = numPages/NbPagesPerThread - nbAllocated;
 #endif
 
 }
@@ -151,6 +155,8 @@ AddrSpace::~AddrSpace ()
 #ifdef CHANGED
 	delete haltLock;
 	delete memoryMap;
+	delete listThread;
+	delete lockId;
 #endif
 }
 
@@ -221,8 +227,18 @@ AddrSpace::RestoreState ()
 
 #ifdef CHANGED
 
-void AddrSpace::increaseThread(){
+int AddrSpace::newThread(){
+
+	lockId->Acquire();
+
 	nbThread ++;
+	idThread ++;
+	int id = idThread;
+	listThread->newThread(id);
+
+	lockId->Release();
+
+	return id;
 }
 
 int AddrSpace::getNbThread(){
@@ -235,14 +251,37 @@ int AddrSpace::getStackForThread(){
 	if (position == -1)
 		return -1;
 
+	currentThread->setStackPosition(position);
 	return (position+1)*NbPagesPerThread*PageSize-16;
 }
 
 void AddrSpace::waitThread(){
 	haltLock->Acquire();
 }
+
 void AddrSpace::endThread(){
+	lockId->Acquire();
 	nbThread --;
+	lockId->Release();
+
+	if (currentThread->getId() != 0)
+		listThread->endThread(currentThread->getId());
+	
+	deallocateMapStack(currentThread->getStackPosition());
+
 	haltLock->Release();
+}
+
+void AddrSpace::joinThread(unsigned int id){
+	listThread->waitThread(id);
+}
+
+void AddrSpace::deallocateMapStack(int position){
+	if (position != -1)
+		memoryMap->Clear(position);
+}
+
+int AddrSpace::getMaxThread(){
+	return maxThreads;
 }
 #endif

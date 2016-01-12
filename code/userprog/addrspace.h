@@ -18,6 +18,7 @@
 
 #ifdef CHANGED
 #include "bitmap.h"
+#include "listthread.h"
 class Lock;
 #define NbPagesPerThread 2
 #endif
@@ -39,11 +40,14 @@ class AddrSpace
 		void RestoreState ();	// info on a context switch 
 
 #ifdef CHANGED
-		void increaseThread();
+		int newThread(); //return the id of the new thread
 		int getStackForThread();
 		int getNbThread();
 		void waitThread();
 		void endThread();
+		void joinThread(unsigned int id);
+		void deallocateMapStack(int position);
+		int getMaxThread();
 #endif
 
 	private:
@@ -54,8 +58,13 @@ class AddrSpace
 
 #ifdef CHANGED
 		unsigned int nbThread;
+		unsigned int idThread;
 		BitMap *memoryMap;
 		Lock *haltLock;
+		ListThread *listThread;
+		int maxThreads;
+
+		Lock* lockId;
 #endif
 };
 

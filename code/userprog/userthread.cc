@@ -7,18 +7,18 @@ static void StartUserThread(int f) {
 
 	ASSERT(param!=NULL);
 	ASSERT(param->f!=0);
-	ASSERT(param->arg!=0);
 
 	machine->WriteRegister(PCReg,param->f);
 	machine->WriteRegister(NextPCReg,(param->f)+4);
 	machine->WriteRegister(4,param->arg);
 
 	delete(param);
-	currentThread->space->increaseThread();
 	int stack = currentThread->space->getStackForThread();
 
 	if (stack == -1)
+	{
 		currentThread->Finish();
+	}
 
 	machine->WriteRegister(StackReg, stack);
 
@@ -27,7 +27,12 @@ static void StartUserThread(int f) {
 
 int do_UserThreadCreate(int f, int arg)
 {
-	Thread *newThread = new Thread("User Thread");
+	if (currentThread->space->getNbThread() >= currentThread->space->getMaxThread())
+	{
+		return -1;
+	}
+	int newId = currentThread->space->newThread();
+	Thread *newThread = new Thread("User Thread", newId);
 
 	if(newThread == NULL) {
 		DEBUG('t',"Error while creating thread");
@@ -40,7 +45,7 @@ int do_UserThreadCreate(int f, int arg)
 
 	newThread->Fork(StartUserThread, (int)args);
 
-	return 0;
+	return newId;
 }
 
 void do_UserThreadExit()
@@ -49,7 +54,7 @@ void do_UserThreadExit()
 }
 
 void do_UserThreadJoin(int threadId){
-//	thread->waitThread();
+	currentThread->space->joinThread(threadId);
 }
 
 #endif //CHANGED

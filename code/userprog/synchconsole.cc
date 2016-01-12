@@ -70,11 +70,13 @@ char SynchConsole::SynchGetChar()
 void SynchConsole::SynchPutString(const char s[])
 {
 //	semPutString->P();
+	lockGet->Acquire();
 	while (*s != '\0')
 	{
 		SynchPutChar(*s);
 		s ++;
 	}
+	lockGet->Release();
 //	semPutString->V();
 }
 

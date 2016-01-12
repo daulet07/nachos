@@ -35,7 +35,8 @@
 Thread::Thread (const char *threadName)
 {
 #ifdef CHANGED
-//	this->threadId = 1;
+	threadId = 0;
+	stackPosition = -1;
 #endif
 	name = threadName;
 	stackTop = NULL;
@@ -52,13 +53,15 @@ Thread::Thread (const char *threadName)
 }
 
 #ifdef CHANGED
-Thread::Thread (const char *threadName, int threadId)
+Thread::Thread (const char *threadName, unsigned int id)
 {
 //	this->threadId = threadId;
 //	joinLock = new Lock("thread Lock");
 //	joinLock->Acquire();
 
 	name = threadName;
+	threadId = id;
+	stackPosition = -1;
 	stackTop = NULL;
 	stack = NULL;
 	status = JUST_CREATED;
@@ -444,9 +447,14 @@ Thread::RestoreUserState ()
 
 
 #ifdef CHANGED
-/*
-int getThreadId(){
+unsigned int Thread::getId(){
 	return threadId;
 }
-*/
+
+int Thread::getStackPosition(){
+	return stackPosition;
+}
+void Thread::setStackPosition(int pos){
+	stackPosition = pos;
+}
 #endif
