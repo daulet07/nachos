@@ -52,7 +52,6 @@ void producer(void* arg) {
 }
 
 void consumer(void* arg) {
-//	while (1) {
 	int i;
 	for ( i = 0 ; i< 100; i++) {
 		P(full);
@@ -75,19 +74,12 @@ int main() {
 	mutex = SemInit(mutex, 1);
 	full = SemInit(full, 0);
 	empty = SemInit(empty, BUFFER_SIZE);
-	PutString("=== ");
-	PutInt(mutex);
-	PutInt(full);
-	PutInt(empty);
-
 
 	pid_t1 = UserThreadCreate(producer, 0);
 	pid_t2 = UserThreadCreate(consumer, 0);
 
 	UserThreadJoin(pid_t1);
 	UserThreadJoin(pid_t2);
-
-//	UserThreadExit();
 
 	return 0;
 }
