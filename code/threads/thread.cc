@@ -201,7 +201,10 @@ Thread::Finish ()
 
 #ifdef USER_PROGRAM
 #ifdef CHANGED
-	space->endThread();
+	if (space != NULL)
+		space->endThread();
+	else
+		interrupt->Halt();
 #endif
 #endif
 
