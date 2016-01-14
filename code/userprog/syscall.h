@@ -41,6 +41,12 @@
 #define SC_UserThreadExit	18
 #define SC_UserThreadJoin	19
 #define SC_ForkExec	20
+
+#define SC_SemInit		21
+#define SC_P			22
+#define SC_V			23
+#define SC_SemDestroy	24
+
 #endif //CHANGED
 
 #ifdef IN_USER_MODE
@@ -156,6 +162,13 @@ int UserThreadCreate(void f(void *arg), void *arg);
 void UserThreadExit();
 void UserThreadJoin(int threadId);
 int ForkExec(char *s);
+
+typedef int sem_t;
+sem_t SemInit(sem_t sem, int value);
+void P(sem_t sem);
+void V(sem_t sem);
+void SemDestroy(sem_t sem);
+
 #endif //CHANGED
 
 #endif // IN_USER_MODE

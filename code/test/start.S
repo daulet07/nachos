@@ -218,4 +218,36 @@ ForkExec:
 	j	$31
 	.end ForkExec
 
+	.globl SemInit
+	.ent	SemInit
+SemInit:
+	addiu $2,$0,SC_SemInit
+	syscall
+	j	$31
+	.end SemInit
+
+	.globl P
+	.ent	P
+P:
+	addiu $2,$0,SC_P
+	syscall
+	j	$31
+	.end P
+
+	.globl V
+	.ent	V
+V:
+	addiu $2,$0,SC_V
+	syscall
+	j	$31
+	.end V
+
+	.globl SemDestroy
+	.ent	SemDestroy
+SemDestroy:
+	addiu $2,$0,SC_SemDestroy
+	syscall
+	j	$31
+	.end SemDestroy
+
 #endif //CHANGED

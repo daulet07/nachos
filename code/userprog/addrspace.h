@@ -21,6 +21,7 @@
 #include "listthread.h"
 class Lock;
 #define NbPagesPerThread 2
+#include "usersemaphore.h"
 #endif
 
 #define UserStackSize	2048	//1024	// increase this as necessary!
@@ -48,6 +49,7 @@ class AddrSpace
 		void joinThread(unsigned int id);
 		void deallocateMapStack(int position);
 		int getMaxThread();
+		UserSemList *userSem;
 #endif
 
 	private:
@@ -63,7 +65,6 @@ class AddrSpace
 		Lock *haltLock;
 		ListThread *listThread;
 		int maxThreads;
-
 		Lock* lockId;
 #endif
 };

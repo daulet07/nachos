@@ -85,13 +85,12 @@ void writeStringToMachine(char* string, int to, unsigned size) {
 	machine->WriteMem(to + i, 1, string[i]);
 }
 
-static void haltMachine(){
+static void haltMachine() {
 	while (currentThread->space->getNbThread() > 1)
-		currentThread->space->waitThread();
-
+	currentThread->space->waitThread();
 
 	if (machine->getNumProcess() == 1)
-		interrupt->Halt();
+	interrupt->Halt();
 
 	if (currentThread->space->getNbThread() == 1)
 	{
@@ -153,11 +152,12 @@ void ExceptionHandler(ExceptionType which) {
 				synchConsole->SynchPutChar(ch);
 				break;
 			}
-			case SC_GetChar:
+			case SC_GetChar: {
 				DEBUG('a', "GetChar, system call handler.\n");
 
 				machine->WriteRegister(2, (int)synchConsole->SynchGetChar());
 				break;
+			}
 			case SC_PutString:
 			{
 				DEBUG('a', "PutString, system call handler.\n");
@@ -211,10 +211,11 @@ void ExceptionHandler(ExceptionType which) {
 
 				break;
 			}
-			case SC_Exit:
+			case SC_Exit: {
 				DEBUG('a', "Shutdown, initiated by user program.\n");
 				haltMachine();
 				break;
+			}
 			case SC_UserThreadCreate:
 			{
 				DEBUG('a', "UserThreadCreate, system call handler.\n");
@@ -225,10 +226,11 @@ void ExceptionHandler(ExceptionType which) {
 				machine->WriteRegister(2, ret);
 				break;
 			}
-			case SC_UserThreadExit:
+			case SC_UserThreadExit: {
 				DEBUG('a', "UserThreadExit, system call handler.\n");
 				do_UserThreadExit();
 				break;
+			}
 			case SC_UserThreadJoin:
 			{
 				DEBUG('a', "UserThreadJoin, system call handler.\n");
@@ -241,15 +243,41 @@ void ExceptionHandler(ExceptionType which) {
 				DEBUG('a', "ForkExec, system call handler.\n");
 
 				char *exec = new char[MAX_STRING_SIZE];
-
-
 				copyStringFromMachine(machine->ReadRegister(4), exec, MAX_STRING_SIZE);
 				int ret = do_UserForkExec(exec);
-
 				machine->WriteRegister(2, ret);
-
 				delete exec;
-				
+				break;
+			}
+			case SC_SemInit:
+			{
+				DEBUG('s', "SC_SemInit.\n");
+				int reg4 = machine->ReadRegister(4);
+				int reg5 = machine->ReadRegister(5);
+				int result = currentThread->space->userSem->sem_create(reg4, reg5);
+				fprintf(stderr, "result = %d\n", result);
+				machine->WriteRegister(2, result);
+				break;
+			}
+			case SC_P:
+			{
+				DEBUG('s', "SC_P.\n");
+				int reg4 = machine->ReadRegister(4);
+				currentThread->space->userSem->sem_p(reg4);
+				break;
+			}
+			case SC_V:
+			{
+				DEBUG('s', "SC_V.\n");
+				int reg4 = machine->ReadRegister(4);
+				currentThread->space->userSem->sem_v(reg4);
+				break;
+			}
+			case SC_SemDestroy:
+			{
+				DEBUG('s', "SC_SemDestroy.\n");
+				int reg4 = machine->ReadRegister(4);
+				currentThread->space->userSem->sem_destroy(reg4);
 				break;
 			}
 			default: {

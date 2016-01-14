@@ -115,6 +115,7 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	haltLock->Acquire();
 	memoryMap = new BitMap(numPages/NbPagesPerThread);
 	lockId = new Lock("Lock of thread id");
+	userSem = new UserSemList();
 
 #endif
 
@@ -196,6 +197,7 @@ AddrSpace::~AddrSpace ()
 	delete memoryMap;
 	delete listThread;
 	delete lockId;
+	delete userSem;
 
 	for (unsigned int i = 0; i < numPages; i ++)
 		frameProvider.ReleaseFrame(pageTable[i].physicalPage);
