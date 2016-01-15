@@ -11,14 +11,13 @@ void puts(char *s)
 void f(void *s)
 {
 	int i; for (i = 0; i < N; i++) puts((char *)s);
-	UserThreadExit();
 }
 
 int main()
 {
 	PutString("start UserPage0\n");
 	UserThreadCreate(f, (void *) THIS);
-	//f((void*) THAT);
+	f((void*) THAT);
 
 	return 0;
 }
