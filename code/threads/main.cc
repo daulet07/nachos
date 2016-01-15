@@ -61,6 +61,10 @@ extern void Print (char *file), PerformanceTest (void);
 extern void StartProcess (char *file), ConsoleTest (char *in, char *out), SynchConsoleTest (char *in, char *out);
 extern void MailTest (int networkID);
 
+#ifdef CHANGED
+extern void Shell();
+#endif
+
 //----------------------------------------------------------------------
 // main
 //      Bootstrap the operating system kernel.  
@@ -159,6 +163,10 @@ main (int argc, char **argv)
 		else if (!strcmp (*argv, "-t"))
 		{			// performance test
 			PerformanceTest ();
+		}
+		else if (!strcmp (*argv, "shell"))
+		{			// performance test
+			Shell ();
 		}
 #endif // FILESYS
 #ifdef NETWORK
