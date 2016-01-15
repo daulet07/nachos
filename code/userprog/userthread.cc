@@ -8,6 +8,8 @@ static void StartUserThread(int f) {
 	ASSERT(param!=NULL);
 	ASSERT(param->f!=0);
 
+	machine->WriteRegister(RetAddrReg,param->callBack); // to call UserThreadExit implicit
+
 	machine->WriteRegister(PCReg,param->f);
 	machine->WriteRegister(NextPCReg,(param->f)+4);
 	machine->WriteRegister(4,param->arg);
@@ -25,7 +27,7 @@ static void StartUserThread(int f) {
 	machine->Run();
 }
 
-int do_UserThreadCreate(int f, int arg)
+int do_UserThreadCreate(int f, int arg, int callBack)
 {
 	if (currentThread->space->getNbThread() >= currentThread->space->getMaxThread())
 	{
@@ -42,6 +44,7 @@ int do_UserThreadCreate(int f, int arg)
 	Args *args = new Args;
 	args->f = f;
 	args->arg = arg;
+	args->callBack = callBack;
 
 	newThread->Fork(StartUserThread, (int)args);
 

@@ -221,7 +221,8 @@ void ExceptionHandler(ExceptionType which) {
 				DEBUG('a', "UserThreadCreate, system call handler.\n");
 				int function = machine->ReadRegister(4);
 				int arg = machine->ReadRegister(5);
-				int ret = do_UserThreadCreate(function, arg);
+				int callBack = machine->ReadRegister(6);
+				int ret = do_UserThreadCreate(function, arg, callBack);
 
 				machine->WriteRegister(2, ret);
 				break;

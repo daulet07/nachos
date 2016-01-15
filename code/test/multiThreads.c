@@ -7,7 +7,7 @@ void print(void * arg) {
 	PutInt(*id);
 	PutChar('\n');
 
-	UserThreadExit();
+//	UserThreadExit();
 }
 
 int main() {

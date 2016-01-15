@@ -48,7 +48,7 @@ void producer(void* arg) {
 		V(full);
 	}
 
-	UserThreadExit();
+//	UserThreadExit();
 }
 
 void consumer(void* arg) {
@@ -64,7 +64,7 @@ void consumer(void* arg) {
 	}
 
 
-	UserThreadExit();
+//	UserThreadExit();
 }
 
 int main() {
