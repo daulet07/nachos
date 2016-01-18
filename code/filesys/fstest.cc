@@ -49,7 +49,11 @@ Copy(const char *from, const char *to)
 
 	// Create a Nachos file of the same length
 	DEBUG('f', "Copying file %s, size %d, to file %s\n", from, fileLength, to);
+#ifndef CHANGED
 	if (!fileSystem->Create(to, fileLength)) {	 // Create Nachos file
+#else
+	if (!fileSystem->CreateFile("/", to, fileLength)) {	 // Create Nachos file
+#endif
 		printf("Copy: couldn't create output file %s\n", to);
 		fclose(fp);
 		return;
@@ -121,7 +125,11 @@ FileWrite()
 
 	printf("Sequential write of %d byte file, in %zd byte chunks\n", 
 			FileSize, ContentSize);
+#ifndef CHANGED
 	if (!fileSystem->Create(FileName, 0)) {
+#else
+	if (!fileSystem->CreateFile("/", FileName, 0)) {
+#endif
 		printf("Perf test: can't create %s\n", FileName);
 		return;
 	}
@@ -187,7 +195,6 @@ PerformanceTest()
 #include "filesys.h"
 
 void Shell(){
-	printf("Shell %d\n", (int)stdout);
 	Directory *currentDir = fileSystem->GetRoot();
 
 	bool run = true;
@@ -201,17 +208,65 @@ void Shell(){
 
 		if (!strcmp(arg, "exit"))
 			run = false;
-		else if (!strcmp(arg, "ls"))
-			currentDir->List();
-		else if (!strcmp(arg, "mkdir"))
+		else if (!strcmp(arg, "list"))
+			fileSystem->Print();
+		else if (!strncmp(arg, "ls", 2))
 		{
-			
+			char *name = strchr(arg, ' ');
+			if (name == NULL)
+				printf("ls <path>\n");
+			else
+			{
+				name ++;
+				char *end = strchr(name, ' ');
+				if (end != NULL)
+					printf("ls <path>\n");
+				else
+				{
+					Directory *dir = fileSystem->GetDir(name);
+					if (dir != NULL)
+					{
+						dir->List();
+						delete dir;
+					}
+					else
+						printf("%s not found\n", name);
+				}
+			}
+		}
+		else if (!strncmp(arg, "mkdir", 5))
+		{
+			char *from = strchr(arg, ' ');
+			if (from == NULL)
+				printf("mkdir <from> <file>\n");
+			else
+			{
+				from ++;
+				char *file = strchr(from, ' ');
+				if (file == NULL)
+					printf("mkdir <from> <file>\n");
+				else
+				{
+					*file = '\0';
+					file ++;
+
+					char *end = strchr(file, ' ');
+					if (end != NULL)
+						printf("mkdir <from> <file>\n");
+					else
+					{
+						if (!fileSystem->CreateDir(from, file))
+							printf("Error\n");
+					}
+				}
+			}
 		}
 
 	}
 
 	printf("good by\n");
 
+	delete []arg;
 	delete currentDir;
 }
 

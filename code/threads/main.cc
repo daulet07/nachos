@@ -164,10 +164,12 @@ main (int argc, char **argv)
 		{			// performance test
 			PerformanceTest ();
 		}
+#ifdef CHANGED
 		else if (!strcmp (*argv, "shell"))
 		{			// performance test
 			Shell ();
 		}
+#endif //CHANGED
 #endif // FILESYS
 #ifdef NETWORK
 		if (!strcmp (*argv, "-o"))
