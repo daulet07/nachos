@@ -22,11 +22,13 @@
 #define SC_Exit		1
 #define SC_Exec		2
 #define SC_Join		3
+
 #define SC_Create	4
 #define SC_Open		5
 #define SC_Read		6
 #define SC_Write	7
 #define SC_Close	8
+
 #define SC_Fork		9
 #define SC_Yield	10
 
@@ -46,6 +48,12 @@
 #define SC_P			22
 #define SC_V			23
 #define SC_SemDestroy	24
+
+#define SC_FCreate	25
+#define SC_FOpen	26
+#define SC_FRead	27
+#define SC_FWrite	28
+#define SC_FClose	29
 
 #endif //CHANGED
 
@@ -131,7 +139,30 @@ int Read (char *buffer, int size, OpenFileId id);
 /* Close the file, we're done reading and writing to it. */
 void Close (OpenFileId id);
 
+#ifdef CHANGED
+/* Create a Nachos file, with "name" */
+void FCreate (char *path);
+//void FCreate (char *from, char *name);
 
+/* Open the Nachos file "name", and return an "OpenFileId" that can 
+ * be used to read and write to the file.
+ */
+OpenFileId FOpen (char *name);
+
+/* Write "size" bytes from "buffer" to the open file. */
+void FWrite (char *buffer, int size, OpenFileId id);
+
+/* Read "size" bytes from the open file into "buffer".  
+ * Return the number of bytes actually read -- if the open file isn't
+ * long enough, or if it is an I/O device, and there aren't enough 
+ * characters to read, return whatever is available (for I/O devices, 
+ * you should always wait until you can return at least one character).
+ */
+int FRead (char *buffer, int size, OpenFileId id);
+
+/* Close the file, we're done reading and writing to it. */
+void FClose (OpenFileId id);
+#endif
 
 /* User-level thread operations: Fork and Yield.  To allow multiple
  * threads to run within a user program. 

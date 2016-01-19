@@ -52,7 +52,7 @@ Copy(const char *from, const char *to)
 #ifndef CHANGED
 	if (!fileSystem->Create(to, fileLength)) {	 // Create Nachos file
 #else
-	if (!fileSystem->CreateFile("/", to, fileLength)) {	 // Create Nachos file
+	if (!fileSystem->CreateFile(to, fileLength)) {	 // Create Nachos file
 #endif
 		printf("Copy: couldn't create output file %s\n", to);
 		fclose(fp);
@@ -184,7 +184,11 @@ PerformanceTest()
 	stats->Print();
 	FileWrite();
 	FileRead();
+#ifndef CHANGED
 	if (!fileSystem->Remove(FileName)) {
+#else
+	if (!fileSystem->RemoveFile(FileName)) {
+#endif
 		printf("Perf test: unable to remove %s\n", FileName);
 		return;
 	}
@@ -269,5 +273,4 @@ void Shell(){
 	delete []arg;
 	delete currentDir;
 }
-
 #endif //CHANGED

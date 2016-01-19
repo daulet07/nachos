@@ -149,7 +149,12 @@ main (int argc, char **argv)
 		else if (!strcmp (*argv, "-r"))
 		{			// remove Nachos file
 			ASSERT (argc > 1);
+#ifndef CHANGED
 			fileSystem->Remove (*(argv + 1));
+#else
+			fileSystem->RemoveFile (*(argv + 1));
+#endif
+
 			argCount = 2;
 		}
 		else if (!strcmp (*argv, "-l"))
@@ -167,7 +172,7 @@ main (int argc, char **argv)
 #ifdef CHANGED
 		else if (!strcmp (*argv, "shell"))
 		{			// performance test
-			Shell ();
+			Shell();
 		}
 #endif //CHANGED
 #endif // FILESYS

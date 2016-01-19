@@ -251,4 +251,44 @@ SemDestroy:
 	j	$31
 	.end SemDestroy
 
+	.globl FCreate
+	.ent	FCreate
+FCreate:
+	addiu $2,$0,SC_FCreate
+	syscall
+	j	$31
+	.end FCreate
+
+	.globl FOpen
+	.ent	FOpen
+FOpen:
+	addiu $2,$0,SC_FOpen
+	syscall
+	j	$31
+	.end FOpen
+
+	.globl FRead
+	.ent	FRead
+FRead:
+	addiu $2,$0,SC_FRead
+	syscall
+	j	$31
+	.end FRead
+
+	.globl FWrite
+	.ent	FWrite
+FWrite:
+	addiu $2,$0,SC_FWrite
+	syscall
+	j	$31
+	.end FWrite
+
+	.globl FClose
+	.ent	FClose
+FClose:
+	addiu $2,$0,SC_FClose
+	syscall
+	j	$31
+	.end FClose
+
 #endif //CHANGED

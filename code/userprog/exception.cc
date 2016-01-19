@@ -45,24 +45,28 @@ static void UpdatePC() {
 }
 
 #ifdef CHANGED
-void copyStringFromMachine( int from, char *to, unsigned size) {
+bool copyStringFromMachine( int from, char *to, unsigned size) {
 	int byte;
 	unsigned int i;
-	int offset = 0;
+//	int offset = 0;
 
-	do {
+//	do {
 		for (i = 0; i < size -1; i ++)
 		{
-			machine->ReadMem(from + offset+i, 1, &byte);
+//			machine->ReadMem(from + offset+i, 1, &byte);
+			machine->ReadMem(from + i, 1, &byte);
 
 			if ((char)byte == '\0')
-			break;
+				break;
 			to[i] = (char)byte;
 		}
-		offset += i;
+//		offset += i;
+		if (to[i] == '\0')
+			return true;
 		to[i] = '\0';
-		synchConsole->SynchPutString(to);
-	}while((char)byte != '\0');
+		return false;
+//		synchConsole->SynchPutString(to);
+//	}while((char)byte != '\0');
 
 	/*
 	 while (size > 0 && (char)byte != '\0')
@@ -82,7 +86,7 @@ void copyStringFromMachine( int from, char *to, unsigned size) {
 void writeStringToMachine(char* string, int to, unsigned size) {
 	int i;
 	for (i = 0; i < (int)size; i++)
-	machine->WriteMem(to + i, 1, string[i]);
+		machine->WriteMem(to + i, 1, string[i]);
 }
 
 static void haltMachine() {
@@ -163,7 +167,8 @@ void ExceptionHandler(ExceptionType which) {
 				DEBUG('a', "PutString, system call handler.\n");
 				char *buffer = new char[MAX_STRING_SIZE];
 
-				copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
+				while (!copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE))
+					synchConsole->SynchPutString(buffer);
 				delete[] buffer;
 				break;
 			}
@@ -256,7 +261,6 @@ void ExceptionHandler(ExceptionType which) {
 				int reg4 = machine->ReadRegister(4);
 				int reg5 = machine->ReadRegister(5);
 				int result = currentThread->space->userSem->sem_create(reg4, reg5);
-				fprintf(stderr, "result = %d\n", result);
 				machine->WriteRegister(2, result);
 				break;
 			}
@@ -281,11 +285,72 @@ void ExceptionHandler(ExceptionType which) {
 				currentThread->space->userSem->sem_destroy(reg4);
 				break;
 			}
-			default: {
-				printf("Unexpected user mode exception %d %d\n", which, type);
-				ASSERT(FALSE);
+#ifndef FILESYS_STUB 		// Temporarily implement file system calls as 
+			case SC_FCreate:
+			{
+				DEBUG('s', "SC_FCreate.\n");
+				char path[MAX_STRING_SIZE];
+				copyStringFromMachine(machine->ReadRegister(4), path, MAX_STRING_SIZE);
+				fileSystem->CreateFile(path, 0);
+				//void FCreate (char *name);
 				break;
 			}
+			case SC_FOpen:
+			{
+				DEBUG('s', "SC_FOpen.\n");
+//				OpenFileId FOpen (char *name);
+				char path[MAX_STRING_SIZE];
+				copyStringFromMachine(machine->ReadRegister(4), path, MAX_STRING_SIZE);
+				int fileId = fileSystem->FOpen(path);
+				machine->WriteRegister(2, fileId);
+				break;
+			}
+			case SC_FRead:
+			{
+				DEBUG('s', "SC_FRead.\n");
+
+				int userBuffer = machine->ReadRegister(4);
+				int size = machine->ReadRegister(5);
+				int fileId = machine->ReadRegister(6);
+
+				char kernelBuffer[size];
+
+				int numRead = fileSystem->FRead(kernelBuffer, size, fileId);
+
+				writeStringToMachine(kernelBuffer, userBuffer, numRead);
+
+				machine->WriteRegister(2, numRead);
+//				int FRead (char *buffer, int size, OpenFileId id);
+				break;
+			}
+			case SC_FWrite:
+			{
+				DEBUG('s', "SC_FWrite.\n");
+				int userBuffer = machine->ReadRegister(4);
+				int size = machine->ReadRegister(5);
+				int fileId = machine->ReadRegister(6);
+
+				char kernelBuffer[size];
+				copyStringFromMachine(userBuffer, kernelBuffer, size);
+
+				fileSystem->FWrite(kernelBuffer, size, fileId);
+
+//				void FWrite (char *buffer, int size, OpenFileId id);
+				break;
+			}
+			case SC_FClose:
+			{
+				DEBUG('s', "SC_FClose.\n");
+				fileSystem->FClose(machine->ReadRegister(4));
+//				void FClose (OpenFileId id);
+				break;
+			}
+#endif
+			default: {
+						 printf("Unexpected user mode exception %d %d\n", which, type);
+						 ASSERT(FALSE);
+						 break;
+					 }
 		} // end of switch case
 	} // end of if statement
 	else
