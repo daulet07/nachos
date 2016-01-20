@@ -112,6 +112,7 @@ class FileSystem {
 		bool RemoveFile(const char *path);
 		bool RemoveFile(const char *from, const char *name);
 		
+		bool ReAllocate(FileHeader *hdr, int numSector);		
 #endif
 
 

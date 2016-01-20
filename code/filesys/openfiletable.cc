@@ -76,7 +76,9 @@ int OpenFileTable::FRead(char* buffer, int size, int fileId){
 	if (!table[fileId].inUse)
 		return 0;
 	OpenFile *file = table[fileId].file;
-	return file->Read(buffer, size);
+	int num = file->Read(buffer, size-1);
+	buffer[num] = '\0';
+	return num;
 }
 
 void OpenFileTable::FWrite(char* buffer, int size, int fileId){

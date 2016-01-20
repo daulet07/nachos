@@ -87,6 +87,35 @@ static FrameProvider frameProvider;
 //      "executable" is the file containing the object code to load into memory
 //----------------------------------------------------------------------
 
+#ifdef CHANGED
+#include "synch.h"
+static int lastProcessId = 0;
+static Lock lockProcessId("Lock for process Id");
+#endif //CHANGED
+
+#ifdef CHANGED
+bool CanCreateNewSpace(OpenFile *exec){
+	NoffHeader noffH;
+	int size;
+
+	exec->ReadAt ((char *) &noffH, sizeof (noffH), 0);
+	if ((noffH.noffMagic != NOFFMAGIC) &&
+			(WordToHost (noffH.noffMagic) == NOFFMAGIC))
+		SwapHeader (&noffH);
+	ASSERT (noffH.noffMagic == NOFFMAGIC);
+
+	// how big is address space?
+	size = noffH.code.size + noffH.initData.size + noffH.uninitData.size + UserStackSize;	// we need to increase the size
+
+	int numPages = divRoundUp (size, PageSize);
+	size = numPages * PageSize;
+	if (numPages > NumPhysPages || frameProvider.NumAvailFrame() < numPages)
+		return false;
+
+	return true;
+}
+#endif //CHANGED
+
 AddrSpace::AddrSpace (OpenFile * executable)
 {
 	NoffHeader noffH;
@@ -117,6 +146,10 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	memoryMap = new BitMap(numPages/NbPagesPerThread);
 	lockId = new Lock("Lock of thread id");
 	userSem = new UserSemList();
+
+	lockProcessId.Acquire();
+	processId = lastProcessId ++;
+	lockProcessId.Release();
 	
 	openFileMap = new BitMap(MAX_OPEN_FILE);
 	openFileTable = new int[MAX_OPEN_FILE];
@@ -133,11 +166,12 @@ AddrSpace::AddrSpace (OpenFile * executable)
 			numPages, size);
 	// first, set up the translation 
 	pageTable = new TranslationEntry[numPages];
+
 	for (i = 0; i < numPages; i++)
 	{
 		pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
 #ifndef CHANGED
-		pageTable[i].physicalPage = i+1;
+		pageTable[i].physicalPage = i;
 #else
 		pageTable[i].physicalPage = frameProvider.GetEmptyFrame();
 #endif

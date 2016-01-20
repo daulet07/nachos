@@ -24,7 +24,11 @@ class Lock;
 #include "usersemaphore.h"
 #endif
 
-#define UserStackSize	2048	//1024	// increase this as necessary!
+#define UserStackSize	1024//2048	//1024	// increase this as necessary!
+
+#ifdef CHANGED
+bool CanCreateNewSpace(OpenFile *exec);
+#endif
 
 class AddrSpace
 {
@@ -54,6 +58,7 @@ class AddrSpace
 		int addOpenFile(int fileId);
 		int getOpenFileId(int fileId);
 		void closeOpenFile(int fileId);
+		int getId();
 #endif
 
 	private:
@@ -73,6 +78,8 @@ class AddrSpace
 
 		BitMap *openFileMap;
 		int *openFileTable;
+
+		int processId;
 #endif
 };
 

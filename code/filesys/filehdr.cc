@@ -51,6 +51,22 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
 	return TRUE;
 }
 
+#ifdef CHANGED
+	bool
+FileHeader::ReAllocate(BitMap *freeMap, int size)
+{ 
+	numBytes += size;
+	int alreadyAlocate = numSectors;
+	numSectors += divRoundUp(size, SectorSize);
+	if (freeMap->NumClear() < numSectors)
+		return FALSE;		// not enough space
+
+	for (int i = alreadyAlocate; i < numSectors; i++)
+		dataSectors[i] = freeMap->Find();
+	return TRUE;
+}
+#endif
+
 //----------------------------------------------------------------------
 // FileHeader::Deallocate
 // 	De-allocate all the space allocated for data blocks for this file.

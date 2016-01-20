@@ -11,6 +11,12 @@ int main(){
 		PutString("File is open\n");
 		char text[100];
 		FRead(text, 100, file);
+		PutString("Content of the file : \n");
+		PutString(text);
+		
+		FWrite("File system is boring!!\n", 24, file);
+		FRead(text, 100, file);
+		PutString("And now: \n");
 		PutString(text);
 		PutString("Closing file\n");
 		FClose(file);

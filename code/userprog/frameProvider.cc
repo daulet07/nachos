@@ -14,9 +14,8 @@ FrameProvider::~FrameProvider(){
 int FrameProvider::GetEmptyFrame(){
 	int ret = frame->Find();
 
-	ASSERT(ret != -1);
-
-	bzero(&machine->mainMemory[ret*PageSize], PageSize);
+	if (ret != -1)
+		bzero(&machine->mainMemory[ret*PageSize], PageSize);
 
 	return ret;
 }
