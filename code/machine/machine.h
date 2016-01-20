@@ -39,7 +39,7 @@ class Lock;
 #ifndef CHANGED
 #define NumPhysPages    32
 #else
-#define NumPhysPages    128
+#define NumPhysPages    256 //128
 #endif //CHANGED
 
 #define MemorySize 	(NumPhysPages * PageSize)
