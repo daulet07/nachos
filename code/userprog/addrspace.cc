@@ -22,6 +22,7 @@
 
 #ifdef CHANGED
 #include "frameProvider.h"
+#define MAX_OPEN_FILE 10
 #endif
 
 #include <strings.h>		/* for bzero */
@@ -116,7 +117,16 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	memoryMap = new BitMap(numPages/NbPagesPerThread);
 	lockId = new Lock("Lock of thread id");
 	userSem = new UserSemList();
+	
+	openFileMap = new BitMap(MAX_OPEN_FILE);
+	openFileTable = new int[MAX_OPEN_FILE];
 
+	for (i = 2; i < MAX_OPEN_FILE; i ++)
+		openFileTable[i] = -1;
+	openFileTable[0] = 0;
+	openFileTable[1] = 1;
+	openFileMap->Mark(0);
+	openFileMap->Mark(1);
 #endif
 
 	DEBUG ('a', "Initializing address space, num pages %d, size %d\n",
@@ -138,10 +148,6 @@ AddrSpace::AddrSpace (OpenFile * executable)
 		// a separate page, we could set its 
 		// pages to be read-only
 	}
-
-#ifdef CHANGED
-//	RestoreState();
-#endif
 
 	// zero out the entire address space, to zero the unitialized data segment 
 	// and the stack segment
@@ -331,5 +337,34 @@ void AddrSpace::deallocateMapStack(int position){
 
 int AddrSpace::getMaxThread(){
 	return maxThreads;
+}
+
+int AddrSpace::addOpenFile(int fileId){
+	int index = getOpenFileId(fileId);
+	if (index == -1)
+	{
+		index = openFileMap->Find();
+		if (index != -1)
+			openFileTable[index] = fileId;
+	}
+
+	return index;
+}
+
+int AddrSpace::getOpenFileId(int fileId){
+	for (int i = 0; i < MAX_OPEN_FILE; i ++)
+		if (openFileTable[i] == fileId)
+			return i;
+
+	return -1;
+}
+
+void AddrSpace::closeOpenFile(int fileId){
+	int index = getOpenFileId(fileId);
+	if (index != -1)
+	{
+		openFileMap->Clear(index);
+		openFileTable[index] = -1;
+	}
 }
 #endif

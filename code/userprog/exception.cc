@@ -61,9 +61,9 @@ bool copyStringFromMachine( int from, char *to, unsigned size) {
 			to[i] = (char)byte;
 		}
 //		offset += i;
-		if (to[i] == '\0')
-			return true;
 		to[i] = '\0';
+		if ((char)byte == '\0')
+			return true;
 		return false;
 //		synchConsole->SynchPutString(to);
 //	}while((char)byte != '\0');
@@ -169,6 +169,7 @@ void ExceptionHandler(ExceptionType which) {
 
 				while (!copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE))
 					synchConsole->SynchPutString(buffer);
+				synchConsole->SynchPutString(buffer);
 				delete[] buffer;
 				break;
 			}

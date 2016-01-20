@@ -53,6 +53,7 @@
 
 #ifdef CHANGED
 #include "openfiletable.h"
+#include "system.h"
 #endif
 
 // Sectors containing the file headers for the bitmap of free sectors,
@@ -463,6 +464,8 @@ FileSystem::FOpen(const char *from, const char *name)
 		OpenFile *file = Open(from, name);
 
 		openFileId = kernelFTable->Open(file, from, name);
+
+		openFileId = currentThread->space->addOpenFile(openFileId);
 	}
 
 	return openFileId;				// return NULL if not found
@@ -737,14 +740,18 @@ void FileSystem::parsePath(char *path, char** name){
 }
 
 void FileSystem::FClose(int index){
-	kernelFTable->Close(index);
+	int fileId = currentThread->space->getOpenFileId(index);
+	currentThread->space->closeOpenFile(index);
+	kernelFTable->Close(fileId);
 }
 
 int FileSystem::FRead(char* buffer, int size, int fileId){
+	fileId = currentThread->space->getOpenFileId(fileId);
 	return kernelFTable->FRead(buffer, size, fileId);
 }
 
 void FileSystem::FWrite(char* buffer, int size, int fileId){
+	fileId = currentThread->space->getOpenFileId(fileId);
 	kernelFTable->FWrite(buffer, size, fileId);
 }
 

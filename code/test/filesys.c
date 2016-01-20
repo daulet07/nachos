@@ -3,12 +3,12 @@
 int main(){
 
 	PutString("Hello World\n");
-	FCreate("/coucou");
+//	FCreate("/coucou");
 
 	OpenFileId file = FOpen("/coucou");
 	if (file != -1)
 	{
-		PutString("File is create\n");
+		PutString("File is open\n");
 		char text[100];
 		FRead(text, 100, file);
 		PutString(text);

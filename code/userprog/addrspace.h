@@ -50,6 +50,10 @@ class AddrSpace
 		void deallocateMapStack(int position);
 		int getMaxThread();
 		UserSemList *userSem;
+
+		int addOpenFile(int fileId);
+		int getOpenFileId(int fileId);
+		void closeOpenFile(int fileId);
 #endif
 
 	private:
@@ -66,6 +70,9 @@ class AddrSpace
 		ListThread *listThread;
 		int maxThreads;
 		Lock* lockId;
+
+		BitMap *openFileMap;
+		int *openFileTable;
 #endif
 };
 
