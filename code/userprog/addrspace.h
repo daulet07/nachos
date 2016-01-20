@@ -24,7 +24,7 @@ class Lock;
 #include "usersemaphore.h"
 #endif
 
-#define UserStackSize	1024//2048	//1024	// increase this as necessary!
+#define UserStackSize	4096 //2048	//1024	// increase this as necessary!
 
 #ifdef CHANGED
 bool CanCreateNewSpace(OpenFile *exec);
