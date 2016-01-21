@@ -3,3 +3,8 @@ code/build-origin/*
 code/bin/coff2noff
 code/bin/*.o
 code/bin/.*.d
+code/nachos.config
+code/nachos.creator
+code/nachos.creator.user
+code/nachos.files
+code/nachos.includes

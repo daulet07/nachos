@@ -138,6 +138,12 @@ MailBox::Get(PacketHeader *pktHdr, MailHeader *mailHdr, char *data)
 					// need, we can now discard the message
 }
 
+#ifdef CHANGED
+bool MailBox::IsEmpty()
+{
+	return messages->IsEmpty();
+}
+#endif
 //----------------------------------------------------------------------
 // PostalHelper, ReadAvail, WriteDone
 // 	Dummy functions because C++ can't indirectly invoke member functions
@@ -344,3 +350,9 @@ PostOffice::PacketSent()
     messageSent->V();
 }
 
+#ifdef CHANGED
+bool PostOffice::IsMailBoxEmpty(int box)
+{
+	return boxes[box].IsEmpty();
+}
+#endif

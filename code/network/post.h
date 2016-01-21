@@ -86,6 +86,10 @@ class MailBox {
    				// Atomically get a message out of the 
 				// mailbox (and wait if there is no message 
 				// to get!)
+
+#ifdef CHANGED
+	bool IsEmpty();
+#endif
   private:
     SynchList *messages;	// A mailbox is just a list of arrived messages
 };
@@ -127,6 +131,9 @@ class PostOffice {
    				// packet has arrived and can be pulled
 				// off of network (i.e., time to call 
 				// PostalDelivery)
+#ifdef CHANGED
+	bool IsMailBoxEmpty(int box);
+#endif
 
   private:
     Network *network;		// Physical network connection
