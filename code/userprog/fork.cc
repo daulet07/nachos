@@ -3,6 +3,8 @@
 #include "thread.h"
 #include "addrspace.h"
 #include "system.h"
+#include "synch.h"
+
 
 static void StartUserProcess(int arg){
 	currentThread->space = (AddrSpace*)arg;
@@ -21,6 +23,9 @@ int do_UserForkExec(char *pName){
 		printf("Unable to open file %s\n", pName);
 		return -1;
 	}
+	if (!CanCreateNewSpace(exec))
+		return -1;
+
 	space = new AddrSpace(exec);
 	
 	delete exec;		// close file
@@ -30,7 +35,7 @@ int do_UserForkExec(char *pName){
 	newThread->Fork(StartUserProcess, (int)space);
 	//scheduler->ReadyToRun(newThread);
 
-	return 0;
+	return 1;
 }
 
 #endif //CHANGED

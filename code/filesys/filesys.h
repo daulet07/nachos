@@ -38,10 +38,6 @@
 #include "copyright.h"
 #include "openfile.h"
 
-#ifdef CHANGED
-#include "directory.h"
-#endif
-
 #ifdef FILESYS_STUB 		// Temporarily implement file system calls as 
 // calls to UNIX, until the real file system
 // implementation is available
@@ -69,6 +65,12 @@ class FileSystem {
 };
 
 #else // FILESYS
+
+#ifdef CHANGED
+#include "directory.h"
+#include "openfiletable.h"
+#define MAX_PATH_LENGTH 100
+#endif
 class FileSystem {
 	public:
 		FileSystem(bool format);		// Initialize the file system.
@@ -81,18 +83,39 @@ class FileSystem {
 #ifndef CHANGED
 		bool Create(const char *name, int initialSize);  	
 		// Create a file (UNIX creat)
+		OpenFile* Open(const char *name); 	// Open a file (UNIX open)
+
+		bool Remove(const char *name); 	// Delete a file (UNIX unlink)
 #else
+		~FileSystem();
 		bool CreateFile(const char *from, const char *name, int initialSize);  	
+		bool CreateFile(const char *path, int initialSize);  	
 		bool CreateDir(const char *from, const char *name);  	
+		bool CreateDir(const char *path);  	
 
 		Directory *SearchDir(const char *name);
 		Directory *GetRoot();
 		Directory *GetDir(const char *name);
+		void parsePath(char *path, char **name);
+
+		int FOpen(const char *from, const char *name);
+		int FOpen(const char *path);
+
+		void FClose(int index);
+
+		OpenFile* Open(const char *from, const char *name);
+		OpenFile* Open(const char *path);
+
+		int FRead(char* buffer, int size, int fileId);
+		void FWrite(char* buffer, int size, int fileId);
+
+		bool RemoveFile(const char *path);
+		bool RemoveFile(const char *from, const char *name);
+		
+		bool ReAllocate(FileHeader *hdr, int numSector);		
 #endif
 
-		OpenFile* Open(const char *name); 	// Open a file (UNIX open)
 
-		bool Remove(const char *name); 	// Delete a file (UNIX unlink)
 
 		void List();			// List all the files in the file system
 
@@ -103,6 +126,9 @@ class FileSystem {
 		// represented as a file
 		OpenFile* directoryFile;		// "Root" directory -- list of 
 		// file names, represented as a file
+#ifdef CHANGED
+		OpenFileTable *kernelFTable;
+#endif
 };
 
 #endif // FILESYS

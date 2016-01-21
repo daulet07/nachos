@@ -51,6 +51,11 @@
 #include "filehdr.h"
 #include "filesys.h"
 
+#ifdef CHANGED
+#include "openfiletable.h"
+#include "system.h"
+#endif
+
 // Sectors containing the file headers for the bitmap of free sectors,
 // and the directory of files.  These file headers are placed in well-known 
 // sectors, so that they can be located on boot-up.
@@ -64,9 +69,6 @@
 #define NumDirEntries 		10
 #define DirectoryFileSize 	(sizeof(DirectoryEntry) * NumDirEntries)
 
-#ifdef CHANGED
-#define MAX_PATH_LENGTH 50
-#endif
 
 //----------------------------------------------------------------------
 // FileSystem::FileSystem
@@ -84,6 +86,9 @@
 FileSystem::FileSystem(bool format)
 { 
 	DEBUG('f', "Initializing the file system.\n");
+#ifdef CHANGED
+	kernelFTable = new OpenFileTable();
+#endif
 	if (format) {
 		BitMap *freeMap = new BitMap(NumSectors);
 		Directory *directory = new Directory(NumDirEntries);
@@ -144,7 +149,15 @@ FileSystem::FileSystem(bool format)
 		freeMapFile = new OpenFile(FreeMapSector);
 		directoryFile = new OpenFile(DirectorySector);
 	}
+
 }
+
+#ifdef CHANGED
+FileSystem::~FileSystem()
+{
+	delete kernelFTable;
+}
+#endif
 
 //----------------------------------------------------------------------
 // FileSystem::Create
@@ -219,6 +232,24 @@ FileSystem::Create(const char *name, int initialSize)
 }
 
 #else
+	bool 
+FileSystem::CreateFile(const char *path, int initialSize)
+{
+	if (*path != '/')
+		return false;
+
+	char from[MAX_PATH_LENGTH];
+	strcpy(from, path);
+	char *name = NULL;
+	parsePath(from, &name);
+	if (*name == '\0')
+		return false;
+
+	if (*from == '\0')
+		return CreateFile("/", name, initialSize);
+	else
+		return CreateFile(from, name, initialSize);
+}
 
 	bool 
 FileSystem::CreateFile(const char *from, const char *name, int initialSize)
@@ -232,7 +263,9 @@ FileSystem::CreateFile(const char *from, const char *name, int initialSize)
 	DEBUG('f', "Creating file %s, size %d\n", name, initialSize);
 
 	directory = SearchDir(from);
-	if (directory != NULL)
+	if (directory == NULL)
+		return FALSE;
+	else
 	{
 		if (directory->Find(name) != -1)
 			success = FALSE;			// file is already in directory
@@ -266,6 +299,25 @@ FileSystem::CreateFile(const char *from, const char *name, int initialSize)
 }
 
 bool
+FileSystem::CreateDir(const char *path)
+{
+	if (*path != '/')
+		return false;
+
+	char from[MAX_PATH_LENGTH];
+	strcpy(from, path);
+	char *name = NULL;
+	parsePath(from, &name);
+	if (name == '\0')
+		return false;
+
+	if (path == '\0')
+		return CreateDir("/", name);
+	else
+		return CreateDir(from, name);
+}
+
+bool
 FileSystem::CreateDir(const char *from, const char *name)
 {
 	Directory *fromDir;
@@ -287,7 +339,6 @@ FileSystem::CreateDir(const char *from, const char *name)
 			freeMap = new BitMap(NumSectors);
 			freeMap->FetchFrom(freeMapFile);
 			sector = freeMap->Find();	// find a sector to hold the file header
-			fprintf(stderr, "hdr sector = %d\n", sector);
 			if (sector == -1) 		
 				success = FALSE;		// no free block for file header 
 			else if (!fromDir->AddDir(name, sector))
@@ -309,7 +360,6 @@ FileSystem::CreateDir(const char *from, const char *name)
 					delete file;
 					delete newDir;
 
-					fromDir->List();
 					fromDir->Flush();
 					freeMap->WriteBack(freeMapFile);
 				}
@@ -339,6 +389,7 @@ Directory *FileSystem::GetDir(const char *name){
 //	"name" -- the text name of the file to be opened
 //----------------------------------------------------------------------
 
+#ifndef CHANGED
 	OpenFile *
 FileSystem::Open(const char *name)
 { 
@@ -355,6 +406,115 @@ FileSystem::Open(const char *name)
 	return openFile;				// return NULL if not found
 }
 
+#else
+
+	int 
+FileSystem::FOpen(const char *path)
+{ 
+	if (*path != '/')
+		return -1;
+
+	char from[MAX_PATH_LENGTH];
+	strcpy(from, path);
+	char *name = NULL;
+	parsePath(from, &name);
+	if (*name == '\0')
+		return -1;
+
+	if (*from == '\0')
+		return FOpen("/", name);
+	else
+		return FOpen(from, name);
+}
+
+
+	int
+FileSystem::FOpen(const char *from, const char *name)
+{ 
+	/*
+	OpenFile *openFile = NULL;
+	int openFileId = kernelFTable->IsOpen(from, name);
+
+	if (openFileId >= 0)
+		return openFileId;
+
+	if (!kernelFTable->CanOpen())
+		return -1;
+
+	Directory *directory = new Directory(NumDirEntries);
+	int sector;
+
+	DEBUG('f', "Opening file %s%s\n", from, name);
+	directory = SearchDir(from);
+	if (directory != NULL)
+	{
+		sector = directory->Find(name); 
+		if (sector >= 0) 		
+		{
+			openFile = new OpenFile(sector);	// name was found in directory 
+			if (openFile != NULL)
+				return kernelFTable->Open(openFile, from, name);
+		}
+		delete directory;
+	}
+	*/
+	int openFileId = kernelFTable->IsOpen(from, name);
+	if (openFileId == -1)
+	{
+		OpenFile *file = Open(from, name);
+
+		openFileId = kernelFTable->Open(file, from, name);
+
+		openFileId = currentThread->space->addOpenFile(openFileId);
+	}
+
+	return openFileId;				// return NULL if not found
+}
+
+	OpenFile * 
+FileSystem::Open(const char *path)
+{ 
+	if (*path != '/')
+		return NULL;
+
+	char from[MAX_PATH_LENGTH];
+	strcpy(from, path);
+	char *name = NULL;
+	parsePath(from, &name);
+	if (*name == '\0')
+		return NULL;
+
+	if (*from == '\0')
+		return Open("/", name);
+	else
+		return Open(from, name);
+}
+
+
+	OpenFile *
+FileSystem::Open(const char *from, const char *name)
+{ 
+	OpenFile *openFile = NULL;
+
+	Directory *directory = new Directory(NumDirEntries);
+	int sector;
+
+	DEBUG('f', "Opening file %s%s\n", from, name);
+	directory = SearchDir(from);
+	if (directory != NULL)
+	{
+		sector = directory->Find(name); 
+		if (sector >= 0) 		
+		{
+			openFile = new OpenFile(sector);	// name was found in directory 
+		}
+		delete directory;
+	}
+	return openFile;				// return NULL if not found
+}
+
+#endif //CHANGED
+
 //----------------------------------------------------------------------
 // FileSystem::Remove
 // 	Delete a file from the file system.  This requires:
@@ -369,6 +529,7 @@ FileSystem::Open(const char *name)
 //	"name" -- the text name of the file to be removed
 //----------------------------------------------------------------------
 
+#ifndef CHANGED
 	bool
 FileSystem::Remove(const char *name)
 { 
@@ -401,6 +562,59 @@ FileSystem::Remove(const char *name)
 	delete freeMap;
 	return TRUE;
 } 
+
+#else
+	bool
+FileSystem::RemoveFile(const char *path)
+{
+	if (*path != '/')
+		return NULL;
+
+	char from[MAX_PATH_LENGTH];
+	strcpy(from, path);
+	char *name = NULL;
+	parsePath(from, &name);
+	if (*name == '\0')
+		return NULL;
+
+	if (*from == '\0')
+		return RemoveFile("/", name);
+	else
+		return RemoveFile(from, name);
+}
+
+	bool
+FileSystem::RemoveFile(const char *from, const char *name)
+{ 
+	Directory *directory;
+	BitMap *freeMap;
+	FileHeader *fileHdr;
+	int sector;
+
+	directory = SearchDir(from);
+	sector = directory->Find(name);
+	if (sector == -1) {
+		delete directory;
+		return FALSE;			 // file not found 
+	}
+	fileHdr = new FileHeader;
+	fileHdr->FetchFrom(sector);
+
+	freeMap = new BitMap(NumSectors);
+	freeMap->FetchFrom(freeMapFile);
+
+	fileHdr->Deallocate(freeMap);  		// remove data blocks
+	freeMap->Clear(sector);			// remove header block
+	directory->Remove(name);
+
+	freeMap->WriteBack(freeMapFile);		// flush to disk
+	directory->WriteBack(directoryFile);        // flush to disk
+	delete fileHdr;
+	delete directory;
+	delete freeMap;
+	return TRUE;
+} 
+#endif //CHANGED
 
 //----------------------------------------------------------------------
 // FileSystem::List
@@ -511,6 +725,43 @@ Directory *FileSystem::SearchDir(const char *name){
 	}
 
 	return dir;
+}
+
+void FileSystem::parsePath(char *path, char** name){
+	*name = path;
+	while(**name != '\0')
+		(*name) ++;
+	
+	while(**name != '/')
+		(*name) --;
+
+	**name = '\0';
+	(*name) ++;
+}
+
+void FileSystem::FClose(int index){
+	int fileId = currentThread->space->getOpenFileId(index);
+	currentThread->space->closeOpenFile(index);
+	kernelFTable->Close(fileId);
+}
+
+int FileSystem::FRead(char* buffer, int size, int fileId){
+	fileId = currentThread->space->getOpenFileId(fileId);
+	return kernelFTable->FRead(buffer, size, fileId);
+}
+
+void FileSystem::FWrite(char* buffer, int size, int fileId){
+	fileId = currentThread->space->getOpenFileId(fileId);
+	kernelFTable->FWrite(buffer, size, fileId);
+}
+
+bool FileSystem::ReAllocate(FileHeader* hdr, int numSector){
+	BitMap *freeMap = new BitMap(NumSectors);
+	freeMap->FetchFrom(freeMapFile);
+	int result = hdr->ReAllocate(freeMap, numSector);
+	freeMap->WriteBack(freeMapFile);
+
+	return result;
 }
 
 #endif //CHANGED

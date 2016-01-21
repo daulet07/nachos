@@ -45,6 +45,8 @@ C	test/sem.c	/^int C = 0;$/;"	v
 C	test/withoutsem.c	/^int C = 0;$/;"	v
 CONSOLE_H	machine/console.h	24;"	d
 CallOnUserAbort	machine/sysdep.cc	/^CallOnUserAbort(VoidNoArgFunctionPtr func)$/;"	f
+CanCreateNewSpace	userprog/addrspace.cc	/^bool CanCreateNewSpace(OpenFile *exec){$/;"	f
+CanOpen	filesys/openfiletable.cc	/^bool OpenFileTable::CanOpen(){$/;"	f	class:OpenFileTable
 ChangeLevel	machine/interrupt.cc	/^Interrupt::ChangeLevel(IntStatus old, IntStatus now)$/;"	f	class:Interrupt
 CheckCharAvail	machine/console.cc	/^Console::CheckCharAvail()$/;"	f	class:Console
 CheckEndian	machine/machine.cc	/^void CheckEndian()$/;"	f	file:
@@ -53,6 +55,7 @@ CheckOverflow	threads/thread.cc	/^Thread::CheckOverflow ()$/;"	f	class:Thread
 CheckPktAvail	machine/network.cc	/^Network::CheckPktAvail()$/;"	f	class:Network
 Cleanup	threads/system.cc	/^Cleanup ()$/;"	f
 Clear	userprog/bitmap.cc	/^BitMap::Clear (int which)$/;"	f	class:BitMap
+Close	filesys/openfiletable.cc	/^void OpenFileTable::Close(int index){$/;"	f	class:OpenFileTable
 Close	machine/sysdep.cc	/^Close(int fd)$/;"	f
 CloseSocket	machine/sysdep.cc	/^CloseSocket(int sockID)$/;"	f
 ComputeLatency	machine/disk.cc	/^Disk::ComputeLatency(int newSector, bool writing)$/;"	f	class:Disk
@@ -60,8 +63,8 @@ Condition	threads/synch.cc	/^Condition::Condition (const char *debugName)$/;"	f	
 Condition	threads/synch.h	/^class Condition$/;"	c
 Console	machine/console.cc	/^Console::Console(char *readFile, char *writeFile, VoidFunctionPtr readAvail, $/;"	f	class:Console
 Console	machine/console.h	/^class Console {$/;"	c
-ConsoleInput	userprog/syscall.h	109;"	d
-ConsoleOutput	userprog/syscall.h	110;"	d
+ConsoleInput	userprog/syscall.h	117;"	d
+ConsoleOutput	userprog/syscall.h	118;"	d
 ConsoleReadInt	machine/interrupt.h	/^enum IntType { TimerInt, DiskInt, ConsoleWriteInt, ConsoleReadInt, $/;"	e	enum:IntType
 ConsoleReadPoll	machine/console.cc	/^static void ConsoleReadPoll(int c) $/;"	f	file:
 ConsoleTest	userprog/progtest.cc	/^void ConsoleTest(char *in, char *out) {$/;"	f
@@ -74,7 +77,9 @@ Copy	filesys/fstest.cc	/^Copy(const char *from, const char *to)$/;"	f
 Create	filesys/filesys.cc	/^FileSystem::Create(const char *name, int initialSize)$/;"	f	class:FileSystem
 Create	filesys/filesys.h	/^		bool Create(const char *name, int initialSize) { $/;"	f	class:FileSystem
 CreateDir	filesys/filesys.cc	/^FileSystem::CreateDir(const char *from, const char *name)$/;"	f	class:FileSystem
+CreateDir	filesys/filesys.cc	/^FileSystem::CreateDir(const char *path)$/;"	f	class:FileSystem
 CreateFile	filesys/filesys.cc	/^FileSystem::CreateFile(const char *from, const char *name, int initialSize)$/;"	f	class:FileSystem
+CreateFile	filesys/filesys.cc	/^FileSystem::CreateFile(const char *path, int initialSize)$/;"	f	class:FileSystem
 DEBUG	threads/utility.cc	/^DEBUG (char flag, const char *format, ...)$/;"	f
 DIRECTORY_H	filesys/directory.h	18;"	d
 DISK_H	machine/disk.h	18;"	d
@@ -91,8 +96,8 @@ Dim	test/matmult.c	12;"	d	file:
 Directory	filesys/directory.cc	/^Directory::Directory(int size)$/;"	f	class:Directory
 Directory	filesys/directory.h	/^class Directory {$/;"	c
 DirectoryEntry	filesys/directory.h	/^class DirectoryEntry {$/;"	c
-DirectoryFileSize	filesys/filesys.cc	65;"	d	file:
-DirectorySector	filesys/filesys.cc	58;"	d	file:
+DirectoryFileSize	filesys/filesys.cc	70;"	d	file:
+DirectorySector	filesys/filesys.cc	63;"	d	file:
 Disk	machine/disk.cc	/^Disk::Disk(const char* name, VoidFunctionPtr callWhenDone, int callArg)$/;"	f	class:Disk
 Disk	machine/disk.h	/^class Disk {$/;"	c
 DiskDone	machine/disk.cc	/^static void DiskDone(int arg) { ((Disk *)arg)->HandleInterrupt(); }$/;"	f	file:
@@ -111,14 +116,21 @@ Exit	machine/sysdep.cc	/^Exit(int exitCode)$/;"	f
 FALSE	threads/bool.h	11;"	d
 FALSE	threads/bool.h	13;"	d
 FAST	bin/execute.c	14;"	d	file:
+FClose	filesys/filesys.cc	/^void FileSystem::FClose(int index){$/;"	f	class:FileSystem
 FILEHDR_H	filesys/filehdr.h	15;"	d
 FORK_H	userprog/fork.h	3;"	d
+FOpen	filesys/filesys.cc	/^FileSystem::FOpen(const char *from, const char *name)$/;"	f	class:FileSystem
+FOpen	filesys/filesys.cc	/^FileSystem::FOpen(const char *path)$/;"	f	class:FileSystem
 FP	threads/switch.h	37;"	d
 FP	threads/switch.h	77;"	d
 FPState	threads/switch.h	143;"	d
 FPState	threads/switch.h	56;"	d
 FRAMEPROVIDER_H	userprog/frameProvider.h	3;"	d
+FRead	filesys/filesys.cc	/^int FileSystem::FRead(char* buffer, int size, int fileId){$/;"	f	class:FileSystem
+FRead	filesys/openfiletable.cc	/^int OpenFileTable::FRead(char* buffer, int size, int fileId){$/;"	f	class:OpenFileTable
 FS_H	filesys/filesys.h	36;"	d
+FWrite	filesys/filesys.cc	/^void FileSystem::FWrite(char* buffer, int size, int fileId){$/;"	f	class:FileSystem
+FWrite	filesys/openfiletable.cc	/^void OpenFileTable::FWrite(char* buffer, int size, int fileId){$/;"	f	class:OpenFileTable
 FetchFrom	filesys/directory.cc	/^Directory::FetchFrom(OpenFile *file)$/;"	f	class:Directory
 FetchFrom	filesys/filehdr.cc	/^FileHeader::FetchFrom(int sector)$/;"	f	class:FileHeader
 FetchFrom	userprog/bitmap.cc	/^BitMap::FetchFrom (OpenFile * file)$/;"	f	class:BitMap
@@ -131,6 +143,7 @@ FileSize	filesys/fstest.cc	118;"	d	file:
 FileSystem	filesys/filesys.cc	/^FileSystem::FileSystem(bool format)$/;"	f	class:FileSystem
 FileSystem	filesys/filesys.h	/^		FileSystem(bool format) {}$/;"	f	class:FileSystem
 FileSystem	filesys/filesys.h	/^class FileSystem {$/;"	c
+FileTableEntry	filesys/openfiletable.h	/^}FileTableEntry;$/;"	t	typeref:struct:__anon1
 FileWrite	filesys/fstest.cc	/^FileWrite()$/;"	f	file:
 Find	filesys/directory.cc	/^Directory::Find(const char *name)$/;"	f	class:Directory
 Find	filesys/directory.cc	/^Directory::Find(int index)$/;"	f	class:Directory
@@ -142,8 +155,8 @@ Flush	filesys/directory.cc	/^Directory::Flush()$/;"	f	class:Directory
 Fork	threads/thread.cc	/^Thread::Fork (VoidFunctionPtr func, int arg)$/;"	f	class:Thread
 FrameProvider	userprog/frameProvider.cc	/^FrameProvider::FrameProvider(){$/;"	f	class:FrameProvider
 FrameProvider	userprog/frameProvider.h	/^class FrameProvider{$/;"	c
-FreeMapFileSize	filesys/filesys.cc	63;"	d	file:
-FreeMapSector	filesys/filesys.cc	57;"	d	file:
+FreeMapFileSize	filesys/filesys.cc	68;"	d	file:
+FreeMapSector	filesys/filesys.cc	62;"	d	file:
 Get	network/post.cc	/^MailBox::Get(PacketHeader *pktHdr, MailHeader *mailHdr, char *data) $/;"	f	class:MailBox
 GetChar	machine/console.cc	/^Console::GetChar()$/;"	f	class:Console
 GetDir	filesys/filesys.cc	/^Directory *FileSystem::GetDir(const char *name){$/;"	f	class:FileSystem
@@ -277,6 +290,7 @@ IsEmpty	threads/list.cc	/^List::IsEmpty ()$/;"	f	class:List
 IsEmpty	threads/synchlist.cc	/^bool SynchList::IsEmpty()$/;"	f	class:SynchList
 IsFile	filesys/directory.cc	/^Directory::IsFile(int pos){$/;"	f	class:Directory
 IsMailBoxEmpty	network/post.cc	/^bool PostOffice::IsMailBoxEmpty(int box)$/;"	f	class:PostOffice
+IsOpen	filesys/openfiletable.cc	/^int OpenFileTable::IsOpen(const char *from, const char *name){$/;"	f	class:OpenFileTable
 JFMT	machine/mipssim.h	109;"	d
 JUST_CREATED	threads/thread.h	/^{ JUST_CREATED, RUNNING, READY, BLOCKED };$/;"	e	enum:ThreadStatus
 LINESIZE	bin/disasm.c	/^int NROWS=64, ASSOC=1, LINESIZE=4, RAND=0, LRD=0;$/;"	v
@@ -318,7 +332,10 @@ MAXRELOCS	bin/out.c	31;"	d	file:
 MAXSCNS	bin/out.c	43;"	d	file:
 MAXSSPACE	bin/out.c	45;"	d	file:
 MAXSYMS	bin/out.c	44;"	d	file:
-MAX_PATH_LENGTH	filesys/filesys.cc	68;"	d	file:
+MAX_OPEN_FILE	filesys/openfiletable.h	10;"	d
+MAX_OPEN_FILE	userprog/addrspace.cc	25;"	d	file:
+MAX_PATH_LENGTH	filesys/filesys.h	72;"	d
+MAX_PATH_LENGTH	filesys/openfiletable.h	8;"	d
 MAX_STRING_SIZE	threads/system.h	20;"	d
 MAX_THREADS	test/sem.c	3;"	d	file:
 MAX_THREADS	test/withoutsem.c	3;"	d	file:
@@ -374,7 +391,7 @@ NoException	machine/machine.h	/^enum ExceptionType { NoException,           \/\/
 NoffHeader	bin/noff.h	/^} NoffHeader;$/;"	t	typeref:struct:noffHeader
 NumAvailFrame	userprog/frameProvider.cc	/^int FrameProvider::NumAvailFrame(){$/;"	f	class:FrameProvider
 NumClear	userprog/bitmap.cc	/^BitMap::NumClear ()$/;"	f	class:BitMap
-NumDirEntries	filesys/filesys.cc	64;"	d	file:
+NumDirEntries	filesys/filesys.cc	69;"	d	file:
 NumDirect	filesys/filehdr.h	20;"	d
 NumExceptionTypes	machine/machine.h	/^		     NumExceptionTypes$/;"	e	enum:ExceptionType
 NumGPRegs	machine/machine.h	71;"	d
@@ -383,6 +400,7 @@ NumPhysPages	machine/machine.h	42;"	d
 NumSectors	machine/disk.h	52;"	d
 NumTotalRegs	machine/machine.h	81;"	d
 NumTracks	machine/disk.h	51;"	d
+OFT_H	filesys/openfiletable.h	3;"	d
 OMAGIC	bin/coff.h	17;"	d
 OPENFILE_H	filesys/openfile.h	21;"	d
 OP_ADD	machine/mipssim.h	25;"	d
@@ -449,12 +467,17 @@ OneInstruction	machine/mipssim.cc	/^Machine::OneInstruction(Instruction *instr)$
 OneTick	machine/interrupt.cc	/^Interrupt::OneTick()$/;"	f	class:Interrupt
 OpInfo	machine/mipssim.h	/^struct OpInfo {$/;"	s
 OpString	machine/mipssim.h	/^struct OpString {$/;"	s
+Open	filesys/filesys.cc	/^FileSystem::Open(const char *from, const char *name)$/;"	f	class:FileSystem
 Open	filesys/filesys.cc	/^FileSystem::Open(const char *name)$/;"	f	class:FileSystem
+Open	filesys/filesys.cc	/^FileSystem::Open(const char *path)$/;"	f	class:FileSystem
 Open	filesys/filesys.h	/^		OpenFile* Open(char *name) {$/;"	f	class:FileSystem
+Open	filesys/openfiletable.cc	/^int OpenFileTable::Open(OpenFile *file, const char *from, const char *name){$/;"	f	class:OpenFileTable
 OpenFile	filesys/openfile.cc	/^OpenFile::OpenFile(int sector)$/;"	f	class:OpenFile
 OpenFile	filesys/openfile.h	/^    OpenFile(int f) { file = f; currentOffset = 0; }	\/\/ open the file$/;"	f	class:OpenFile
 OpenFile	filesys/openfile.h	/^class OpenFile {$/;"	c
 OpenFileId	userprog/syscall.h	/^typedef int OpenFileId;$/;"	t
+OpenFileTable	filesys/openfiletable.cc	/^OpenFileTable::OpenFileTable(){$/;"	f	class:OpenFileTable
+OpenFileTable	filesys/openfiletable.h	/^class OpenFileTable{$/;"	c
 OpenForReadWrite	machine/sysdep.cc	/^OpenForReadWrite(const char *name, bool crashOnError)$/;"	f
 OpenForWrite	machine/sysdep.cc	/^OpenForWrite(const char *name)$/;"	f
 OpenSocket	machine/sysdep.cc	/^OpenSocket()$/;"	f
@@ -514,6 +537,8 @@ RUNNING	threads/thread.h	/^{ JUST_CREATED, RUNNING, READY, BLOCKED };$/;"	e	enum
 RaiseException	machine/machine.cc	/^Machine::RaiseException(ExceptionType which, int badVAddr)$/;"	f	class:Machine
 Random	machine/sysdep.cc	/^Random()$/;"	f
 RandomInit	machine/sysdep.cc	/^RandomInit(unsigned seed)$/;"	f
+ReAllocate	filesys/filehdr.cc	/^FileHeader::ReAllocate(BitMap *freeMap, int size)$/;"	f	class:FileHeader
+ReAllocate	filesys/filesys.cc	/^bool FileSystem::ReAllocate(FileHeader* hdr, int numSector){$/;"	f	class:FileSystem
 Read	bin/coff2flat.c	/^void Read(int fd, char *buf, int nBytes)$/;"	f
 Read	bin/coff2noff.c	/^void Read(int fd, char *buf, int nBytes)$/;"	f
 Read	filesys/openfile.cc	/^OpenFile::Read(char *into, int numBytes)$/;"	f	class:OpenFile
@@ -552,6 +577,8 @@ Remove	filesys/filesys.cc	/^FileSystem::Remove(const char *name)$/;"	f	class:Fil
 Remove	filesys/filesys.h	/^		bool Remove(char *name) { return Unlink(name) == 0; }$/;"	f	class:FileSystem
 Remove	threads/list.cc	/^List::Remove ()$/;"	f	class:List
 Remove	threads/synchlist.cc	/^SynchList::Remove ()$/;"	f	class:SynchList
+RemoveFile	filesys/filesys.cc	/^FileSystem::RemoveFile(const char *from, const char *name)$/;"	f	class:FileSystem
+RemoveFile	filesys/filesys.cc	/^FileSystem::RemoveFile(const char *path)$/;"	f	class:FileSystem
 RequestDone	filesys/synchdisk.cc	/^SynchDisk::RequestDone()$/;"	f	class:SynchDisk
 RestoreState	userprog/addrspace.cc	/^AddrSpace::RestoreState ()$/;"	f	class:AddrSpace
 RestoreUserState	threads/thread.cc	/^Thread::RestoreUserState ()$/;"	f	class:Thread
@@ -585,31 +612,36 @@ S7	threads/switch.h	36;"	d
 S8	threads/switch.h	105;"	d
 S9	threads/switch.h	106;"	d
 SCHEDULER_H	threads/scheduler.h	10;"	d
-SC_Close	userprog/syscall.h	29;"	d
-SC_Create	userprog/syscall.h	25;"	d
+SC_Close	userprog/syscall.h	30;"	d
+SC_Create	userprog/syscall.h	26;"	d
 SC_Exec	userprog/syscall.h	23;"	d
 SC_Exit	userprog/syscall.h	22;"	d
-SC_Fork	userprog/syscall.h	30;"	d
-SC_ForkExec	userprog/syscall.h	43;"	d
-SC_GetChar	userprog/syscall.h	35;"	d
-SC_GetInt	userprog/syscall.h	39;"	d
-SC_GetString	userprog/syscall.h	37;"	d
+SC_FClose	userprog/syscall.h	56;"	d
+SC_FCreate	userprog/syscall.h	52;"	d
+SC_FOpen	userprog/syscall.h	53;"	d
+SC_FRead	userprog/syscall.h	54;"	d
+SC_FWrite	userprog/syscall.h	55;"	d
+SC_Fork	userprog/syscall.h	32;"	d
+SC_ForkExec	userprog/syscall.h	45;"	d
+SC_GetChar	userprog/syscall.h	37;"	d
+SC_GetInt	userprog/syscall.h	41;"	d
+SC_GetString	userprog/syscall.h	39;"	d
 SC_Halt	userprog/syscall.h	21;"	d
 SC_Join	userprog/syscall.h	24;"	d
-SC_Open	userprog/syscall.h	26;"	d
-SC_P	userprog/syscall.h	46;"	d
-SC_PutChar	userprog/syscall.h	34;"	d
-SC_PutInt	userprog/syscall.h	38;"	d
-SC_PutString	userprog/syscall.h	36;"	d
-SC_Read	userprog/syscall.h	27;"	d
-SC_SemDestroy	userprog/syscall.h	48;"	d
-SC_SemInit	userprog/syscall.h	45;"	d
-SC_UserThreadCreate	userprog/syscall.h	40;"	d
-SC_UserThreadExit	userprog/syscall.h	41;"	d
-SC_UserThreadJoin	userprog/syscall.h	42;"	d
-SC_V	userprog/syscall.h	47;"	d
-SC_Write	userprog/syscall.h	28;"	d
-SC_Yield	userprog/syscall.h	31;"	d
+SC_Open	userprog/syscall.h	27;"	d
+SC_P	userprog/syscall.h	48;"	d
+SC_PutChar	userprog/syscall.h	36;"	d
+SC_PutInt	userprog/syscall.h	40;"	d
+SC_PutString	userprog/syscall.h	38;"	d
+SC_Read	userprog/syscall.h	28;"	d
+SC_SemDestroy	userprog/syscall.h	50;"	d
+SC_SemInit	userprog/syscall.h	47;"	d
+SC_UserThreadCreate	userprog/syscall.h	42;"	d
+SC_UserThreadExit	userprog/syscall.h	43;"	d
+SC_UserThreadJoin	userprog/syscall.h	44;"	d
+SC_V	userprog/syscall.h	49;"	d
+SC_Write	userprog/syscall.h	29;"	d
+SC_Yield	userprog/syscall.h	33;"	d
 SIGN_BIT	machine/mipssim.h	96;"	d
 SOMAGIC	bin/coff.h	18;"	d
 SP	threads/switch.h	28;"	d
@@ -788,6 +820,7 @@ _ESP	threads/switch.h	131;"	d
 _PC	threads/switch.h	139;"	d
 _bool_h	threads/bool.h	7;"	d
 active	machine/disk.h	/^    bool active;     			\/\/ Is a disk operation in progress?$/;"	m	class:Disk
+addOpenFile	userprog/addrspace.cc	/^int AddrSpace::addOpenFile(int fileId){$/;"	f	class:AddrSpace
 addProcess	machine/machine.cc	/^void Machine::addProcess(){$/;"	f	class:Machine
 addtable	bin/execute.c	/^int addtable[33][33];$/;"	v
 amark	bin/int.h	15;"	d
@@ -814,14 +847,16 @@ cc_mulscc	bin/execute.c	54;"	d	file:
 cc_sub	bin/execute.c	40;"	d	file:
 cfetch	bin/int.h	22;"	d
 chanceToWork	machine/network.h	/^    double chanceToWork;	\/\/ Likelihood packet will be dropped$/;"	m	class:Network
+closeOpenFile	userprog/addrspace.cc	/^void AddrSpace::closeOpenFile(int fileId){$/;"	f	class:AddrSpace
 code	bin/noff.h	/^   Segment code;		\/* executable code segment *\/ $/;"	m	struct:noffHeader
 column	bin/out.c	/^static column = 1;$/;"	v	file:
 console	userprog/progtest.cc	/^static Console *console;$/;"	v	file:
 console	userprog/synchconsole.h	/^		Console *console;$/;"	m	class:SynchConsole
 consume_item	test/pc.c	/^void consume_item(int n) {$/;"	f
 consumer	test/pc.c	/^void consumer(void* arg) {$/;"	f
-copyStringFromMachine	userprog/exception.cc	/^void copyStringFromMachine( int from, char *to, unsigned size) {$/;"	f
+copyStringFromMachine	userprog/exception.cc	/^bool copyStringFromMachine( int from, char *to, unsigned size) {$/;"	f
 copyright	threads/copyright.h	/^static const char *copyright __attribute__((unused)) =$/;"	v
+count	filesys/openfiletable.h	/^	int count;$/;"	m	struct:__anon1
 cprmask	bin/coff.h	/^        long    cprmask[4];     \/* co-processor register masks          *\/$/;"	m	struct:aouthdr
 cstore	bin/int.h	29;"	d
 currentOffset	filesys/openfile.h	/^    int currentOffset;$/;"	m	class:OpenFile
@@ -870,6 +905,7 @@ f_timdat	bin/coff.h	/^        long            f_timdat;       \/* time & date st
 false	bin/execute.c	16;"	d	file:
 fetch	bin/int.h	19;"	d
 file	filesys/openfile.h	/^    int file;$/;"	m	class:OpenFile
+file	filesys/openfiletable.h	/^	OpenFile *file;$/;"	m	struct:__anon1
 fileSystem	threads/system.cc	/^FileSystem *fileSystem;$/;"	v
 filehdr	bin/coff.h	/^struct filehdr {$/;"	s
 filehdr	bin/out.c	/^struct filehdr filehdr;$/;"	v	typeref:struct:filehdr
@@ -900,6 +936,7 @@ getName	threads/synch.h	/^		const char *getName ()$/;"	f	class:Semaphore
 getName	threads/thread.h	/^		const char *getName ()$/;"	f	class:Thread
 getNbThread	userprog/addrspace.cc	/^int AddrSpace::getNbThread(){$/;"	f	class:AddrSpace
 getNumProcess	machine/machine.cc	/^int Machine::getNumProcess(){$/;"	f	class:Machine
+getOpenFileId	userprog/addrspace.cc	/^int AddrSpace::getOpenFileId(int fileId){$/;"	f	class:AddrSpace
 getStackForThread	userprog/addrspace.cc	/^int AddrSpace::getStackForThread(){$/;"	f	class:AddrSpace
 getStackPosition	threads/thread.cc	/^int Thread::getStackPosition(){$/;"	f	class:Thread
 getStatus	machine/interrupt.h	/^    MachineStatus getStatus() { return status; } \/\/ idle, kernel, user$/;"	f	class:Interrupt
@@ -935,6 +972,7 @@ inFileAddr	bin/noff.h	/^  int inFileAddr;		\/* location of segment in this file 
 inHandler	machine/interrupt.h	/^    bool inHandler;		\/\/ TRUE if we are running an interrupt handler$/;"	m	class:Interrupt
 inHdr	machine/network.h	/^    PacketHeader inHdr;		\/\/ Information about arrived packet$/;"	m	class:Network
 inUse	filesys/directory.h	/^    bool inUse;				\/\/ Is this directory entry in use?$/;"	m	class:DirectoryEntry
+inUse	filesys/openfiletable.h	/^	bool inUse;$/;"	m	struct:__anon1
 inbox	machine/network.h	/^    char inbox[MaxPacketSize];  \/\/ Data for arrived packet$/;"	m	class:Network
 incoming	machine/console.h	/^    char incoming;    			\/\/ Contains the character to be read,$/;"	m	class:Console
 initData	bin/noff.h	/^   Segment initData;		\/* initialized data segment *\/$/;"	m	struct:noffHeader
@@ -944,10 +982,12 @@ interrupt	threads/system.cc	/^Interrupt *interrupt;		\/\/ interrupt status$/;"	v
 isFile	filesys/directory.h	/^	bool isFile;$/;"	m	class:DirectoryEntry
 item	threads/list.h	/^    void *item;			\/\/ pointer to item on the list$/;"	m	class:ListElement
 joinThread	userprog/addrspace.cc	/^void AddrSpace::joinThread(unsigned int id){$/;"	f	class:AddrSpace
+kernelFTable	filesys/filesys.h	/^		OpenFileTable *kernelFTable;$/;"	m	class:FileSystem
 key	threads/list.h	/^    long long key;			\/\/ priority, for a sorted list$/;"	m	class:ListElement
 last	threads/list.h	/^    ListElement *last;		\/\/ Last element of list$/;"	m	class:List
 last	userprog/listthread.h	/^		ElemThread *last;$/;"	m	class:ListThread
 last	userprog/usersemaphore.h	/^	UserSem *last;$/;"	m	class:UserSemList
+lastProcessId	userprog/addrspace.cc	/^static int lastProcessId = 0;$/;"	v	file:
 lastSector	machine/disk.h	/^    int lastSector;			\/\/ The previous disk request $/;"	m	class:Disk
 ldptr	bin/disasm.c	/^static LDFILE *ldptr;$/;"	v	file:
 ldptr	bin/main.c	/^static LDFILE *ldptr;$/;"	v	file:
@@ -983,6 +1023,7 @@ main	bin/coff2noff.c	/^int main (int argc, char **argv)$/;"	f
 main	bin/disasm.c	/^main(argc, argv)$/;"	f
 main	bin/main.c	/^main(argc, argv)$/;"	f
 main	bin/out.c	/^main(argc,argv)$/;"	f
+main	test/filesys.c	/^int main(){$/;"	f
 main	test/getchar.c	/^int main() {$/;"	f
 main	test/getint.c	/^int main()$/;"	f
 main	test/getstring.c	/^int main()$/;"	f
@@ -1004,6 +1045,7 @@ main	test/userpages1.c	/^int main()$/;"	f
 main	test/withoutsem.c	/^int main() {$/;"	f
 main	threads/main.cc	/^main (int argc, char **argv)$/;"	f
 mainMemory	machine/machine.h	/^    char *mainMemory;		\/\/ physical memory to store user program,$/;"	m	class:Machine
+map	filesys/openfiletable.h	/^		BitMap *map;$/;"	m	class:OpenFileTable
 map	userprog/bitmap.h	/^    unsigned int *map;		\/\/ bit storage$/;"	m	class:BitMap
 max	threads/utility.h	36;"	d
 maxThreads	userprog/addrspace.h	/^		int maxThreads;$/;"	m	class:AddrSpace
@@ -1021,6 +1063,7 @@ myprintf	bin/out.c	/^myprintf(va_alist)$/;"	f
 mysetfile	bin/out.c	/^mysetfile(f)$/;"	f
 mytab	bin/out.c	/^mytab(n)$/;"	f
 name	filesys/directory.h	/^    char name[FileNameMaxLen + 1];	\/\/ Text name for file, with +1 for $/;"	m	class:DirectoryEntry
+name	filesys/openfiletable.h	/^	char name[FileNameMaxLen];$/;"	m	struct:__anon1
 name	threads/synch.h	/^		const char *name;		\/\/ for debugging$/;"	m	class:Lock
 name	threads/synch.h	/^		const char *name;		\/\/ useful for debugging$/;"	m	class:Semaphore
 name	threads/synch.h	/^		const char *name;$/;"	m	class:Condition
@@ -1063,12 +1106,16 @@ opCode	machine/machine.h	/^   unsigned char opCode;     \/\/ Type of instruction
 opCode	machine/mipssim.h	/^    int opCode;		\/* Translated op code. *\/$/;"	m	struct:OpInfo
 opStrings	machine/mipssim.h	/^static struct OpString opStrings[] = {$/;"	v	typeref:struct:OpString
 opTable	machine/mipssim.h	/^static OpInfo opTable[] = {$/;"	v
+openFileMap	userprog/addrspace.h	/^		BitMap *openFileMap;$/;"	m	class:AddrSpace
+openFileTable	userprog/addrspace.h	/^		int *openFileTable;$/;"	m	class:AddrSpace
 outfile	bin/out.c	/^static FILE *outfile = stdout;$/;"	v	file:
 packetAvail	machine/network.h	/^    bool packetAvail;		\/\/ Packet has arrived, can be pulled off of$/;"	m	class:Network
 pageTable	machine/machine.h	/^    TranslationEntry *pageTable;$/;"	m	class:Machine
 pageTable	userprog/addrspace.h	/^		TranslationEntry * pageTable;	\/\/ Assume linear page table translation$/;"	m	class:AddrSpace
 pageTableSize	machine/machine.h	/^    unsigned int pageTableSize;$/;"	m	class:Machine
+parsePath	filesys/filesys.cc	/^void FileSystem::parsePath(char *path, char** name){$/;"	f	class:FileSystem
 patable	bin/execute.c	/^patable(tab)$/;"	f
+path	filesys/openfiletable.h	/^	char path[MAX_PATH_LENGTH];$/;"	m	struct:__anon1
 pc	bin/disasm.c	/^int pc;$/;"	v
 pending	machine/interrupt.h	/^    List *pending;		\/\/ the list of interrupts scheduled$/;"	m	class:Interrupt
 physicalPage	machine/translate.h	/^    unsigned int physicalPage; 	\/\/ The page number in real memory (relative to the$/;"	m	class:TranslationEntry
@@ -1086,6 +1133,7 @@ print_section	bin/out.c	/^print_section(i)$/;"	f
 printf	bin/out.c	190;"	d	file:
 printhist	bin/execute.c	/^printhist()$/;"	f
 printstatistics	bin/execute.c	/^printstatistics()$/;"	f
+processId	userprog/addrspace.h	/^		int processId;$/;"	m	class:AddrSpace
 processLock	machine/machine.h	/^	Lock *processLock;$/;"	m	class:Machine
 produce_item	test/pc.c	/^int produce_item() {$/;"	f
 producer	test/pc.c	/^void producer(void* arg) {$/;"	f
@@ -1191,6 +1239,7 @@ systemTicks	machine/stats.h	/^  long long systemTicks;	\/\/ Time spent executing
 system_break	bin/system.c	/^system_break()$/;"	f
 system_trap	bin/system.c	/^system_trap()$/;"	f
 table	filesys/directory.h	/^    DirectoryEntry *table;		\/\/ Table of pairs: $/;"	m	class:Directory
+table	filesys/openfiletable.h	/^		FileTableEntry *table;$/;"	m	class:OpenFileTable
 tableSize	filesys/directory.h	/^    int tableSize;			\/\/ Number of directory entries$/;"	m	class:Directory
 tail	test/pc.c	/^int head = 0, tail = 0;$/;"	v
 text_start	bin/coff.h	/^        long    text_start;     \/* base of text used for this file      *\/$/;"	m	struct:aouthdr
@@ -1240,6 +1289,7 @@ yieldOnReturn	machine/interrupt.h	/^    bool yieldOnReturn; 	\/\/ TRUE if we are
 ~Console	machine/console.cc	/^Console::~Console()$/;"	f	class:Console
 ~Directory	filesys/directory.cc	/^Directory::~Directory()$/;"	f	class:Directory
 ~Disk	machine/disk.cc	/^Disk::~Disk()$/;"	f	class:Disk
+~FileSystem	filesys/filesys.cc	/^FileSystem::~FileSystem()$/;"	f	class:FileSystem
 ~FrameProvider	userprog/frameProvider.cc	/^FrameProvider::~FrameProvider(){$/;"	f	class:FrameProvider
 ~Interrupt	machine/interrupt.cc	/^Interrupt::~Interrupt()$/;"	f	class:Interrupt
 ~List	threads/list.cc	/^List::~List ()$/;"	f	class:List
@@ -1250,6 +1300,7 @@ yieldOnReturn	machine/interrupt.h	/^    bool yieldOnReturn; 	\/\/ TRUE if we are
 ~Network	machine/network.cc	/^Network::~Network()$/;"	f	class:Network
 ~OpenFile	filesys/openfile.cc	/^OpenFile::~OpenFile()$/;"	f	class:OpenFile
 ~OpenFile	filesys/openfile.h	/^    ~OpenFile() { Close(file); }			\/\/ close the file$/;"	f	class:OpenFile
+~OpenFileTable	filesys/openfiletable.cc	/^OpenFileTable::~OpenFileTable(){$/;"	f	class:OpenFileTable
 ~PostOffice	network/post.cc	/^PostOffice::~PostOffice()$/;"	f	class:PostOffice
 ~Scheduler	threads/scheduler.cc	/^Scheduler::~Scheduler ()$/;"	f	class:Scheduler
 ~Semaphore	threads/synch.cc	/^Semaphore::~Semaphore ()$/;"	f	class:Semaphore
