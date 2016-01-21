@@ -9,7 +9,7 @@ class ReliablePostOffice
 public:
 	ReliablePostOffice();
     bool Send(PacketHeader pktHdr, MailHeader mailHdr, const char *data);
-	bool Receive();
+	void Receive(int box, PacketHeader *pktHdr, MailHeader *mailHdr, char *data);
 	void ReleaseLock();
 private:
 	Lock lock;

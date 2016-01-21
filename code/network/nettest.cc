@@ -75,6 +75,7 @@ void MailTest(int farAddr)
 }
 
 
+#ifdef CHANGED
 void RingTest(int to)
 {
 	PacketHeader outPktHdr, inPktHdr;
@@ -141,3 +142,32 @@ void RingTest(int to)
 		fflush(stdout);
 	}
 }
+
+void ReliablePostTest(int to)
+{
+	PacketHeader outPktHdr, inPktHdr;
+	MailHeader outMailHdr, inMailHdr;
+	const char *data = "Hello there!";
+	char buffer[MaxMailSize];
+
+	// construct packet, mail header for original message
+	// To: destination machine, mailbox 0
+	// From: our machine, reply to: mailbox 1
+	outPktHdr.to = to;
+	outMailHdr.to = 0;
+	outMailHdr.from = 1;
+	outMailHdr.length = strlen(data) + 1;
+
+	ReliablePostOffice *rpo = new ReliablePostOffice();
+	// Send the first message
+	if (rpo->Send(outPktHdr, outMailHdr, data))
+		printf("Successfully sent\n");
+	else
+		printf("Failed to send\n");
+
+	// Wait for the first message from the other machine
+	rpo->Receive(0, &inPktHdr, &inMailHdr, buffer);
+	printf("Got \"%s\" from %d, box %d\n", buffer, inPktHdr.from, inMailHdr.from);
+	fflush(stdout);
+}
+#endif
