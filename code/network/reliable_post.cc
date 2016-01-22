@@ -49,8 +49,6 @@ void ReliablePostOffice::Receive(int box, PacketHeader *pktHdr, MailHeader *mail
 	outMailHdr.to = mailHdr->from;
 	outMailHdr.length = strlen(ack) + 1;
 	postOffice->Send(outPktHdr, outMailHdr, ack);
-
-	return true;
 }
 
 void ReliablePostOffice::ReleaseLock()
