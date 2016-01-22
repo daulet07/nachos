@@ -9,12 +9,22 @@
 
 #define MAX_OPEN_FILE 10
 
+struct ProcessTableEntry{
+	int processId;
+	int position;
+	struct ProcessTableEntry *next;
+	struct ProcessTableEntry *prev;
+};
+
+typedef struct ProcessTableEntry ProcessTableEntry;
+
 typedef struct{
 	bool inUse;
 	char path[MAX_PATH_LENGTH];
 	char name[FileNameMaxLen];
 	OpenFile *file;
 	int count;
+	ProcessTableEntry *process;
 }FileTableEntry;
 
 class OpenFileTable{
@@ -28,6 +38,8 @@ class OpenFileTable{
 
 		int FRead(char* buffer, int size, int fileId);
 		void FWrite(char* buffer, int size, int fileId);
+		void AppendProcess(int index);
+		ProcessTableEntry* GetProcessEntry(int index);
 
 	private:
 		FileTableEntry *table;

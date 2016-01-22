@@ -45,7 +45,7 @@ static void UpdatePC() {
 }
 
 #ifdef CHANGED
-bool copyStringFromMachine( int from, char *to, unsigned size) {
+int copyStringFromMachine( int from, char *to, unsigned size) {
 	int byte;
 	unsigned int i;
 //	int offset = 0;
@@ -56,15 +56,13 @@ bool copyStringFromMachine( int from, char *to, unsigned size) {
 //			machine->ReadMem(from + offset+i, 1, &byte);
 			machine->ReadMem(from + i, 1, &byte);
 
+			to[i] = (char)byte;
 			if ((char)byte == '\0')
 				break;
-			to[i] = (char)byte;
 		}
 //		offset += i;
-		to[i] = '\0';
-		if ((char)byte == '\0')
-			return true;
-		return false;
+		//to[i] = '\0';
+		return i;
 //		synchConsole->SynchPutString(to);
 //	}while((char)byte != '\0');
 
@@ -166,10 +164,14 @@ void ExceptionHandler(ExceptionType which) {
 			{
 				DEBUG('a', "PutString, system call handler.\n");
 				char *buffer = new char[MAX_STRING_SIZE];
+				int size, alreadyRead = 0;
+				do {
+					size = copyStringFromMachine(machine->ReadRegister(4) + alreadyRead, buffer, MAX_STRING_SIZE);
+					synchConsole->SynchPutString(buffer, size);
+					alreadyRead += size;
+				}
+				while (size < MAX_STRING_SIZE && buffer[size] != '\0');
 
-				while (!copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE))
-					synchConsole->SynchPutString(buffer);
-				synchConsole->SynchPutString(buffer);
 				delete[] buffer;
 				break;
 			}

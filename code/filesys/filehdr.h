@@ -57,7 +57,12 @@ class FileHeader {
     void Print();			// Print the contents of the file.
 
 #ifdef CHANGED
+	FileHeader();
+	~FileHeader();
 	bool ReAllocate(BitMap *freeMap, int size);
+	int FileAllocatedLength();
+    void SetFileLength(int size);			// Return the length of the file 
+	void Flush();
 #endif
 
   private:
@@ -65,6 +70,10 @@ class FileHeader {
     int numSectors;			// Number of data sectors in the file
     int dataSectors[NumDirect];		// Disk sector numbers for each data 
 					// block in the file
+
+#ifdef CHANGED
+	int mySector;
+#endif
 };
 
 #endif // FILEHDR_H

@@ -461,11 +461,29 @@ FileSystem::FOpen(const char *from, const char *name)
 	int openFileId = kernelFTable->IsOpen(from, name);
 	if (openFileId == -1)
 	{
+		if (!kernelFTable->CanOpen())
+			return -1;
+
 		OpenFile *file = Open(from, name);
+		if (file == NULL)
+			return -1;
 
 		openFileId = kernelFTable->Open(file, from, name);
-
-		openFileId = currentThread->space->addOpenFile(openFileId);
+		if (openFileId != -1)
+		{
+			kernelFTable->AppendProcess(openFileId);
+			openFileId = currentThread->space->addOpenFile(openFileId);
+		}
+	}
+	else
+	{
+		if (kernelFTable->GetProcessEntry(openFileId) == NULL)
+		{
+			kernelFTable->AppendProcess(openFileId);
+			openFileId = currentThread->space->addOpenFile(openFileId);
+		}
+		else
+			openFileId = currentThread->space->getOpenFileId(openFileId);
 	}
 
 	return openFileId;				// return NULL if not found
@@ -505,9 +523,7 @@ FileSystem::Open(const char *from, const char *name)
 	{
 		sector = directory->Find(name); 
 		if (sector >= 0) 		
-		{
 			openFile = new OpenFile(sector);	// name was found in directory 
-		}
 		delete directory;
 	}
 	return openFile;				// return NULL if not found

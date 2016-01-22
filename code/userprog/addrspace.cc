@@ -401,4 +401,8 @@ void AddrSpace::closeOpenFile(int fileId){
 		openFileTable[index] = -1;
 	}
 }
+
+int AddrSpace::GetId(){
+	return processId;
+}
 #endif

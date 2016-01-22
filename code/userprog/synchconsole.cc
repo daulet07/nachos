@@ -67,6 +67,15 @@ char SynchConsole::SynchGetChar()
 	return ch;
 }
 
+void SynchConsole::SynchPutString(const char s[], int length)
+{
+	lockGet->Acquire();
+	for (int i = 0; i < length; i ++, s ++)
+		SynchPutChar(*s);
+	lockGet->Release();
+
+}
+
 void SynchConsole::SynchPutString(const char s[])
 {
 //	semPutString->P();

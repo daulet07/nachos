@@ -27,6 +27,18 @@
 #include "system.h"
 #include "filehdr.h"
 
+#ifdef CHANGED
+FileHeader::FileHeader(){
+	numBytes = -1;
+	numSectors = -1;
+	mySector = -1;
+}
+
+FileHeader::~FileHeader(){
+//	Flush();
+}
+#endif
+
 //----------------------------------------------------------------------
 // FileHeader::Allocate
 // 	Initialize a fresh file header for a newly created file.
@@ -55,14 +67,18 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
 	bool
 FileHeader::ReAllocate(BitMap *freeMap, int size)
 { 
-	numBytes += size;
 	int alreadyAlocate = numSectors;
-	numSectors += divRoundUp(size, SectorSize);
-	if (freeMap->NumClear() < numSectors)
+	int numSectorToAllocate = divRoundUp(numBytes+size, SectorSize) - numSectors;
+	if (freeMap->NumClear() < numSectorToAllocate)
 		return FALSE;		// not enough space
 
-	for (int i = alreadyAlocate; i < numSectors; i++)
+	for (int i = alreadyAlocate; i < numSectorToAllocate; i++)
 		dataSectors[i] = freeMap->Find();
+
+	numSectors += numSectorToAllocate;
+	numBytes += size;
+	
+	Flush();
 	return TRUE;
 }
 #endif
@@ -93,6 +109,9 @@ FileHeader::Deallocate(BitMap *freeMap)
 	void
 FileHeader::FetchFrom(int sector)
 {
+#ifdef CHANGED
+	mySector = sector;
+#endif
 	synchDisk->ReadSector(sector, (char *)this);
 }
 
@@ -164,3 +183,18 @@ FileHeader::Print()
 	}
 	delete [] data;
 }
+
+#ifdef CHANGED
+int FileHeader::FileAllocatedLength(){
+	return numSectors * SectorSize;
+}
+
+void FileHeader::SetFileLength(int size){
+	numBytes = size;
+}
+
+void FileHeader::Flush(){
+	if (mySector >= 0)
+		WriteBack(mySector);
+}
+#endif

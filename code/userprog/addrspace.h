@@ -58,7 +58,7 @@ class AddrSpace
 		int addOpenFile(int fileId);
 		int getOpenFileId(int fileId);
 		void closeOpenFile(int fileId);
-		int getId();
+		int GetId();
 #endif
 
 	private:

@@ -137,7 +137,9 @@ OpenFile::ReadAt(char *into, int numBytes, int position)
 				&buf[(i - firstSector) * SectorSize]);
 
 	// copy the part we want
+	fprintf(stderr, "Setor 0 = %s\n", buf);
 	bcopy(&buf[position - (firstSector * SectorSize)], into, numBytes);
+	fprintf(stderr, "buf = %s\n", into);
 	delete [] buf;
 	return numBytes;
 }
@@ -150,7 +152,7 @@ OpenFile::WriteAt(const char *from, int numBytes, int position)
 	bool firstAligned, lastAligned;
 	char *buf;
 
-	if ((numBytes <= 0) || (position >= fileLength))
+	if ((numBytes <= 0) || (position > fileLength))
 		return 0;				// check request
 	if ((position + numBytes) > fileLength)
 #ifndef CHANGED
