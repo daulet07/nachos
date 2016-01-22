@@ -67,13 +67,12 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
 	bool
 FileHeader::ReAllocate(BitMap *freeMap, int size)
 { 
-	int alreadyAlocate = numSectors;
-	int numSectorToAllocate = divRoundUp(numBytes+size, SectorSize) - numSectors;
+	int numSectorToAllocate = divRoundUp(numBytes + size, SectorSize) - numSectors;
 	if (freeMap->NumClear() < numSectorToAllocate)
 		return FALSE;		// not enough space
 
-	for (int i = alreadyAlocate; i < numSectorToAllocate; i++)
-		dataSectors[i] = freeMap->Find();
+	for (int i = 0; i < numSectorToAllocate; i++)
+		dataSectors[numSectors + i] = freeMap->Find();
 
 	numSectors += numSectorToAllocate;
 	numBytes += size;

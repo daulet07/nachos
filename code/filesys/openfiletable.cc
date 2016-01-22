@@ -117,6 +117,7 @@ void OpenFileTable::Close(int index){
 
 int OpenFileTable::FRead(char* buffer, int size, int fileId){
 	if (fileId < 2)
+// TO DO
 		return 0;
 
 	if (!table[fileId].inUse)
@@ -135,6 +136,7 @@ int OpenFileTable::FRead(char* buffer, int size, int fileId){
 
 void OpenFileTable::FWrite(char* buffer, int size, int fileId){
 	if (fileId < 2)
+// TO DO
 		return;
 
 	if (table[fileId].inUse)
@@ -144,7 +146,6 @@ void OpenFileTable::FWrite(char* buffer, int size, int fileId){
 			return;
 
 		OpenFile *file = table[fileId].file;
-		fprintf(stderr, "===Try tro write %d at %d\n", size, procEntry->position);
 		int num = file->WriteAt(buffer, size, procEntry->position);
 		procEntry->position += num;
 	}

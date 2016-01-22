@@ -47,38 +47,29 @@ static void UpdatePC() {
 #ifdef CHANGED
 int copyStringFromMachine( int from, char *to, unsigned size) {
 	int byte;
-	unsigned int i;
-//	int offset = 0;
+	unsigned int i = 0;
+	do
+	{
+		machine->ReadMem(from + i, 1, &byte);
+		to[i] = (char)byte;
+		i ++;
+	}while ((char)byte != '\0' && i < size);
+	return i;
+		
+/*
+	for (i = 0; i < size-1; i ++)
+	{
+		machine->ReadMem(from + i, 1, &byte);
 
-//	do {
-		for (i = 0; i < size -1; i ++)
+		to[i] = (char)byte;
+		if ((char)byte == '\0')
 		{
-//			machine->ReadMem(from + offset+i, 1, &byte);
-			machine->ReadMem(from + i, 1, &byte);
-
-			to[i] = (char)byte;
-			if ((char)byte == '\0')
-				break;
+			i ++;
+			break;
 		}
-//		offset += i;
-		//to[i] = '\0';
-		return i;
-//		synchConsole->SynchPutString(to);
-//	}while((char)byte != '\0');
-
-	/*
-	 while (size > 0 && (char)byte != '\0')
-	 {
-	 machine->ReadMem(from, 1, &byte);
-	 from ++;
-	 *to = (char)byte;
-	 to ++;
-	 size --;
-	 }
-
-	 if ((char) byte != '\0')
-	 to = '\0';
-	 */
+	}
+	return i+1;
+*/
 }
 
 void writeStringToMachine(char* string, int to, unsigned size) {
@@ -89,15 +80,14 @@ void writeStringToMachine(char* string, int to, unsigned size) {
 
 static void haltMachine() {
 	while (currentThread->space->getNbThread() > 1)
-	currentThread->space->waitThread();
+		currentThread->space->waitThread();
 
 	if (machine->getNumProcess() == 1)
-	interrupt->Halt();
+		interrupt->Halt();
 
 	if (currentThread->space->getNbThread() == 1)
-	{
 		machine->endProcess();
-	}
+
 	currentThread->Finish();
 }
 
@@ -170,7 +160,7 @@ void ExceptionHandler(ExceptionType which) {
 					synchConsole->SynchPutString(buffer, size);
 					alreadyRead += size;
 				}
-				while (size < MAX_STRING_SIZE && buffer[size] != '\0');
+				while (/*size < MAX_STRING_SIZE && */buffer[size-1] != '\0');
 
 				delete[] buffer;
 				break;
@@ -187,15 +177,15 @@ void ExceptionHandler(ExceptionType which) {
 
 				while (offset < maxSize) {
 					if (maxSize - offset > MAX_STRING_SIZE)
-					mustRead = MAX_STRING_SIZE;
+						mustRead = MAX_STRING_SIZE;
 					else
-					mustRead = maxSize - offset;
+						mustRead = maxSize - offset;
 
 					int read = synchConsole->SynchGetString(kernelBuffer, mustRead);
 					writeStringToMachine(kernelBuffer, mipsBuffer + offset, read);
 					offset += read;
 					if (kernelBuffer[read-1] == '\n' || kernelBuffer[read-1] == EOF|| kernelBuffer[read-1] == '\0')
-					break;
+						break;
 				}
 				machine->WriteMem(mipsBuffer+offset+1, 1, '\0');
 				delete [] kernelBuffer;
@@ -330,14 +320,22 @@ void ExceptionHandler(ExceptionType which) {
 			{
 				DEBUG('s', "SC_FWrite.\n");
 				int userBuffer = machine->ReadRegister(4);
-				int size = machine->ReadRegister(5);
-				int fileId = machine->ReadRegister(6);
+//				int size = machine->ReadRegister(5);
+				int fileId = machine->ReadRegister(5);
+				int alreadyRead = 0;
+				int size;
 
-				char kernelBuffer[size];
-				copyStringFromMachine(userBuffer, kernelBuffer, size);
+				char kernelBuffer[MAX_STRING_SIZE];
+				do{
+					size = copyStringFromMachine(userBuffer + alreadyRead, kernelBuffer, MAX_STRING_SIZE);
+					alreadyRead += size;
+					if (kernelBuffer[size-1] == '\0')
+						fileSystem->FWrite(kernelBuffer, size-1, fileId);
+					else
+						fileSystem->FWrite(kernelBuffer, size, fileId);
+				} while (kernelBuffer[size-1] != '\0');
 
-				fileSystem->FWrite(kernelBuffer, size, fileId);
-
+//				void FWrite (char *buffer, OpenFileId id);
 //				void FWrite (char *buffer, int size, OpenFileId id);
 				break;
 			}

@@ -150,7 +150,8 @@ void FCreate (char *path);
 OpenFileId FOpen (char *name);
 
 /* Write "size" bytes from "buffer" to the open file. */
-void FWrite (char *buffer, int size, OpenFileId id);
+//void FWrite (char *buffer, int size, OpenFileId id);
+void FWrite (char *buffer, OpenFileId id);
 
 /* Read "size" bytes from the open file into "buffer".  
  * Return the number of bytes actually read -- if the open file isn't

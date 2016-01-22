@@ -771,10 +771,10 @@ void FileSystem::FWrite(char* buffer, int size, int fileId){
 	kernelFTable->FWrite(buffer, size, fileId);
 }
 
-bool FileSystem::ReAllocate(FileHeader* hdr, int numSector){
+bool FileSystem::ReAllocate(FileHeader* hdr, int numByte){
 	BitMap *freeMap = new BitMap(NumSectors);
 	freeMap->FetchFrom(freeMapFile);
-	int result = hdr->ReAllocate(freeMap, numSector);
+	int result = hdr->ReAllocate(freeMap, numByte);
 	freeMap->WriteBack(freeMapFile);
 
 	return result;
