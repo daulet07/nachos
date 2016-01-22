@@ -61,8 +61,11 @@ extern void Print (char *file), PerformanceTest (void);
 extern void StartProcess (char *file), ConsoleTest (char *in, char *out), SynchConsoleTest (char *in, char *out);
 extern void MailTest (int networkID);
 
+
 #ifdef CHANGED
 extern void Shell();
+extern void RingTest (int networkID);
+extern void ReliablePostTest(int networkID);
 #endif
 
 //----------------------------------------------------------------------
@@ -129,7 +132,7 @@ main (int argc, char **argv)
 				SynchConsoleTest (*(argv + 1), *(argv + 2));
 				argCount = 3;
 			}
-			interrupt->Halt ();	// once we start the console, then 
+			interrupt->Halt ();	// once we start the console, then
 		}
 #endif //CHANGED
 #endif // USER_PROGRAM
@@ -186,6 +189,26 @@ main (int argc, char **argv)
 			MailTest (atoi (*(argv + 1)));
 			argCount = 2;
 		}
+#ifdef CHANGED
+		else if (!strcmp(*argv, "-oring"))
+		{
+			ASSERT (argc > 1);
+			Delay (2);	// delay for 2 seconds
+			// to give the user time to
+			// start up another nachos
+			RingTest (atoi (*(argv + 1)));
+			argCount = 2;
+		}
+		else if (!strcmp(*argv, "-orel"))
+		{
+			ASSERT (argc > 1);
+			Delay (2);	// delay for 2 seconds
+			// to give the user time to
+			// start up another nachos
+			ReliablePostTest (atoi (*(argv + 1)));
+			argCount = 2;
+		}
+#endif
 #endif // NETWORK
 	}
 
