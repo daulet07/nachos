@@ -15,7 +15,7 @@ int main() {
 	PutString("Begin Main\n");
 
 	int i;
-	int nbThread = 3;
+	int nbThread = 10;
 	int id[nbThread];
 	for (i = 0; i < nbThread; i ++)
 	{
