@@ -35,7 +35,7 @@ int do_UserForkExec(char *pName){
 	newThread->Fork(StartUserProcess, (int)space);
 	//scheduler->ReadyToRun(newThread);
 
-	return 1;
+	return space->GetId();
 }
 
 #endif //CHANGED

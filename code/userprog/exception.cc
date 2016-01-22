@@ -55,21 +55,6 @@ int copyStringFromMachine( int from, char *to, unsigned size) {
 		i ++;
 	}while ((char)byte != '\0' && i < size);
 	return i;
-		
-/*
-	for (i = 0; i < size-1; i ++)
-	{
-		machine->ReadMem(from + i, 1, &byte);
-
-		to[i] = (char)byte;
-		if ((char)byte == '\0')
-		{
-			i ++;
-			break;
-		}
-	}
-	return i+1;
-*/
 }
 
 void writeStringToMachine(char* string, int to, unsigned size) {
@@ -172,22 +157,22 @@ void ExceptionHandler(ExceptionType which) {
 				char *kernelBuffer = new char[MAX_STRING_SIZE];
 				int offset = 0;
 				int mipsBuffer = machine->ReadRegister(4);
-				int maxSize = machine->ReadRegister(5)-1;
-				int mustRead;
+				int maxSize = machine->ReadRegister(5);
+				int mustRead, read;
 
-				while (offset < maxSize) {
-					if (maxSize - offset > MAX_STRING_SIZE)
+				do{
+					if (maxSize <  offset + MAX_STRING_SIZE)
 						mustRead = MAX_STRING_SIZE;
 					else
-						mustRead = maxSize - offset;
-
-					int read = synchConsole->SynchGetString(kernelBuffer, mustRead);
-					writeStringToMachine(kernelBuffer, mipsBuffer + offset, read);
+						mustRead = offset + MAX_STRING_SIZE - maxSize;
+					read = synchConsole->SynchGetString(kernelBuffer, mustRead);
+					if (kernelBuffer[read-1] == '\n')
+						writeStringToMachine(kernelBuffer, mipsBuffer + offset, read-1);
+					else
+						writeStringToMachine(kernelBuffer, mipsBuffer + offset, read);
 					offset += read;
-					if (kernelBuffer[read-1] == '\n' || kernelBuffer[read-1] == EOF|| kernelBuffer[read-1] == '\0')
-						break;
-				}
-				machine->WriteMem(mipsBuffer+offset+1, 1, '\0');
+				} while(kernelBuffer[read-1] != '\n');
+
 				delete [] kernelBuffer;
 				break;
 			}

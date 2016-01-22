@@ -57,7 +57,7 @@ class FileHeader {
     void Print();			// Print the contents of the file.
 
 #ifdef CHANGED
-	FileHeader();
+	FileHeader(int myParent2 = -1, bool parentHeader2 = false);
 	~FileHeader();
 	bool ReAllocate(BitMap *freeMap, int size);
 	int FileAllocatedLength();
@@ -73,6 +73,8 @@ class FileHeader {
 
 #ifdef CHANGED
 	int mySector;
+	bool parentHeader;
+	int myParent;
 #endif
 };
 

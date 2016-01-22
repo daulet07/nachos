@@ -28,7 +28,9 @@
 #include "filehdr.h"
 
 #ifdef CHANGED
-FileHeader::FileHeader(){
+FileHeader::FileHeader(int myParent2, bool parentHeader2){
+	this->parentHeader = parentHeader2;
+	this->myParent = myParent2;
 	numBytes = -1;
 	numSectors = -1;
 	mySector = -1;

@@ -79,20 +79,23 @@ void SynchConsole::SynchPutString(const char s[], int length)
 void SynchConsole::SynchPutString(const char s[])
 {
 //	semPutString->P();
-	lockGet->Acquire();
 	while (*s != '\0')
 	{
 		SynchPutChar(*s);
 		s ++;
 	}
-	lockGet->Release();
 //	semPutString->V();
 }
 
 int SynchConsole::SynchGetString(char *s, int n)
 {
 //	semGetString->P();
-	int i;
+	int i = 0;
+	do{
+		s[i] = SynchGetChar();
+		i ++;
+	}while(i < n && s[i] != '\0');
+	return i;
 	for (i = 0; i < n; i ++)
 	{
 		s[i] = SynchGetChar();
@@ -120,7 +123,7 @@ void SynchConsole::SynchGetInt(int *n)
 	char *buffer = new char[MAX_STRING_SIZE];
 	SynchGetString(buffer, MAX_STRING_SIZE);
 	if (sscanf(buffer, "%i", n) != 1)
-	*n = 0;
+		*n = 0;
 	delete [] buffer;
 }
 
