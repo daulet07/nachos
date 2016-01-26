@@ -1,4 +1,5 @@
 #ifdef CHANGED
+#include "filesys.h"
 #include "openfiletable.h"
 #include "system.h"
 
@@ -10,7 +11,6 @@ OpenFileTable::OpenFileTable(){
 	{
 		table[i].inUse = false;
 		table[i].file = NULL;
-		table[i].count = 0;
 		table[i].process = NULL;
 	}
 	table[0].inUse = true;
@@ -48,16 +48,59 @@ ProcessTableEntry* OpenFileTable::GetProcessEntry(int index){
 
 void OpenFileTable::AppendProcess(int index){
 	ProcessTableEntry *proc = new ProcessTableEntry;
+
 	proc->processId = currentThread->space->GetId();
 	proc->position = 0;
 	proc->next = table[index].process;
+
 	if (table[index].process!= NULL)
 		table[index].process->prev = proc;
+
 	table[index].process = proc;
-	table[index].count ++;
 }
 
-int OpenFileTable::Open(OpenFile *file, const char *from, const char *name){
+int OpenFileTable::Open(const char *from, const char *name){
+	int fileId = IsOpen(from, name);
+	if (fileId == -1) // The file is not allready open
+	{
+		if (!CanOpen() || !currentThread->space->CanOpenFile())
+			return -1;
+
+		OpenFile *file = fileSystem->Open(from, name);
+		if (file == NULL)
+			return -1;
+
+		int index = map->Find();
+
+		ASSERT(index >= 2);
+
+		table[index].inUse = true;
+		strncpy(table[index].path, from, MAX_PATH_LENGTH);
+		strncpy(table[index].name, name, FileNameMaxLen);
+		table[index].file = file;
+		table[index].process = NULL;
+
+		AppendProcess(index);
+		
+		fileId = currentThread->space->AddOpenFile(index);
+	}
+	else if (GetProcessEntry(fileId) == NULL) // Current thread  have not open it
+	{
+		if (!currentThread->space->CanOpenFile())
+			return -1;
+
+		AppendProcess(fileId);
+		fileId = currentThread->space->AddOpenFile(fileId);
+
+	}
+	else // File is open for the thread
+	{
+		fileId = currentThread->space->GetOpenFileId(fileId);
+	}
+			
+	ASSERT(fileId >= 2);
+	return fileId;
+	/*
 	int index = map->Find();
 	if (index >= 2)
 	{
@@ -69,6 +112,7 @@ int OpenFileTable::Open(OpenFile *file, const char *from, const char *name){
 		table[index].process = NULL;
 	}
 	return index;
+	*/
 }
 
 int OpenFileTable::IsOpen(const char *from, const char *name){
@@ -76,10 +120,7 @@ int OpenFileTable::IsOpen(const char *from, const char *name){
 		if (table[i].inUse && 
 				strcmp(from, table[i].path) == 0 && 
 				strcmp(name, table[i].name) == 0)
-		{
-			//table[i].count ++;
 			return i;
-		}
 	return -1;
 }
 
@@ -104,11 +145,11 @@ void OpenFileTable::Close(int index){
 
 			delete procEntry;
 
-			table[index].count --;
-			if (table[index].count == 0)
+			if (table[index].process == NULL)
 			{
 				map->Clear(index);
 				table[index].inUse = false;
+				table[index].file->FlushHeader();
 				delete table[index].file;
 			}
 		}

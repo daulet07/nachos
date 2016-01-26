@@ -202,7 +202,7 @@ Thread::Finish ()
 #ifdef USER_PROGRAM
 #ifdef CHANGED
 	if (space != NULL)
-		space->endThread();
+		space->EndThread();
 	else
 		interrupt->Halt();
 #endif
@@ -451,14 +451,14 @@ Thread::RestoreUserState ()
 
 
 #ifdef CHANGED
-unsigned int Thread::getId(){
+unsigned int Thread::GetId(){
 	return threadId;
 }
 
-int Thread::getStackPosition(){
+int Thread::GetStackPosition(){
 	return stackPosition;
 }
-void Thread::setStackPosition(int pos){
+void Thread::SetStackPosition(int pos){
 	stackPosition = pos;
 }
 #endif

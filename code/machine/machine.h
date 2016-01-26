@@ -27,6 +27,7 @@
 #include "disk.h"
 
 #ifdef CHANGED
+#include "listwait.h"
 class Lock;
 #endif
 
@@ -191,9 +192,10 @@ class Machine {
     TranslationEntry *pageTable;
     unsigned int pageTableSize;
 #ifdef CHANGED
-	int getNumProcess();
-	void addProcess();
-	void endProcess();
+	int GetNumProcess();
+	int AddProcess();
+	void EndProcess(int id);
+	void WaitProcess(int id);
 #endif
 
   private:
@@ -204,6 +206,7 @@ class Machine {
 #ifdef CHANGED
 	int numProcess;
 	Lock *processLock;
+	ListWaiter *listProcess;
 #endif
 };
 

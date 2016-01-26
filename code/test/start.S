@@ -291,4 +291,28 @@ FClose:
 	j	$31
 	.end FClose
 
+	.globl ListDir
+	.ent	ListDir
+ListDir:
+	addiu $2,$0,SC_ListDir
+	syscall
+	j	$31
+	.end ListDir
+
+	.globl Mkdir
+	.ent	Mkdir
+Mkdir:
+	addiu $2,$0,SC_Mkdir
+	syscall
+	j	$31
+	.end Mkdir
+
+	.globl Wait
+	.ent	Wait
+Wait:
+	addiu $2,$0,SC_Wait
+	syscall
+	j	$31
+	.end Wait
+
 #endif //CHANGED

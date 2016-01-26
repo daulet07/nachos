@@ -177,6 +177,14 @@ main (int argc, char **argv)
 		{			// performance test
 			Shell();
 		}
+		else if (!strcmp (*argv, "-mkdir"))
+		{
+			fileSystem->CreateDir(*(argv+1));
+		}
+		else if (!strcmp (*argv, "-rmdir"))
+		{
+			fileSystem->RemoveDir(*(argv+1));
+		}
 #endif //CHANGED
 #endif // FILESYS
 #ifdef NETWORK

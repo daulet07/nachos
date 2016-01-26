@@ -18,7 +18,7 @@
 
 #ifdef CHANGED
 #include "bitmap.h"
-#include "listthread.h"
+#include "listwait.h"
 class Lock;
 #define NbPagesPerThread 2
 #include "usersemaphore.h"
@@ -45,19 +45,21 @@ class AddrSpace
 		void RestoreState ();	// info on a context switch 
 
 #ifdef CHANGED
-		int newThread(); //return the id of the new thread
-		int getStackForThread();
-		int getNbThread();
-		void waitThread();
-		void endThread();
-		void joinThread(unsigned int id);
-		void deallocateMapStack(int position);
-		int getMaxThread();
+		int NewThread(); //return the id of the new thread
+		int GetStackForThread();
+		int GetNbThread();
+		void WaitThread();
+		void EndThread();
+		void JoinThread(unsigned int id);
+		void DeallocateMapStack(int position);
+		int GetMaxThread();
 		UserSemList *userSem;
 
-		int addOpenFile(int fileId);
-		int getOpenFileId(int fileId);
-		void closeOpenFile(int fileId);
+		int AddOpenFile(int fileId);
+		bool CanOpenFile();
+		int GetOpenFileId(int fileId);
+		void CloseOpenFile(int fileId);
+
 		int GetId();
 #endif
 
@@ -72,7 +74,7 @@ class AddrSpace
 		unsigned int idThread;
 		BitMap *memoryMap;
 		Lock *haltLock;
-		ListThread *listThread;
+		ListWaiter *listThread;
 		int maxThreads;
 		Lock* lockId;
 

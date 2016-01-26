@@ -88,12 +88,6 @@ static FrameProvider frameProvider;
 //----------------------------------------------------------------------
 
 #ifdef CHANGED
-#include "synch.h"
-static int lastProcessId = 0;
-static Lock lockProcessId("Lock for process Id");
-#endif //CHANGED
-
-#ifdef CHANGED
 bool CanCreateNewSpace(OpenFile *exec){
 	NoffHeader noffH;
 	int size;
@@ -138,18 +132,16 @@ AddrSpace::AddrSpace (OpenFile * executable)
 	// at least until we have
 	// virtual memory
 #ifdef CHANGED
-	listThread = new ListThread();
+	listThread = new ListWaiter();
 	nbThread = 1;
 	idThread = 1;
 	haltLock = new Lock("Lock for halt");
 	haltLock->Acquire();
+	lockId = new Lock("Lock for id");
 	memoryMap = new BitMap(numPages/NbPagesPerThread);
-	lockId = new Lock("Lock of thread id");
 	userSem = new UserSemList();
 
-	lockProcessId.Acquire();
-	processId = lastProcessId ++;
-	lockProcessId.Release();
+	processId = machine->AddProcess();
 	
 	openFileMap = new BitMap(MAX_OPEN_FILE);
 	openFileTable = new int[MAX_OPEN_FILE];
@@ -315,77 +307,81 @@ AddrSpace::RestoreState ()
 
 #ifdef CHANGED
 
-int AddrSpace::newThread(){
+int AddrSpace::NewThread(){
 
 	lockId->Acquire();
 
 	nbThread ++;
 	idThread ++;
 	int id = idThread;
-	listThread->newThread(id);
+	listThread->New(id);
 
 	lockId->Release();
 
 	return id;
 }
 
-int AddrSpace::getNbThread(){
+int AddrSpace::GetNbThread(){
 	return nbThread;
 }
 
 // must return -1 if no space available
-int AddrSpace::getStackForThread(){
+int AddrSpace::GetStackForThread(){
 	int position = memoryMap->Find();
 	if (position == -1)
 		return -1;
 
-	currentThread->setStackPosition(position);
+	currentThread->SetStackPosition(position);
 	return (position+1)*NbPagesPerThread*PageSize-16;
 }
 
-void AddrSpace::waitThread(){
+void AddrSpace::WaitThread(){
 	haltLock->Acquire();
+	haltLock->Release();
 }
 
-void AddrSpace::endThread(){
+void AddrSpace::EndThread(){
 	lockId->Acquire();
 	nbThread --;
 	lockId->Release();
 
-	if (currentThread->getId() != 1)
-		listThread->endThread(currentThread->getId());
+	if (currentThread->GetId() != 1)
+		listThread->End(currentThread->GetId());
 	
-	deallocateMapStack(currentThread->getStackPosition());
+	DeallocateMapStack(currentThread->GetStackPosition());
 
 	haltLock->Release();
 }
 
-void AddrSpace::joinThread(unsigned int id){
-	listThread->waitThread(id);
+void AddrSpace::JoinThread(unsigned int id){
+	listThread->Wait(id);
 }
 
-void AddrSpace::deallocateMapStack(int position){
+void AddrSpace::DeallocateMapStack(int position){
 	if (position != -1)
 		memoryMap->Clear(position);
 }
 
-int AddrSpace::getMaxThread(){
+int AddrSpace::GetMaxThread(){
 	return maxThreads;
 }
 
-int AddrSpace::addOpenFile(int fileId){
-	int index = getOpenFileId(fileId);
+int AddrSpace::AddOpenFile(int fileId){
+	if (!CanOpenFile())
+		return -1;
+
+	int index = GetOpenFileId(fileId);
 	if (index == -1)
 	{
 		index = openFileMap->Find();
-		if (index != -1)
-			openFileTable[index] = fileId;
+		ASSERT(index != -1);
+		openFileTable[index] = fileId;
 	}
 
 	return index;
 }
 
-int AddrSpace::getOpenFileId(int fileId){
+int AddrSpace::GetOpenFileId(int fileId){
 	for (int i = 0; i < MAX_OPEN_FILE; i ++)
 		if (openFileTable[i] == fileId)
 			return i;
@@ -393,13 +389,17 @@ int AddrSpace::getOpenFileId(int fileId){
 	return -1;
 }
 
-void AddrSpace::closeOpenFile(int fileId){
-	int index = getOpenFileId(fileId);
+void AddrSpace::CloseOpenFile(int fileId){
+	int index = GetOpenFileId(fileId);
 	if (index != -1)
 	{
 		openFileMap->Clear(index);
 		openFileTable[index] = -1;
 	}
+}
+
+bool AddrSpace::CanOpenFile(){
+	return openFileMap->NumClear() > 0;
 }
 
 int AddrSpace::GetId(){

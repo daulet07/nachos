@@ -308,10 +308,10 @@ FileSystem::CreateDir(const char *path)
 	strcpy(from, path);
 	char *name = NULL;
 	parsePath(from, &name);
-	if (name == '\0')
+	if (*name == '\0')
 		return false;
 
-	if (path == '\0')
+	if (*from == '\0')
 		return CreateDir("/", name);
 	else
 		return CreateDir(from, name);
@@ -431,33 +431,9 @@ FileSystem::FOpen(const char *path)
 	int
 FileSystem::FOpen(const char *from, const char *name)
 { 
+	int openFileId = kernelFTable->Open(from, name);
+	return openFileId;
 	/*
-	OpenFile *openFile = NULL;
-	int openFileId = kernelFTable->IsOpen(from, name);
-
-	if (openFileId >= 0)
-		return openFileId;
-
-	if (!kernelFTable->CanOpen())
-		return -1;
-
-	Directory *directory = new Directory(NumDirEntries);
-	int sector;
-
-	DEBUG('f', "Opening file %s%s\n", from, name);
-	directory = SearchDir(from);
-	if (directory != NULL)
-	{
-		sector = directory->Find(name); 
-		if (sector >= 0) 		
-		{
-			openFile = new OpenFile(sector);	// name was found in directory 
-			if (openFile != NULL)
-				return kernelFTable->Open(openFile, from, name);
-		}
-		delete directory;
-	}
-	*/
 	int openFileId = kernelFTable->IsOpen(from, name);
 	if (openFileId == -1)
 	{
@@ -487,6 +463,7 @@ FileSystem::FOpen(const char *from, const char *name)
 	}
 
 	return openFileId;				// return NULL if not found
+	*/
 }
 
 	OpenFile * 
@@ -756,18 +733,18 @@ void FileSystem::parsePath(char *path, char** name){
 }
 
 void FileSystem::FClose(int index){
-	int fileId = currentThread->space->getOpenFileId(index);
-	currentThread->space->closeOpenFile(index);
+	int fileId = currentThread->space->GetOpenFileId(index);
+	currentThread->space->CloseOpenFile(index);
 	kernelFTable->Close(fileId);
 }
 
 int FileSystem::FRead(char* buffer, int size, int fileId){
-	fileId = currentThread->space->getOpenFileId(fileId);
+	fileId = currentThread->space->GetOpenFileId(fileId);
 	return kernelFTable->FRead(buffer, size, fileId);
 }
 
 void FileSystem::FWrite(char* buffer, int size, int fileId){
-	fileId = currentThread->space->getOpenFileId(fileId);
+	fileId = currentThread->space->GetOpenFileId(fileId);
 	kernelFTable->FWrite(buffer, size, fileId);
 }
 
@@ -779,5 +756,67 @@ bool FileSystem::ReAllocate(FileHeader* hdr, int numByte){
 
 	return result;
 }
+	bool
+FileSystem::RemoveDir(const char *path)
+{
+	if (*path != '/')
+		return NULL;
+
+	char from[MAX_PATH_LENGTH];
+	strcpy(from, path);
+	char *name = NULL;
+	parsePath(from, &name);
+	if (*name == '\0')
+		return NULL;
+
+	if (*from == '\0')
+		return RemoveDir("/", name);
+	else
+		return RemoveDir(from, name);
+}
+
+	bool
+FileSystem::RemoveDir(const char *from, const char *name)
+{ 
+	Directory *directory, *parentDir;
+	BitMap *freeMap;
+	OpenFile *file;
+	int sector;
+
+	parentDir = SearchDir(from);
+	sector = parentDir->Find(name);
+	if (sector == -1 || !parentDir->IsDir(parentDir->FindIndex(name))) {
+		fprintf(stderr, "Directory is not found\n");
+		delete parentDir;
+		return FALSE;			 // file not found 
+	}
+	file = new OpenFile(sector);
+
+	directory = new Directory(NumDirEntries);
+	directory->FetchFrom(file);
+	delete file;
+
+	if (!directory->IsEmpty())
+	{
+		fprintf(stderr, "Directory is not empty\n");
+		delete parentDir;
+		delete directory;
+		return FALSE;
+	}
+
+	fprintf(stderr, "Remove %s from %s\n", name, from);
+	freeMap = new BitMap(NumSectors);
+	freeMap->FetchFrom(freeMapFile);
+
+	freeMap->Clear(sector);			// remove header block
+	directory->Remove(name);
+
+	freeMap->WriteBack(freeMapFile);		// flush to disk
+	parentDir->WriteBack(directoryFile);        // flush to disk
+	delete directory;
+	delete parentDir;
+	delete freeMap;
+	return TRUE;
+} 
 
 #endif //CHANGED

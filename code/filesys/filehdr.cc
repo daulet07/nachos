@@ -27,20 +27,6 @@
 #include "system.h"
 #include "filehdr.h"
 
-#ifdef CHANGED
-FileHeader::FileHeader(int myParent2, bool parentHeader2){
-	this->parentHeader = parentHeader2;
-	this->myParent = myParent2;
-	numBytes = -1;
-	numSectors = -1;
-	mySector = -1;
-}
-
-FileHeader::~FileHeader(){
-//	Flush();
-}
-#endif
-
 //----------------------------------------------------------------------
 // FileHeader::Allocate
 // 	Initialize a fresh file header for a newly created file.
@@ -66,6 +52,66 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
 }
 
 #ifdef CHANGED
+/*
+	bool
+FileHeader::Allocate(BitMap *freeMap, int fileSize)
+{ 
+	if (numBytes + fileSize <=  MaxFileSize) // Juste one indirection
+	{
+		int sectorToAllocate = divRoundUp(numBytes + fileSize, SectorSize) - numSectors;
+
+		if (freeMap->NumClear() < sectorToAllocate)
+			return FALSE;
+		for (int i = 0; i < sectorToAllocate; i ++)
+		{
+			dataSectors[numSectors + i] = freeMap->Find();
+			ASSERT(dataSectors[numSectors + i] != -1);
+		}
+		numBytes += fileSize;
+		numSectors += sectorToAllocate;
+	}
+	else 
+	{
+		int newDataSectors[NumSecondDirect];
+
+		if (numBytes <= MaxFileSize) // Need to change from one indirection to two
+		{
+			int totalSector = (numBytes + fileSize) / SectorSize + (numBytes + fileSize) / MaxFileSize;
+			if (freeMap->NumClear() < totalSector - numSectors)
+				return FALSE;
+
+			for (int i = 0; i < numSectors; i ++)
+				newDataSectors[i] = dataSectors[i];
+			
+			numSectors = 1;
+			dataSectors[0] = freeMap->Find();
+			ASSERT(dataSectors[0] != -1);
+			synchDisk->WriteSector(dataSectors[0], (char*)newDataSectors);
+		}
+		else
+			synchDisk->ReadSector(dataSectors[numSectors-1], (char*)newDataSectors);
+		
+		// Fill last secondDirect
+
+		int canFill = MaxFileSize * numSectors - numBytes;
+		///////////////////////////////////:
+	}
+	numBytes = fileSize;
+	numSectors  = divRoundUp(fileSize, SectorSize);
+	if (freeMap->NumClear() < numSectors)
+		return FALSE;		// not enough space
+
+	for (int i = 0; i < numSectors; i++)
+		dataSectors[i] = freeMap->Find();
+	return TRUE;
+}
+*/
+
+FileHeader::FileHeader(){
+	numBytes = 0;
+	numSectors = 0;
+}
+
 	bool
 FileHeader::ReAllocate(BitMap *freeMap, int size)
 { 
@@ -79,7 +125,6 @@ FileHeader::ReAllocate(BitMap *freeMap, int size)
 	numSectors += numSectorToAllocate;
 	numBytes += size;
 	
-	Flush();
 	return TRUE;
 }
 #endif
@@ -110,9 +155,6 @@ FileHeader::Deallocate(BitMap *freeMap)
 	void
 FileHeader::FetchFrom(int sector)
 {
-#ifdef CHANGED
-	mySector = sector;
-#endif
 	synchDisk->ReadSector(sector, (char *)this);
 }
 
@@ -192,10 +234,5 @@ int FileHeader::FileAllocatedLength(){
 
 void FileHeader::SetFileLength(int size){
 	numBytes = size;
-}
-
-void FileHeader::Flush(){
-	if (mySector >= 0)
-		WriteBack(mySector);
 }
 #endif

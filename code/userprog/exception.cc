@@ -64,14 +64,14 @@ void writeStringToMachine(char* string, int to, unsigned size) {
 }
 
 static void haltMachine() {
-	while (currentThread->space->getNbThread() > 1)
-		currentThread->space->waitThread();
+	while (currentThread->space->GetNbThread() > 1)
+		currentThread->space->WaitThread();
 
-	if (machine->getNumProcess() == 1)
+	if (machine->GetNumProcess() == 1)
 		interrupt->Halt();
 
-	if (currentThread->space->getNbThread() == 1)
-		machine->endProcess();
+	if (currentThread->space->GetNbThread() == 1)
+		machine->EndProcess(currentThread->space->GetId());
 
 	currentThread->Finish();
 }
@@ -167,11 +167,10 @@ void ExceptionHandler(ExceptionType which) {
 						mustRead = offset + MAX_STRING_SIZE - maxSize;
 					read = synchConsole->SynchGetString(kernelBuffer, mustRead);
 					if (kernelBuffer[read-1] == '\n')
-						writeStringToMachine(kernelBuffer, mipsBuffer + offset, read-1);
-					else
-						writeStringToMachine(kernelBuffer, mipsBuffer + offset, read);
+						kernelBuffer[read-1] = '\0';
+					writeStringToMachine(kernelBuffer, mipsBuffer + offset, read);
 					offset += read;
-				} while(kernelBuffer[read-1] != '\n');
+				} while(kernelBuffer[read-1] != '\0');
 
 				delete [] kernelBuffer;
 				break;
@@ -233,12 +232,19 @@ void ExceptionHandler(ExceptionType which) {
 				delete exec;
 				break;
 			}
+			case SC_Wait:
+			{
+				DEBUG('s', "SC_Wait.\n");
+				int id = machine->ReadRegister(4);
+				
+				do_UserWait(id);
+				break;
+			}
 			case SC_SemInit:
 			{
 				DEBUG('s', "SC_SemInit.\n");
 				int reg4 = machine->ReadRegister(4);
-				int reg5 = machine->ReadRegister(5);
-				int result = currentThread->space->userSem->sem_create(reg4, reg5);
+				int result = currentThread->space->userSem->sem_create(reg4);
 				machine->WriteRegister(2, result);
 				break;
 			}
@@ -329,6 +335,45 @@ void ExceptionHandler(ExceptionType which) {
 				DEBUG('s', "SC_FClose.\n");
 				fileSystem->FClose(machine->ReadRegister(4));
 //				void FClose (OpenFileId id);
+				break;
+			}
+			case SC_ListDir:
+			{
+				DEBUG('s', "SC_ListDir.\n");
+				char *path = new char[MAX_STRING_SIZE];
+				copyStringFromMachine(machine->ReadRegister(4), path, MAX_STRING_SIZE);
+				Directory *dir = fileSystem->GetDir(path);
+				if (dir != NULL)
+				{
+					dir->List();
+					delete dir;
+				}
+				else
+					printf("%s not found\n", path);
+
+				delete []path;
+				break;
+			}
+			case SC_Mkdir:
+			{
+				DEBUG('s', "SC_Mkdir.\n");
+				char *path = new char[MAX_STRING_SIZE];
+				copyStringFromMachine(machine->ReadRegister(4), path, MAX_STRING_SIZE);
+				char *name = new char[MAX_STRING_SIZE];
+				copyStringFromMachine(machine->ReadRegister(5), name, MAX_STRING_SIZE);
+				bool result = fileSystem->CreateDir(path, name);
+				machine->WriteRegister(2, result);
+				break;
+			}
+			case SC_RmDir:
+			{
+				DEBUG('s', "SC_RmDir.\n");
+				char *path = new char[MAX_STRING_SIZE];
+				copyStringFromMachine(machine->ReadRegister(4), path, MAX_STRING_SIZE);
+				char *name = new char[MAX_STRING_SIZE];
+				copyStringFromMachine(machine->ReadRegister(5), name, MAX_STRING_SIZE);
+				bool result = fileSystem->RemoveDir(path, name);
+				machine->WriteRegister(2, result);
 				break;
 			}
 #endif

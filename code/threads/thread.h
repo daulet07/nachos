@@ -59,7 +59,6 @@
 // WATCH OUT IF THIS ISN'T BIG ENOUGH!!!!!
 #define StackSize	(4 * 1024)	// in words
 
-
 // Thread state
 enum ThreadStatus
 { JUST_CREATED, RUNNING, READY, BLOCKED };
@@ -121,9 +120,9 @@ class Thread
 		}
 
 #ifdef CHANGED
-		unsigned int getId();
-		int getStackPosition();
-		void setStackPosition(int pos);
+		unsigned int GetId();
+		int GetStackPosition();
+		void SetStackPosition(int pos);
 #endif //CHANGED
 
 	private:

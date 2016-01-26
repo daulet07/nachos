@@ -31,6 +31,9 @@ OpenFile::OpenFile(int sector)
 	hdr = new FileHeader;
 	hdr->FetchFrom(sector);
 	seekPosition = 0;
+#ifdef CHANGED
+	hdrSector = sector;
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -206,3 +209,9 @@ OpenFile::Length()
 { 
 	return hdr->FileLength(); 
 }
+
+#ifdef CHANGED
+void OpenFile::FlushHeader(){
+	hdr->WriteBack(hdrSector);
+}
+#endif

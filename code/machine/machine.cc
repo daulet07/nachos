@@ -75,8 +75,9 @@ Machine::Machine(bool debug)
 	CheckEndian();
 
 #ifdef CHANGED
-	numProcess = 1;
+	numProcess = 0;
 	processLock = new Lock("lock for numProcess");
+	listProcess = new ListWaiter();
 #endif
 }
 
@@ -93,6 +94,7 @@ Machine::~Machine()
 
 #ifdef CHANGED
 	delete processLock;
+	delete listProcess;
 #endif
 }
 
@@ -228,20 +230,32 @@ void Machine::WriteRegister(int num, int value)
 }
 
 #ifdef CHANGED
-void Machine::addProcess(){
+int Machine::AddProcess(){
 	processLock->Acquire();
-	numProcess ++;
+
+	int id = numProcess ++;
+	listProcess->New(id);
+
 	processLock->Release();
+
+	return id;
 }
 
-int Machine::getNumProcess(){
+int Machine::GetNumProcess(){
 	return numProcess;
 }
 
-void Machine::endProcess(){
+void Machine::EndProcess(int id){
 	processLock->Acquire();
+
 	numProcess --;
+	listProcess->End(id);
+
 	processLock->Release();
+}
+
+void Machine::WaitProcess(int id){
+	listProcess->Wait(id);
 }
 
 #endif

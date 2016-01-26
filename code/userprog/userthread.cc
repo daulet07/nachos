@@ -15,7 +15,7 @@ static void StartUserThread(int f) {
 	machine->WriteRegister(4,param->arg);
 
 	delete(param);
-	int stack = currentThread->space->getStackForThread();
+	int stack = currentThread->space->GetStackForThread();
 
 	if (stack == -1)
 	{
@@ -29,11 +29,11 @@ static void StartUserThread(int f) {
 
 int do_UserThreadCreate(int f, int arg, int callBack)
 {
-	if (currentThread->space->getNbThread() >= currentThread->space->getMaxThread())
+	if (currentThread->space->GetNbThread() >= currentThread->space->GetMaxThread())
 	{
 		return -1;
 	}
-	int newId = currentThread->space->newThread();
+	int newId = currentThread->space->NewThread();
 	Thread *newThread = new Thread("User Thread", newId);
 
 	if(newThread == NULL) {
@@ -57,7 +57,7 @@ void do_UserThreadExit()
 }
 
 void do_UserThreadJoin(int threadId){
-	currentThread->space->joinThread(threadId);
+	currentThread->space->JoinThread(threadId);
 }
 
 #endif //CHANGED

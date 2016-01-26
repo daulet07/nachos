@@ -1,4 +1,5 @@
 #ifdef CHANGED
+#ifdef FILESYS
 #ifndef OFT_H
 #define OFT_H
 
@@ -23,7 +24,6 @@ typedef struct{
 	char path[MAX_PATH_LENGTH];
 	char name[FileNameMaxLen];
 	OpenFile *file;
-	int count;
 	ProcessTableEntry *process;
 }FileTableEntry;
 
@@ -31,7 +31,7 @@ class OpenFileTable{
 	public:
 		OpenFileTable();
 		~OpenFileTable();
-		int Open(OpenFile *file, const char *from, const char *name);
+		int Open(const char *from, const char *name);
 		void Close(int index);
 		int IsOpen(const char *from, const char *name);
 		bool CanOpen();
@@ -41,10 +41,12 @@ class OpenFileTable{
 		void AppendProcess(int index);
 		ProcessTableEntry* GetProcessEntry(int index);
 
+
 	private:
 		FileTableEntry *table;
 		BitMap *map;
 };
 
 #endif //OFT_H
+#endif //FILESYS
 #endif //CHANGED

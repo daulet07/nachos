@@ -43,17 +43,22 @@
 #define SC_UserThreadExit	18
 #define SC_UserThreadJoin	19
 #define SC_ForkExec	20
+#define SC_Wait	21
 
-#define SC_SemInit		21
-#define SC_P			22
-#define SC_V			23
-#define SC_SemDestroy	24
+#define SC_SemInit		22
+#define SC_P			23
+#define SC_V			24
+#define SC_SemDestroy	25
 
-#define SC_FCreate	25
-#define SC_FOpen	26
-#define SC_FRead	27
-#define SC_FWrite	28
-#define SC_FClose	29
+#define SC_FCreate	26
+#define SC_FOpen	27
+#define SC_FRead	28
+#define SC_FWrite	29
+#define SC_FClose	30
+
+#define SC_ListDir	31
+#define SC_Mkdir	32
+#define SC_RmDir	33
 
 #endif //CHANGED
 
@@ -194,12 +199,17 @@ int UserThreadCreate(void f(void *arg), void *arg);
 void UserThreadExit();
 void UserThreadJoin(int threadId);
 int ForkExec(char *s);
+void Wait(int id);
 
 typedef int sem_t;
-sem_t SemInit(sem_t sem, int value);
+sem_t SemInit(int value);
 void P(sem_t sem);
 void V(sem_t sem);
 void SemDestroy(sem_t sem);
+
+void ListDir(const char path[]);
+int Mkdir(const char path[], const char name[]);
+int RmDir(const char path[], const char name[]);
 
 #endif //CHANGED
 

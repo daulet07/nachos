@@ -83,6 +83,9 @@ class Directory {
 	void SetMySector(int sector);
 	void SetParentSector(int sector);
 	int GetSector();
+
+	bool IsEmpty();
+
 #endif
 
     bool Remove(const char *name);	// Remove a file from the directory

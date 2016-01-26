@@ -94,7 +94,7 @@ int SynchConsole::SynchGetString(char *s, int n)
 	do{
 		s[i] = SynchGetChar();
 		i ++;
-	}while(i < n && s[i] != '\0');
+	}while(i < n && s[i-1] != '\0' && s[i-1] != '\n');
 	return i;
 	for (i = 0; i < n; i ++)
 	{

@@ -184,7 +184,6 @@ Directory::AddFile(const char *name, int newSector)
 	bool
 Directory::AddDir(const char *name, int newSector)
 {
-	fprintf(stderr, "AddDir %s\n", name);
 	if (FindIndex(name) != -1)
 		return FALSE;
 
@@ -287,5 +286,12 @@ void Directory::SetParentSector(int sector){
 
 int Directory::GetSector(){
 	return table[0].sector;
+}
+
+bool Directory::IsEmpty(){
+	for (int i = 2; i < tableSize; i++)
+		if (table[i].inUse)
+			return false;
+	return true;
 }
 #endif
