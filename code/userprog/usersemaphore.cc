@@ -23,7 +23,7 @@ UserSemList::~UserSemList() {
 	}
 }
 
-int UserSemList::sem_create(int addr, int initialValue) {
+int UserSemList::sem_create(int initialValue) {
 
 	lockPC->Acquire();
 

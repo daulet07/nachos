@@ -27,7 +27,7 @@ int main() {
 
 	int tid[MAX_THREADS], i;
 	PutString("At the beginning\n");
-	mutex = SemInit(mutex, 1);
+	mutex = SemInit(1);
 
 	for (i = 0; i < MAX_THREADS; ++i){
 		tid[i] = UserThreadCreate(safe_increment, 0);

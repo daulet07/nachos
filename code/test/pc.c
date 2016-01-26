@@ -71,9 +71,9 @@ int main() {
 
 	int pid_t1, pid_t2;
 
-	mutex = SemInit(mutex, 1);
-	full = SemInit(full, 0);
-	empty = SemInit(empty, BUFFER_SIZE);
+	mutex = SemInit(1);
+	full = SemInit(0);
+	empty = SemInit(BUFFER_SIZE);
 
 	pid_t1 = UserThreadCreate(producer, 0);
 	pid_t2 = UserThreadCreate(consumer, 0);

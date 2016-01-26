@@ -17,7 +17,7 @@ class UserSemList
 public:
 	UserSemList();
 	~UserSemList();
-	int sem_create(int addr, int initialValue);
+	int sem_create(int initialValue);
 	void sem_p(int id);
 	void sem_v(int id);
 	void sem_destroy(int id);
