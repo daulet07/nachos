@@ -307,6 +307,14 @@ Mkdir:
 	j	$31
 	.end Mkdir
 
+	.globl RmDir
+	.ent	RmDir
+RmDir:
+	addiu $2,$0,SC_RmDir
+	syscall
+	j	$31
+	.end RmDir
+
 	.globl Wait
 	.ent	Wait
 Wait:

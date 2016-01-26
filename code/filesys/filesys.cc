@@ -601,7 +601,7 @@ FileSystem::RemoveFile(const char *from, const char *name)
 	directory->Remove(name);
 
 	freeMap->WriteBack(freeMapFile);		// flush to disk
-	directory->WriteBack(directoryFile);        // flush to disk
+	directory->Flush();        // flush to disk
 	delete fileHdr;
 	delete directory;
 	delete freeMap;
@@ -786,7 +786,6 @@ FileSystem::RemoveDir(const char *from, const char *name)
 	parentDir = SearchDir(from);
 	sector = parentDir->Find(name);
 	if (sector == -1 || !parentDir->IsDir(parentDir->FindIndex(name))) {
-		fprintf(stderr, "Directory is not found\n");
 		delete parentDir;
 		return FALSE;			 // file not found 
 	}
@@ -798,21 +797,19 @@ FileSystem::RemoveDir(const char *from, const char *name)
 
 	if (!directory->IsEmpty())
 	{
-		fprintf(stderr, "Directory is not empty\n");
 		delete parentDir;
 		delete directory;
 		return FALSE;
 	}
 
-	fprintf(stderr, "Remove %s from %s\n", name, from);
 	freeMap = new BitMap(NumSectors);
 	freeMap->FetchFrom(freeMapFile);
 
 	freeMap->Clear(sector);			// remove header block
-	directory->Remove(name);
+	parentDir->Remove(name);
 
 	freeMap->WriteBack(freeMapFile);		// flush to disk
-	parentDir->WriteBack(directoryFile);        // flush to disk
+	parentDir->Flush();
 	delete directory;
 	delete parentDir;
 	delete freeMap;

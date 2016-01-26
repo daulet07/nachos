@@ -12,6 +12,7 @@ static void StartUserProcess(int arg){
 	currentThread->space->RestoreState();	// load page table register
 
 	machine->Run();
+	ASSERT(FALSE);
 }
 
 int do_UserForkExec(char *pName){
@@ -22,6 +23,7 @@ int do_UserForkExec(char *pName){
 		printf("Unable to open file %s\n", pName);
 		return -1;
 	}
+
 	if (!CanCreateNewSpace(exec))
 		return -1;
 
