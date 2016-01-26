@@ -359,9 +359,7 @@ void ExceptionHandler(ExceptionType which) {
 				DEBUG('s', "SC_Mkdir.\n");
 				char *path = new char[MAX_STRING_SIZE];
 				copyStringFromMachine(machine->ReadRegister(4), path, MAX_STRING_SIZE);
-				char *name = new char[MAX_STRING_SIZE];
-				copyStringFromMachine(machine->ReadRegister(5), name, MAX_STRING_SIZE);
-				bool result = fileSystem->CreateDir(path, name);
+				bool result = fileSystem->CreateDir(path);
 				machine->WriteRegister(2, result);
 				break;
 			}
@@ -370,9 +368,16 @@ void ExceptionHandler(ExceptionType which) {
 				DEBUG('s', "SC_RmDir.\n");
 				char *path = new char[MAX_STRING_SIZE];
 				copyStringFromMachine(machine->ReadRegister(4), path, MAX_STRING_SIZE);
-				char *name = new char[MAX_STRING_SIZE];
-				copyStringFromMachine(machine->ReadRegister(5), name, MAX_STRING_SIZE);
-				bool result = fileSystem->RemoveDir(path, name);
+				bool result = fileSystem->RemoveDir(path);
+				machine->WriteRegister(2, result);
+				break;
+			}
+			case SC_IsDir:
+			{
+				DEBUG('s', "SC_IsDir.\n");
+				char *path = new char[MAX_STRING_SIZE];
+				copyStringFromMachine(machine->ReadRegister(4), path, MAX_STRING_SIZE);
+				bool result = fileSystem->IsDir(path);
 				machine->WriteRegister(2, result);
 				break;
 			}

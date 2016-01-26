@@ -116,6 +116,9 @@ class FileSystem {
 		bool RemoveDir(const char *from, const char *name);
 		
 		bool ReAllocate(FileHeader *hdr, int numByte);		
+
+		bool IsDir(const char *path);
+		bool IsDir(const char *from, const char *name);
 #endif
 
 

@@ -41,6 +41,13 @@
 	bool
 FileHeader::Allocate(BitMap *freeMap, int fileSize)
 { 
+#ifdef CHANGED
+	if (fileSize > (int)MaxFileSize)
+	{
+		fprintf(stderr, "File to big\n");
+		return FALSE;
+	}
+#endif
 	numBytes = fileSize;
 	numSectors  = divRoundUp(fileSize, SectorSize);
 	if (freeMap->NumClear() < numSectors)

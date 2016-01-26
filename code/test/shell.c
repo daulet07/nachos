@@ -3,6 +3,17 @@
 #define TRUE 1
 #define FALSE 0
 
+int strcmp(const char* c1, const  char* c2)
+{
+	while (*c2 != '\0' && *c1 == *c2 && *c1 != '\0')
+	{
+		c1 ++;
+		c2 ++;
+	}
+	return *c1 == *c2;
+
+}
+
 int strcmpstart(const char* c1, const  char* c2)
 {
 
@@ -37,11 +48,76 @@ void strappend(char* to, char* from1, char* from2){
 		to ++;
 		from1 ++;
 	}
-	while (*from2 != '\0')
+	
+	do
 	{
 		*to = *from2;
 		to ++;
 		from2 ++;
+	}while (*from2 != '\0');
+}
+
+void strcpy(char *to, char* from){
+	strappend(to, from, "");
+}
+
+void getPath(char* to, char *path, char* name){
+	if (*name == '\0')
+	{
+		strcpy(to, path);
+		return;
+	}
+
+	while(*name == ' ')
+		name ++;
+	
+	if (*name == '/')
+	{
+		strcpy(to, name);
+		return;
+	}
+
+	strcpy(to, path);
+
+	while(*name != '\0')
+	{
+		if (strcmpstart(name, ".."))
+		{
+			if (!strcmp(to, "/"))
+			{
+				char *tmp = to;
+				while (*tmp != '\0')
+					tmp++;
+				while (*tmp != '/')
+					tmp --;
+
+				if (tmp == to)
+					*(tmp+1) = '\0';
+				else
+					*tmp = '\0';
+			}
+		}
+		else if (strcmpstart(name, "."));
+		else
+		{
+			char *tmp = name;
+			while (*tmp != '/' && *tmp != '\0')
+				tmp ++;
+			if (*tmp == '/')
+			{
+				*tmp = '\0';
+				strappend(to, to, name);
+				*tmp = '/';
+			}
+			else
+				strappend(to, to, name);
+		}
+
+		while (*name != '\0' && *name != '/')
+			name ++;
+
+		if (*name == '/')
+			name ++;
 	}
 }
 
@@ -50,9 +126,10 @@ main ()
 {
 	char read[100];
 	char currentDir[100];
-	currentDir[0] = '/';
-	currentDir[1] = '\0';
+	strcpy(currentDir, "/");
+
 	int finish = FALSE;
+
 	while (!finish){
 		PutString("<My Shell ");
 		PutString(currentDir);
@@ -67,11 +144,32 @@ main ()
 				PutString("exec <program>\n");
 			else
 			{
-				int processId = ForkExec(com);
+				char path[100];
+				getPath(path, currentDir, com);
+
+				int processId = ForkExec(path);
 				if (processId == -1)
-					PutString("Error, the program not start\n");
+					PutString("Program not start\n");
 				else
 					Wait(processId);
+			}
+		}
+		else if (strcmpstart(read, "cd"))
+		{
+			if (*com == '\0')
+				ListDir(currentDir);
+			else
+			{
+				char path[100];
+				getPath(path, currentDir, com);
+				if (!IsDir(path))
+				{
+					PutString("Erreur, ");
+					PutString(path);
+					PutString(" is not a directory\n");
+				}
+				else
+					strcpy(currentDir, path);
 			}
 		}
 		else if (strcmpstart(read, "ls"))
@@ -81,7 +179,8 @@ main ()
 			else
 			{
 				char path[100];
-				strappend(path, currentDir, com);
+				getPath(path, currentDir, com);
+				PutChar('\n');
 				ListDir(path);
 			}
 		}
@@ -91,9 +190,12 @@ main ()
 				PutString("mkdir <dirName>\n");
 			else
 			{
-				int rest = Mkdir(currentDir, com);
-				if (!rest)
-					PutString("Error, the directory is not create\n");
+				char path[100];
+				getPath(path, currentDir, com);
+				Mkdir(path);
+//				int rest = Mkdir(path);
+//				if (!rest)
+//					PutString("Error, the directory is not create\n");
 			}
 		}
 		else if (strcmpstart(read, "rmdir"))
@@ -102,19 +204,25 @@ main ()
 				PutString("rmdir <dirName>\n");
 			else
 			{
-				int rest = RmDir(currentDir, com);
-				if (!rest)
-					PutString("Error, the directory is not create delete. Maybe it is not empty\n");
+				char path[100];
+				getPath(path, currentDir, com);
+				RmDir(path);
+//				int rest = RmDir(path);
+//				if (!rest)
+//					PutString("Error, the directory is not delete\n");
 			}
 		}
+		/*
 		else if (strcmpstart(read, "create"))
 		{
 			if (*com == '\0')
 				PutString("create <fileName>\n");
 			else
 			{
-				FCreate(com);
-				OpenFileId file = FOpen(com);
+				char path[100];
+				getPath(path, currentDir, com);
+				FCreate(path);
+				OpenFileId file = FOpen(path);
 				if (file == -1)
 				{
 					PutString("Impossible to create file ");
@@ -134,7 +242,9 @@ main ()
 				PutString("write <fileName>\n");
 			else
 			{
-				OpenFileId file = FOpen(com);
+				char path[100];
+				getPath(path, currentDir, com);
+				OpenFileId file = FOpen(path);
 				if (file == -1)
 				{
 					PutString("Impossible to open file ");
@@ -154,7 +264,9 @@ main ()
 				PutString("cat <fileName>\n");
 			else
 			{
-				OpenFileId file = FOpen(com);
+				char path[100];
+				getPath(path, currentDir, com);
+				OpenFileId file = FOpen(path);
 				if (file == -1)
 				{
 					PutString("Impossible to open file ");
@@ -171,12 +283,10 @@ main ()
 				}
 			}
 		}
+		*/
 		else if (strcmpstart(read, "exit"))
 			finish = TRUE;
-		else
-			PutString("Commande not found\n");
 		
 	}
-	PutString("Good by\n");
 	return 0;
 }

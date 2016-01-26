@@ -59,6 +59,7 @@
 #define SC_ListDir	31
 #define SC_Mkdir	32
 #define SC_RmDir	33
+#define SC_IsDir	34
 
 #endif //CHANGED
 
@@ -208,8 +209,9 @@ void V(sem_t sem);
 void SemDestroy(sem_t sem);
 
 void ListDir(const char path[]);
-int Mkdir(const char path[], const char name[]);
-int RmDir(const char path[], const char name[]);
+int Mkdir(const char name[]);
+int RmDir(const char name[]);
+int IsDir(const char name[]);
 
 #endif //CHANGED
 

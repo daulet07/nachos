@@ -816,4 +816,35 @@ FileSystem::RemoveDir(const char *from, const char *name)
 	return TRUE;
 } 
 
+bool
+FileSystem::IsDir(const char *path){
+	if (*path != '/')
+		return NULL;
+
+	char from[MAX_PATH_LENGTH];
+	strcpy(from, path);
+	char *name = NULL;
+	parsePath(from, &name);
+	if (*name == '\0')
+		return TRUE;
+
+	if (*from == '\0')
+		return IsDir("/", name);
+	else
+		return IsDir(from, name);
+}
+
+bool
+FileSystem::IsDir(const char *from, const char *name){
+	Directory *parentDir;
+
+	parentDir = SearchDir(from);
+	if (parentDir == NULL)
+		return FALSE;
+	bool result = parentDir->IsDir(parentDir->FindIndex(name));
+
+	delete parentDir;
+	return result;
+}
+
 #endif //CHANGED

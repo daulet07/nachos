@@ -208,11 +208,15 @@ Directory::Flush()
 
 bool
 Directory::IsFile(int pos){
+	if (pos < 0 || pos > tableSize-1)
+		return false;
 	return table[pos].inUse && table[pos].isFile;
 }
 
 bool
 Directory::IsDir(int pos){
+	if (pos < 0 || pos > tableSize-1)
+		return false;
 	return table[pos].inUse && !table[pos].isFile;
 }
 #endif //CHANGED

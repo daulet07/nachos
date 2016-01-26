@@ -323,4 +323,11 @@ Wait:
 	j	$31
 	.end Wait
 
+	.globl IsDir
+	.ent	IsDir
+IsDir:
+	addiu $2,$0,SC_IsDir
+	syscall
+	j	$31
+	.end IsDir
 #endif //CHANGED
