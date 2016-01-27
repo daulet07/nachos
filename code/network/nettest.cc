@@ -41,7 +41,9 @@ void MailTest(int farAddr)
 	const char *ack = "Got it!";
 	char buffer[MaxMailSize];
 
+#ifdef CHANGED
 	for (int i = 0; i < 10; i++) {
+#endif
 		// construct packet, mail header for original message
 		// To: destination machine, mailbox 0
 		// From: our machine, reply to: mailbox 1
@@ -55,7 +57,7 @@ void MailTest(int farAddr)
 
 		// Wait for the first message from the other machine
 		postOffice->Receive(0, &inPktHdr, &inMailHdr, buffer);
-		printf("Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
+		printf("Got \"%s\" from %d, box %d\n", buffer, inPktHdr.from, inMailHdr.from);
 		fflush(stdout);
 
 		// Send acknowledgement to the other machine (using "reply to" mailbox
@@ -69,7 +71,10 @@ void MailTest(int farAddr)
 		postOffice->Receive(1, &inPktHdr, &inMailHdr, buffer);
 		printf("Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
 		fflush(stdout);
+
+#ifdef CHANGED
 	}
+#endif
 	// Then we're done!
 	interrupt->Halt();
 }
@@ -99,7 +104,7 @@ void RingTest(int to)
 
 		// Wait for the ack from the other machine to the first message we sent.
 		postOffice->Receive(1, &inPktHdr, &inMailHdr, buffer);
-		printf("Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
+		printf("Got \"%s\" from %d, box %d\n", buffer, inPktHdr.from, inMailHdr.from);
 		fflush(stdout);
 
 		// Wait for the first message from the other machine
@@ -124,6 +129,7 @@ void RingTest(int to)
 		// in the message that just arrived
 		outPktHdr.to = inPktHdr.from;
 		outMailHdr.to = inMailHdr.from;
+		outMailHdr.from = 1;
 		outMailHdr.length = strlen(ack) + 1;
 		postOffice->Send(outPktHdr, outMailHdr, ack);
 
