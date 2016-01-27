@@ -151,7 +151,7 @@ main ()
 		char* com = read;
 
 		com = nextCommand(com);
-		if (strcmpstart(read, "exec"))
+		if (strcmpstart(read, "exec "))
 		{
 			if (*com == '\0')
 				PutString("exec <program>\n");
@@ -167,7 +167,7 @@ main ()
 					Wait(processId);
 			}
 		}
-		else if (strcmpstart(read, "cd"))
+		else if (strcmpstart(read, "cd "))
 		{
 			if (*com == '\0')
 				ListDir(currentDir);
@@ -197,7 +197,7 @@ main ()
 				ListDir(path);
 			}
 		}
-		else if (strcmpstart(read, "mkdir"))
+		else if (strcmpstart(read, "mkdir "))
 		{
 			if (*com == '\0')
 				PutString("mkdir <dirName>\n");
@@ -210,7 +210,7 @@ main ()
 					PutString("Error, the directory is not create\n");
 			}
 		}
-		else if (strcmpstart(read, "rm"))
+		else if (strcmpstart(read, "rm "))
 		{
 			if (*com == '\0')
 				PutString("rm <fileName>\n");
@@ -223,7 +223,7 @@ main ()
 					PutString("Error, the file is not delete\n");
 			}
 		}
-		else if (strcmpstart(read, "rmdir"))
+		else if (strcmpstart(read, "rmdir "))
 		{
 			if (*com == '\0')
 				PutString("rmdir <dirName>\n");
@@ -236,7 +236,7 @@ main ()
 					PutString("Error, the directory is not delete\n");
 			}
 		}
-		else if (strcmpstart(read, "create"))
+		else if (strcmpstart(read, "create "))
 		{
 			if (*com == '\0')
 				PutString("create <fileName>\n");
@@ -254,7 +254,7 @@ main ()
 					PutString("File is create\n");
 			}
 		}
-		else if (strcmpstart(read, "write"))
+		else if (strcmpstart(read, "write "))
 		{
 			if (*com == '\0')
 				PutString("write <fileName>\n");
@@ -279,7 +279,7 @@ main ()
 				}
 			}
 		}
-		else if (strcmpstart(read, "cat"))
+		else if (strcmpstart(read, "cat "))
 		{
 			if (*com == '\0')
 				PutString("cat <fileName>\n");
@@ -306,6 +306,8 @@ main ()
 		}
 		else if (strcmpstart(read, "exit"))
 			finish = TRUE;
+		else
+			PutString("Commande not found\n");
 		
 	}
 	return 0;

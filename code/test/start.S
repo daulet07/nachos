@@ -299,13 +299,13 @@ ListDir:
 	j	$31
 	.end ListDir
 
-	.globl Mkdir
-	.ent	Mkdir
-Mkdir:
-	addiu $2,$0,SC_Mkdir
+	.globl MkDir
+	.ent	MkDir
+MkDir:
+	addiu $2,$0,SC_MkDir
 	syscall
 	j	$31
-	.end Mkdir
+	.end MkDir
 
 	.globl Rm
 	.ent	Rm

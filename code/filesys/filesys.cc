@@ -586,7 +586,7 @@ FileSystem::RemoveFile(const char *from, const char *name)
 
 	directory = SearchDir(from);
 	sector = directory->Find(name);
-	if (sector == -1) {
+	if (sector == -1 || !directory->IsFile(directory->FindIndex(name))) {
 		delete directory;
 		return FALSE;			 // file not found 
 	}
