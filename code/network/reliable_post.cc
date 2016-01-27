@@ -24,11 +24,14 @@ bool ReliablePostOffice::Send(PacketHeader pktHdr, MailHeader mailHdr, const cha
 		interrupt->Schedule(TimerHandler, (int)this, TEMP0, NetworkRecvInt);
 		lock.Acquire();
 
-		if (!postOffice->IsMailBoxEmpty(1))
-		{
-			postOffice->Receive(1, &inPktHdr, &inMailHdr, buffer);
-			return true;
-		}
+		(void)inMailHdr;
+		(void)inPktHdr;
+		(void)buffer;
+//		if (!postOffice->IsMailBoxEmpty(1))
+//		{
+//			postOffice->Receive(1, &inPktHdr, &inMailHdr, buffer);
+//			return true;
+//		}
 	}
 	return false;
 }
