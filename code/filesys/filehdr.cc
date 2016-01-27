@@ -38,6 +38,7 @@
 //	"fileSize" is the bit map of free disk sectors
 //----------------------------------------------------------------------
 
+#ifndef CHANGED
 	bool
 FileHeader::Allocate(BitMap *freeMap, int fileSize)
 { 
@@ -57,68 +58,53 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
 		dataSectors[i] = freeMap->Find();
 	return TRUE;
 }
-
-#ifdef CHANGED
-/*
+#else
 	bool
 FileHeader::Allocate(BitMap *freeMap, int fileSize)
 { 
-	if (numBytes + fileSize <=  MaxFileSize) // Juste one indirection
+	if (fileSize > (int)MaxBigFileSize)
 	{
-		int sectorToAllocate = divRoundUp(numBytes + fileSize, SectorSize) - numSectors;
-
-		if (freeMap->NumClear() < sectorToAllocate)
-			return FALSE;
-		for (int i = 0; i < sectorToAllocate; i ++)
-		{
-			dataSectors[numSectors + i] = freeMap->Find();
-			ASSERT(dataSectors[numSectors + i] != -1);
-		}
-		numBytes += fileSize;
-		numSectors += sectorToAllocate;
-	}
-	else 
-	{
-		int newDataSectors[NumSecondDirect];
-
-		if (numBytes <= MaxFileSize) // Need to change from one indirection to two
-		{
-			int totalSector = (numBytes + fileSize) / SectorSize + (numBytes + fileSize) / MaxFileSize;
-			if (freeMap->NumClear() < totalSector - numSectors)
-				return FALSE;
-
-			for (int i = 0; i < numSectors; i ++)
-				newDataSectors[i] = dataSectors[i];
-			
-			numSectors = 1;
-			dataSectors[0] = freeMap->Find();
-			ASSERT(dataSectors[0] != -1);
-			synchDisk->WriteSector(dataSectors[0], (char*)newDataSectors);
-		}
-		else
-			synchDisk->ReadSector(dataSectors[numSectors-1], (char*)newDataSectors);
-		
-		// Fill last secondDirect
-
-		int canFill = MaxFileSize * numSectors - numBytes;
-		///////////////////////////////////:
+		fprintf(stderr, "File to big\n");
+		return FALSE;
 	}
 	numBytes = fileSize;
-	numSectors  = divRoundUp(fileSize, SectorSize);
-	if (freeMap->NumClear() < numSectors)
+	int numAllSectors = divRoundUp(fileSize, SectorSize);
+	int numHdr = divRoundUp(numAllSectors, NumSecondDirect);
+
+	if (freeMap->NumClear() < numAllSectors + numHdr)
 		return FALSE;		// not enough space
 
-	for (int i = 0; i < numSectors; i++)
-		dataSectors[i] = freeMap->Find();
+	int i = numAllSectors;
+	int tab[NumSecondDirect];
+	numSectLastHdr = 0;
+	numSectors = 0;
+	numBytes = fileSize;
+	dataSectors[numSectors ++] = freeMap->Find();
+	while (i > 0)
+	{
+		if (numSectLastHdr == NumSecondDirect)
+		{
+			synchDisk->WriteSector(dataSectors[numSectors-1], (char*)tab);
+			dataSectors[numSectors ++] = freeMap->Find();
+			numSectLastHdr = 0;
+		}
+
+		tab[numSectLastHdr++] = freeMap->Find();
+		i --;
+	}
+	synchDisk->WriteSector(dataSectors[numSectors-1], (char*)tab);
+
 	return TRUE;
 }
-*/
+
 
 FileHeader::FileHeader(){
 	numBytes = 0;
 	numSectors = 0;
+	numSectLastHdr = 0;
 }
 
+#ifndef CHANGED
 	bool
 FileHeader::ReAllocate(BitMap *freeMap, int size)
 { 
@@ -134,7 +120,37 @@ FileHeader::ReAllocate(BitMap *freeMap, int size)
 	
 	return TRUE;
 }
-#endif
+#else
+
+	bool
+FileHeader::ReAllocate(BitMap *freeMap, int size)
+{ 
+	int totalNumSector = divRoundUp(numBytes + size, SectorSize);
+	int totalNumSubHdr = divRoundUp(totalNumSector, NumSecondDirect);
+	int numSectorToAllocate = (totalNumSector + totalNumSubHdr) - ((numSectors-1)*NumSecondDirect + numSectLastHdr+ numSectors);
+
+	if (freeMap->NumClear() < numSectorToAllocate)
+		return FALSE;		// not enough space
+
+	int tab[NumSecondDirect];
+	synchDisk->ReadSector(dataSectors[numSectors-1], (char*)tab);
+
+	while (numSectorToAllocate > 0)
+	{
+		if (numSectLastHdr == (int)NumSecondDirect)
+		{
+			numSectLastHdr = 0;
+			synchDisk->WriteSector(dataSectors[numSectors-1], (char*)tab);
+			dataSectors[numSectors++] = freeMap->Find();
+		}
+		tab[numSectLastHdr++] = freeMap->Find();
+		numSectorToAllocate --;
+	}
+	synchDisk->WriteSector(dataSectors[numSectors-1], (char*)tab);
+	return TRUE;
+}
+#endif //CHANGED
+#endif //CHANGED
 
 //----------------------------------------------------------------------
 // FileHeader::Deallocate
@@ -143,6 +159,7 @@ FileHeader::ReAllocate(BitMap *freeMap, int size)
 //	"freeMap" is the bit map of free disk sectors
 //----------------------------------------------------------------------
 
+#ifndef CHANGED
 	void 
 FileHeader::Deallocate(BitMap *freeMap)
 {
@@ -151,6 +168,26 @@ FileHeader::Deallocate(BitMap *freeMap)
 		freeMap->Clear((int) dataSectors[i]);
 	}
 }
+#else
+	void 
+FileHeader::Deallocate(BitMap *freeMap)
+{
+	int tab[NumSecondDirect];
+	synchDisk->ReadSector(dataSectors[numSectors-1], (char *)tab);
+	while (numSectors != 0 || numSectLastHdr != 0)
+	{
+		if (numSectLastHdr < 0)
+		{
+			numSectLastHdr = NumSecondDirect -1;
+			freeMap->Clear((int)dataSectors[--numSectors]);
+			synchDisk->ReadSector(dataSectors[numSectors-1], (char *)tab);
+		}
+		freeMap->Clear((int)tab[--numSectLastHdr]);
+	}
+}
+#ifdef CHANGED
+#endif //CHANGED
+#endif //CHANGED
 
 //----------------------------------------------------------------------
 // FileHeader::FetchFrom
@@ -188,11 +225,26 @@ FileHeader::WriteBack(int sector)
 //	"offset" is the location within the file of the byte in question
 //----------------------------------------------------------------------
 
+#ifndef CHANGED
 	int
 FileHeader::ByteToSector(int offset)
 {
 	return(dataSectors[offset / SectorSize]);
 }
+#else
+	int
+FileHeader::ByteToSector(int offset)
+{
+	int tab[NumSecondDirect];
+	int numSect = offset/ SectorSize;
+	int numHdr = numSect / NumSecondDirect;
+	synchDisk->ReadSector(dataSectors[numHdr], (char*)tab); 
+
+
+	int sector = tab[numSect - numHdr * NumSecondDirect];
+	return sector;
+}
+#endif //CHANGED
 
 //----------------------------------------------------------------------
 // FileHeader::FileLength
@@ -234,12 +286,3 @@ FileHeader::Print()
 	delete [] data;
 }
 
-#ifdef CHANGED
-int FileHeader::FileAllocatedLength(){
-	return numSectors * SectorSize;
-}
-
-void FileHeader::SetFileLength(int size){
-	numBytes = size;
-}
-#endif
