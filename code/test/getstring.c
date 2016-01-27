@@ -6,6 +6,5 @@ int main()
 	GetString(buffer, 8);
 	PutString(buffer);
 	PutString("\n");
-	Halt();
 	return 0;
 }

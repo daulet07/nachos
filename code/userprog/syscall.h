@@ -57,9 +57,10 @@
 #define SC_FClose	30
 
 #define SC_ListDir	31
-#define SC_Mkdir	32
+#define SC_MkDir	32
 #define SC_RmDir	33
-#define SC_IsDir	34
+#define SC_Rm	34
+#define SC_IsDir	35
 
 #endif //CHANGED
 
@@ -146,8 +147,9 @@ int Read (char *buffer, int size, OpenFileId id);
 void Close (OpenFileId id);
 
 #ifdef CHANGED
+typedef int ProcessId;
 /* Create a Nachos file, with "name" */
-void FCreate (char *path);
+int FCreate (char *path);
 //void FCreate (char *from, char *name);
 
 /* Open the Nachos file "name", and return an "OpenFileId" that can 
@@ -199,7 +201,7 @@ void GetInt(int *n);
 int UserThreadCreate(void f(void *arg), void *arg);
 void UserThreadExit();
 void UserThreadJoin(int threadId);
-int ForkExec(char *s);
+ProcessId ForkExec(char *s);
 void Wait(int id);
 
 typedef int sem_t;
@@ -209,8 +211,9 @@ void V(sem_t sem);
 void SemDestroy(sem_t sem);
 
 void ListDir(const char path[]);
-int Mkdir(const char name[]);
+int MkDir(const char name[]);
 int RmDir(const char name[]);
+int Rm(const char name[]);
 int IsDir(const char name[]);
 
 #endif //CHANGED

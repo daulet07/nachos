@@ -76,6 +76,7 @@ Machine::Machine(bool debug)
 
 #ifdef CHANGED
 	numProcess = 0;
+	idProcess = 0;
 	processLock = new Lock("lock for numProcess");
 	listProcess = new ListWaiter();
 #endif
@@ -233,7 +234,8 @@ void Machine::WriteRegister(int num, int value)
 int Machine::AddProcess(){
 	processLock->Acquire();
 
-	int id = numProcess ++;
+	int id = idProcess ++;
+	numProcess ++;
 	listProcess->New(id);
 
 	processLock->Release();

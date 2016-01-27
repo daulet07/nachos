@@ -205,6 +205,7 @@ class Machine {
 				// time reaches this value
 #ifdef CHANGED
 	int numProcess;
+	int idProcess;
 	Lock *processLock;
 	ListWaiter *listProcess;
 #endif

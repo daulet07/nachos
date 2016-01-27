@@ -47,7 +47,8 @@ void ListWaiter::Wait(unsigned int id){
 	while (elem != NULL && elem->id < id)
 		elem = elem->next;
 
-	if (elem->id != id)
+
+	if (elem == NULL || elem->id != id)
 		return;
 
 	Lock *lockTmp = new Lock("Lock for elem");

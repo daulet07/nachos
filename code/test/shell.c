@@ -160,7 +160,7 @@ main ()
 				char path[100];
 				getPath(path, currentDir, com);
 
-				int processId = ForkExec(path);
+				ProcessId processId = ForkExec(path);
 				if (processId == -1)
 					PutString("Program not start\n");
 				else
@@ -205,10 +205,22 @@ main ()
 			{
 				char path[100];
 				getPath(path, currentDir, com);
-				Mkdir(path);
-				int rest = Mkdir(path);
+				int rest = MkDir(path);
 				if (!rest)
 					PutString("Error, the directory is not create\n");
+			}
+		}
+		else if (strcmpstart(read, "rm"))
+		{
+			if (*com == '\0')
+				PutString("rm <fileName>\n");
+			else
+			{
+				char path[100];
+				getPath(path, currentDir, com);
+				int result = Rm(path);
+				if (!result)
+					PutString("Error, the file is not delete\n");
 			}
 		}
 		else if (strcmpstart(read, "rmdir"))
@@ -219,9 +231,8 @@ main ()
 			{
 				char path[100];
 				getPath(path, currentDir, com);
-				RmDir(path);
-				int rest = RmDir(path);
-				if (!rest)
+				int result = RmDir(path);
+				if (!result)
 					PutString("Error, the directory is not delete\n");
 			}
 		}
@@ -233,19 +244,14 @@ main ()
 			{
 				char path[100];
 				getPath(path, currentDir, com);
-				FCreate(path);
-				OpenFileId file = FOpen(path);
-				if (file == -1)
+				if (!FCreate(path))
 				{
 					PutString("Impossible to create file ");
 					PutString(com);
 					PutChar('\n');
 				}
 				else
-				{
 					PutString("File is create\n");
-					FClose(file);
-				}
 			}
 		}
 		else if (strcmpstart(read, "write"))
@@ -265,7 +271,10 @@ main ()
 				}
 				else
 				{
-					FWrite("HelloWorld\n", file);
+					char tmp[10];
+					while (FRead(tmp, 9, file) > 0);
+
+					FWrite("Hello World\n", file);
 					FClose(file);
 				}
 			}

@@ -273,8 +273,8 @@ void ExceptionHandler(ExceptionType which) {
 				DEBUG('s', "SC_FCreate.\n");
 				char path[MAX_STRING_SIZE];
 				copyStringFromMachine(machine->ReadRegister(4), path, MAX_STRING_SIZE);
-				fileSystem->CreateFile(path, 0);
-				//void FCreate (char *name);
+				int result = fileSystem->CreateFile(path, 0);
+				machine->WriteRegister(2, result);
 				break;
 			}
 			case SC_FOpen:
@@ -352,12 +352,21 @@ void ExceptionHandler(ExceptionType which) {
 				delete []path;
 				break;
 			}
-			case SC_Mkdir:
+			case SC_MkDir:
 			{
-				DEBUG('s', "SC_Mkdir.\n");
+				DEBUG('s', "SC_MkDir.\n");
 				char *path = new char[MAX_STRING_SIZE];
 				copyStringFromMachine(machine->ReadRegister(4), path, MAX_STRING_SIZE);
 				bool result = fileSystem->CreateDir(path);
+				machine->WriteRegister(2, result);
+				break;
+			}
+			case SC_Rm:
+			{
+				DEBUG('s', "SC_Rm.\n");
+				char *path = new char[MAX_STRING_SIZE];
+				copyStringFromMachine(machine->ReadRegister(4), path, MAX_STRING_SIZE);
+				bool result = fileSystem->RemoveFile(path);
 				machine->WriteRegister(2, result);
 				break;
 			}

@@ -139,6 +139,7 @@ FileHeader::ReAllocate(BitMap *freeMap, int size)
 	{
 		if (numSectLastHdr == (int)NumSecondDirect)
 		{
+			numSectors ++;
 			numSectLastHdr = 0;
 			synchDisk->WriteSector(dataSectors[numSectors-1], (char*)tab);
 			dataSectors[numSectors++] = freeMap->Find();
@@ -147,6 +148,7 @@ FileHeader::ReAllocate(BitMap *freeMap, int size)
 		numSectorToAllocate --;
 	}
 	synchDisk->WriteSector(dataSectors[numSectors-1], (char*)tab);
+	numBytes += size;
 	return TRUE;
 }
 #endif //CHANGED
