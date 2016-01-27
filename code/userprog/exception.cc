@@ -28,8 +28,6 @@
 #ifdef CHANGED
 #include "userthread.h"
 #include "fork.h"
-
-extern SynchConsole *synchConsole;
 #endif //CHANGED
 //----------------------------------------------------------------------
 // UpdatePC : Increments the Program Counter register in order to resume
