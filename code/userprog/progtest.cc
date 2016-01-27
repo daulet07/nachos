@@ -71,6 +71,10 @@ void TestAsynchCOnsole(char *in, char *out);
 
 void ConsoleTest(char *in, char *out) {
 	//TestAsynchCOnsole(in, out);
+#ifdef CHANGED
+	delete synchConsole;
+	synchConsole = NULL;
+#endif
 
 	console = new Console(in, out, ReadAvail, WriteDone, 0);
 	readAvail = new Semaphore("read avail", 0);
