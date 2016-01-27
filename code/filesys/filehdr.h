@@ -19,9 +19,9 @@
 
 #define NumDirect 	((SectorSize - 2 * sizeof(int)) / sizeof(int))
 #define MaxFileSize 	(NumDirect * SectorSize)
-#ifndef CHANGED
+#ifdef CHANGED
 #define NumSecondDirect (SectorSize / sizeof(int))
-#define MaxBigFileSize (NumDirect * NumSecondDirect)
+#define MaxBigFileSize (NumDirect * NumSecondDirect * SectorSize)
 #endif
 
 // The following class defines the Nachos "file header" (in UNIX terms,  
@@ -63,8 +63,6 @@ class FileHeader {
 #ifdef CHANGED
 		FileHeader();
 		bool ReAllocate(BitMap *freeMap, int size);
-		int FileAllocatedLength();
-		void SetFileLength(int size);			// Return the length of the file 
 #endif
 
 	private:
@@ -72,6 +70,10 @@ class FileHeader {
 		int numSectors;			// Number of data sectors in the file
 		int dataSectors[NumDirect];		// Disk sector numbers for each data 
 		// block in the file
+
+#ifdef CHANGED
+		int numSectLastHdr;
+#endif
 };
 
 #endif // FILEHDR_H

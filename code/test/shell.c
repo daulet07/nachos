@@ -49,16 +49,23 @@ void strappend(char* to, char* from1, char* from2){
 		from1 ++;
 	}
 	
-	do
+	while (*from2 != '\0')
 	{
 		*to = *from2;
 		to ++;
 		from2 ++;
-	}while (*from2 != '\0');
+	}
+	*to = *from2;
 }
 
 void strcpy(char *to, char* from){
-	strappend(to, from, "");
+	while (*from != '\0')
+	{
+		*to = *from;
+		to ++;
+		from ++;
+	}
+	*to = *from;
 }
 
 void getPath(char* to, char *path, char* name){
@@ -106,11 +113,17 @@ void getPath(char* to, char *path, char* name){
 			if (*tmp == '/')
 			{
 				*tmp = '\0';
+				if (!strcmp(to, "/"))
+					strappend(to, to, "/");
 				strappend(to, to, name);
 				*tmp = '/';
 			}
 			else
-				strappend(to, to, name);
+			{
+				if (!strcmp(to, "/"))
+					strappend(to, to, "/");
+				strappend(to, to,  name);
+			}
 		}
 
 		while (*name != '\0' && *name != '/')
@@ -193,9 +206,9 @@ main ()
 				char path[100];
 				getPath(path, currentDir, com);
 				Mkdir(path);
-//				int rest = Mkdir(path);
-//				if (!rest)
-//					PutString("Error, the directory is not create\n");
+				int rest = Mkdir(path);
+				if (!rest)
+					PutString("Error, the directory is not create\n");
 			}
 		}
 		else if (strcmpstart(read, "rmdir"))
@@ -207,12 +220,11 @@ main ()
 				char path[100];
 				getPath(path, currentDir, com);
 				RmDir(path);
-//				int rest = RmDir(path);
-//				if (!rest)
-//					PutString("Error, the directory is not delete\n");
+				int rest = RmDir(path);
+				if (!rest)
+					PutString("Error, the directory is not delete\n");
 			}
 		}
-		/*
 		else if (strcmpstart(read, "create"))
 		{
 			if (*com == '\0')
@@ -283,7 +295,6 @@ main ()
 				}
 			}
 		}
-		*/
 		else if (strcmpstart(read, "exit"))
 			finish = TRUE;
 		
