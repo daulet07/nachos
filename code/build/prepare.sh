@@ -17,8 +17,10 @@ echo Copy shell
 ./nachos-step5 -cp thread /vm/thread
 ./nachos-step5 -cp sem /vm/sem
 ./nachos-step5 -cp pc /vm/pc
-./nachos-step5 -cp multiprocess /vm/multiprocess
-./nachos-step5 -cp multithread /vm/multithreads
+#./nachos-step5 -cp multiprocess /vm/multiprocess
+#./nachos-step5 -cp multithread /vm/multithreads
+./nachos-step5 -cp step4_1 /vm/step4
+./nachos-step5 -cp step4_2 /vm/step4MP
 
 ./nachos-step5 -mkdir /filesys
 ./nachos-step5 -cp filesys /filesys/filesys
