@@ -56,8 +56,7 @@ int copyStringFromMachine( int from, char *to, unsigned size) {
 }
 
 void writeStringToMachine(char* string, int to, unsigned size) {
-	int i;
-	for (i = 0; i < (int)size; i++)
+	for (unsigned i = 0; i < size; i++)
 		machine->WriteMem(to + i, 1, string[i]);
 }
 
