@@ -2,8 +2,8 @@
 
 int main()
 {
-	ForkExec("p1");
-	ForkExec("p2");
+	ForkExec("/test/p1");
+	ForkExec("/test/p2");
 	PutString("\n");
 	
 	return 0;

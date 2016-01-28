@@ -25,7 +25,9 @@ int do_UserForkExec(char *pName){
 	}
 
 	if (!CanCreateNewSpace(exec))
+	{
 		return -1;
+	}
 
 	space = new AddrSpace(exec);
 	

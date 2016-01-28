@@ -2,8 +2,8 @@
 
 int main()
 {
-	ForkExec("userpages0");
-	ForkExec("userpages1");
+	ForkExec("/test/p1");
+	ForkExec("/test/p2");
 	PutString("###\n");
 	
 	return 0;

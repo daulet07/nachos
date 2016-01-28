@@ -18,8 +18,6 @@ void safe_increment(void* arg) {
 	PutInt(C);
 	PutChar('\n');
 	V(mutex);
-
-	UserThreadExit();
 }
 
 

@@ -68,7 +68,9 @@ static void haltMachine() {
 		interrupt->Halt();
 
 	if (currentThread->space->GetNbThread() == 1)
+	{
 		machine->EndProcess(currentThread->space->GetId());
+	}
 
 	currentThread->Finish();
 }

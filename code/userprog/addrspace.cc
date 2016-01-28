@@ -353,6 +353,9 @@ void AddrSpace::EndThread(){
 	DeallocateMapStack(currentThread->GetStackPosition());
 
 	haltLock->Release();
+
+	if (GetNbThread() == 0)
+		delete this;
 }
 
 void AddrSpace::JoinThread(unsigned int id){
